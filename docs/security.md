@@ -32,6 +32,7 @@ Cada RPC descobre o negócio a partir de `auth.uid()` e nunca confia em `busines
 
 - `SECURITY DEFINER` sempre com `set search_path = ''` e nomes totalmente qualificados.
 - `revoke execute ... from public` e grant explícito só para quem precisa.
+- Funções novas nascem sem EXECUTE para PUBLIC/anon (`alter default privileges revoke execute on functions from public`, na forma GLOBAL: a forma `in schema` não remove o padrão do Postgres; corrigido na migração 1000). `tests/integration/privilegios.test.ts` trava a matriz: toda função pública precisa estar listada como "logado" ou "só servidor".
 - `private.bootstrap_owner` só é executável pelo papel `postgres` (SQL Editor do painel).
 
 ## Storage (`sale-signatures`)

@@ -21,6 +21,7 @@ Migrações versionadas em `supabase/migrations/`. Toda mudança de banco é um 
 | `0400_auditoria` | `audit_logs` (imutável), `private.audit`, gatilho genérico `audit_row` |
 | `0500_rls` | RLS em todas as tabelas, privilégios por coluna, grants |
 | `0600_storage` | bucket privado `sale-signatures` e políticas de leitura |
+| `1000_privilegios` | correção: tira o EXECUTE automático de PUBLIC/anon das funções (as das migrações 0700/0800 nasceram executáveis por anon, embora recusassem por dentro) |
 | `0900_assinatura` | `sale_confirmations.captured_by`; `signature_prepare` e `signature_finalize` (só `service_role`, chamadas pela Edge Function): conferem membro do negócio, venda ativa, hash do resumo canônico, assinatura única por venda e caminho determinístico |
 | `0800_vendas` | RPCs `create_sale` (CREATED/DUPLICATE/CONFLICT; hash do corpo; validação completa; flags `PRICE_CHANGED`/`INACTIVE_*` na auditoria) e `cancel_sale` (motivo obrigatório; estorna o pagamento da venda paga na hora), view `sale_list`, `private.statement_entries` e RPC `customer_statement` (extrato paginado com o que está em aberto) |
 | `0700_operacao` | fuso do negócio (`business_settings.timezone`), `whoami` com fuso, `bootstrap_owner` com fuso, saldo anterior no fuso do negócio, RPC `dashboard_summary`, views `establishment_overview`/`customer_overview`/`product_overview`, RPC `save_customer` |
