@@ -68,6 +68,10 @@ Estados: `PENDING` → `SYNCING` → `SYNCED`, ou `FAILED`.
 
 ## Assinatura
 
+> Implementada na Fase 4 (`src/features/signatures/`, `src/services/signatures.ts`, `supabase/functions/signature-upload/`). Testada em integração (`tests/integration/assinatura.test.ts`) e no navegador, inclusive sem internet (`tests/e2e/fase4-assinatura.spec.ts`).
+
+No celular: a venda, a assinatura (PNG + sha256 + hash do resumo canônico, com a data/hora mostrada no resumo) e as duas operações são gravadas na MESMA transação. Mudar a venda depois de assinar (voltar, trocar cliente ou lugar) descarta a assinatura. Se a venda for cancelada antes de a assinatura subir, o servidor responde `SKIPPED` e a operação termina.
+
 1. `CREATE_SALE` fica `SYNCED`.
 2. POST multipart com o JWT para a Edge Function `signature-upload`.
 3. A função valida o usuário, confere o PNG (bytes mágicos, IHDR, até 200 KB), calcula o sha256 e chama `signature_prepare` (verifica membro do negócio, venda ativa, hash do resumo igual ao recalculado no servidor e ausência de outra assinatura válida), que devolve o caminho determinístico `{business_id}/{sale_id}/{confirmation_id}.png`.

@@ -13,6 +13,7 @@ import { maskPhone } from '@/domain/phone';
 import { discardFailedSale, enqueueCancel, retryOp } from '@/lib/offline/outbox';
 import { useLiveQuery } from '@/lib/offline/useLiveQuery';
 import { errorMessage } from '@/lib/supabase/errors';
+import { SaleSignature } from '@/features/signatures/SaleSignature';
 import { useSync } from '@/features/sync/SyncProvider';
 import { SaleBadges } from './SaleBadges';
 import { useSale } from './salesData';
@@ -117,6 +118,8 @@ export function SaleDetailPage() {
             </p>
           )}
         </section>
+
+        <SaleSignature saleId={sale.id} confirmationStatus={sale.confirmationStatus} />
 
         {sale.sync === 'FAILED' && createOp && (
           <section role="alert" className="space-y-3 rounded-card bg-danger/10 p-5">

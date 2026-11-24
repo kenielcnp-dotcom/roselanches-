@@ -9,6 +9,7 @@
 import type { Client } from '@/lib/supabase/client';
 import { toAppError } from '@/lib/supabase/errors';
 import { cancelSale, createSale, type CreateSalePayload } from '@/services/sales';
+import { uploadSignature } from '@/services/signatures';
 import type { OutboxError, OutboxOp } from '@/types/domain';
 import type { LocalDb } from './db';
 
@@ -25,6 +26,7 @@ export interface SyncReport {
   sent: number;
   /** Ids das vendas que acabaram de chegar ao servidor. */
   syncedSales: string[];
+  syncedSignatures: number;
   failed: number;
   /** Parou por falta de conexão ou sessão expirada. */
   stoppedBy: 'network' | 'auth' | null;
@@ -41,7 +43,7 @@ export class PermanentSyncError extends Error {
   }
 }
 
-type Handler = (client: Client, op: OutboxOp) => Promise<{ flags?: string[] }>;
+type Handler = (client: Client, op: OutboxOp, db: LocalDb) => Promise<{ flags?: string[] }>;
 
 const HANDLERS: Record<OutboxOp['type'], Handler | undefined> = {
   CREATE_SALE: async (client, op) => {
@@ -59,7 +61,14 @@ const HANDLERS: Record<OutboxOp['type'], Handler | undefined> = {
     await cancelSale(client, p.sale_id, p.reason);
     return {};
   },
-  UPLOAD_SIGNATURE: undefined,
+  UPLOAD_SIGNATURE: async (client, op, db) => {
+    const sig = await db.localSignatures.get(op.entityId);
+    if (!sig) throw new PermanentSyncError('SIGNATURE_MISSING', 'A imagem da assinatura não está mais neste celular.');
+    await uploadSignature(client, sig);
+    // Confirmada no servidor: a imagem sai do celular.
+    await db.localSignatures.delete(op.entityId);
+    return {};
+  },
   REGISTER_PAYMENT: undefined,
 };
 
@@ -79,7 +88,7 @@ export interface SyncOptions {
 /** Uma rodada de envio. Quem chama garante que só uma rodada roda por vez. */
 export async function runSyncRound(db: LocalDb, client: Client, options: SyncOptions = {}): Promise<SyncReport> {
   const now = options.now ?? Date.now;
-  const report: SyncReport = { sent: 0, syncedSales: [], failed: 0, stoppedBy: null, flags: [] };
+  const report: SyncReport = { sent: 0, syncedSales: [], syncedSignatures: 0, failed: 0, stoppedBy: null, flags: [] };
 
   const all = await db.outbox.orderBy('createdAt').toArray();
   const state = new Map(all.map((o) => [o.opId, o.state]));
@@ -96,11 +105,12 @@ export async function runSyncRound(db: LocalDb, client: Client, options: SyncOpt
     await db.outbox.update(op.opId, { state: 'SYNCING', updatedAt: now() });
     state.set(op.opId, 'SYNCING');
     try {
-      const result = await handler(client, op);
+      const result = await handler(client, op, db);
       await db.outbox.update(op.opId, { state: 'SYNCED', updatedAt: now(), lastError: undefined });
       state.set(op.opId, 'SYNCED');
       report.sent += 1;
       if (op.type === 'CREATE_SALE') report.syncedSales.push(op.entityId);
+      if (op.type === 'UPLOAD_SIGNATURE') report.syncedSignatures += 1;
       report.flags.push(...(result.flags ?? []));
     } catch (e) {
       const error = classify(e);

@@ -40,7 +40,7 @@ test('venda por valor direto, online: salva no celular e sincroniza', async ({ p
   await expect(summary).toContainText('R$ 18,50');
   await page.screenshot({ path: `${SHOTS}/10-venda-resumo.png`, fullPage: true });
 
-  await page.getByRole('button', { name: 'Salvar venda' }).click();
+  await page.getByRole('button', { name: 'Salvar sem assinatura' }).click();
   await expect(page.getByText('Venda salva no celular.')).toBeVisible();
   await expect(page.getByText('Venda sincronizada.')).toBeVisible({ timeout: 15_000 });
   // Volta direto para a escolha do cliente, no mesmo lugar.
@@ -66,7 +66,7 @@ test('venda por produtos SEM internet, app reaberto com a venda pendente, envio 
   await expect(page.getByText('R$ 16,00').first()).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/11-venda-produtos.png`, fullPage: true });
   await page.getByRole('button', { name: 'Continuar' }).click();
-  await page.getByRole('button', { name: 'Salvar venda' }).click();
+  await page.getByRole('button', { name: 'Salvar sem assinatura' }).click();
   await expect(page.getByText('Venda salva no celular.')).toBeVisible();
   await expect(page.getByRole('status').filter({ hasText: '1 venda no celular' }).first()).toBeVisible();
 
@@ -114,7 +114,7 @@ test('cliente de outro lugar: aviso que não bloqueia a venda', async ({ page })
   await page.getByRole('button', { name: 'Continuar' }).click();
   await page.getByRole('button', { name: 'Pago agora' }).click();
   await page.getByRole('button', { name: 'Pix' }).click();
-  await page.getByRole('button', { name: 'Salvar venda' }).click();
+  await page.getByRole('button', { name: 'Salvar sem assinatura' }).click();
   await expect(page.getByText('Venda sincronizada.')).toBeVisible({ timeout: 15_000 });
   const { rows } = await db.query(
     `select e.name, p.method from public.sales s join public.establishments e on e.id = s.establishment_id

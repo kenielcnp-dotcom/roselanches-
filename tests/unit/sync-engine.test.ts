@@ -232,3 +232,80 @@ describe('espera entre tentativas', () => {
     expect(backoffDelay(1, () => 1)).toBe(6_000);
   });
 });
+
+describe('assinatura na fila', () => {
+  function withFunctions(impl: RpcImpl, upload: () => { data: unknown; error: unknown }) {
+    const base = fakeClient(impl);
+    const uploads: FormData[] = [];
+    (base.client as unknown as { functions: unknown }).functions = {
+      invoke: async (_name: string, opts: { body: FormData }) => {
+        uploads.push(opts.body);
+        return upload();
+      },
+    };
+    return { ...base, uploads };
+  }
+
+  function signatureFor(saleId: string) {
+    return {
+      confirmationId: randomUUID(),
+      saleId,
+      png: new Uint8Array([137, 80, 78, 71]).buffer,
+      fileSha256: 'f'.repeat(64),
+      documentHash: 'e'.repeat(64),
+      termsVersion: 'v1',
+      capturedAt: new Date().toISOString(),
+    };
+  }
+
+  it('venda e assinatura são gravadas juntas; a assinatura depende da venda', async () => {
+    const d = draft();
+    const sig = signatureFor(d.id);
+    await enqueueSale(db, d, display, sig);
+    const ops = await db.outbox.orderBy('createdAt').toArray();
+    expect(ops.map((o) => o.type)).toEqual(['CREATE_SALE', 'UPLOAD_SIGNATURE']);
+    expect(ops[1]?.dependsOn).toEqual([ops[0]?.opId]);
+    expect(await db.localSignatures.count()).toBe(1);
+    expect(countOutbox(ops)).toMatchObject({ pendingSales: 1, pendingSignatures: 1 });
+  });
+
+  it('não aceita assinatura de outra venda', async () => {
+    await expect(enqueueSale(db, draft(), display, signatureFor(randomUUID()))).rejects.toThrow();
+    expect(await db.outbox.count()).toBe(0);
+  });
+
+  it('sobe depois da venda e a imagem sai do celular quando o servidor confirma', async () => {
+    const d = draft();
+    const sig = signatureFor(d.id);
+    await enqueueSale(db, d, display, sig);
+    const c = withFunctions(created, () => ({ data: { status: 'FINALIZED' }, error: null }));
+    const r = await runSyncRound(db, c.client);
+    expect(c.calls.map((x) => x.name)).toEqual(['create_sale']);
+    expect(c.uploads).toHaveLength(1);
+    expect(c.uploads[0]?.get('confirmation_id')).toBe(sig.confirmationId);
+    expect(c.uploads[0]?.get('document_hash')).toBe(sig.documentHash);
+    expect(r.syncedSignatures).toBe(1);
+    expect(await db.localSignatures.count()).toBe(0);
+  });
+
+  it('sem internet para a venda, a assinatura nem é tentada e continua no celular', async () => {
+    const d = draft();
+    await enqueueSale(db, d, display, signatureFor(d.id));
+    const c = withFunctions(networkDown, () => ({ data: { status: 'FINALIZED' }, error: null }));
+    await runSyncRound(db, c.client);
+    expect(c.uploads).toHaveLength(0);
+    expect(await db.localSignatures.count()).toBe(1);
+  });
+
+  it('venda enviada mas assinatura falhou: a venda fica sincronizada e a assinatura espera', async () => {
+    const d = draft();
+    await enqueueSale(db, d, display, signatureFor(d.id));
+    const { FunctionsFetchError } = await import('@supabase/supabase-js');
+    const c = withFunctions(created, () => ({ data: null, error: new FunctionsFetchError('rede') }));
+    await runSyncRound(db, c.client);
+    const ops = await db.outbox.orderBy('createdAt').toArray();
+    expect(ops.map((o) => o.state)).toEqual(['SYNCED', 'PENDING']);
+    expect(await db.localSignatures.count()).toBe(1);
+    expect(countOutbox(ops)).toMatchObject({ pendingSales: 0, pendingSignatures: 1 });
+  });
+});

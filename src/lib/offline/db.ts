@@ -64,6 +64,20 @@ export interface LocalSale {
   cancel?: { opId: string; reason: string; at: number };
 }
 
+/**
+ * Assinatura capturada no celular, até chegar ao servidor. Presa à venda pelo
+ * hash do resumo canônico que o cliente viu. Apagada depois do envio.
+ */
+export interface LocalSignature {
+  confirmationId: string;
+  saleId: string;
+  png: ArrayBuffer;
+  fileSha256: string;
+  documentHash: string;
+  termsVersion: string;
+  capturedAt: string;
+}
+
 export class LocalDb extends Dexie {
   meta!: Table<MetaRow, string>;
   establishments!: Table<CachedEstablishment, string>;
@@ -71,6 +85,7 @@ export class LocalDb extends Dexie {
   products!: Table<CachedProduct, string>;
   localSales!: Table<LocalSale, string>;
   outbox!: Table<OutboxOp, string>;
+  localSignatures!: Table<LocalSignature, string>;
 
   constructor(name: string) {
     super(name);
@@ -82,6 +97,7 @@ export class LocalDb extends Dexie {
       localSales: 'id, createdAt, opId',
       outbox: 'opId, state, createdAt, entityId',
     });
+    this.version(2).stores({ localSignatures: 'confirmationId, saleId' });
   }
 }
 

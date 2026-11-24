@@ -43,6 +43,7 @@ export interface SalesSettingsForm {
   saleMaxCents: number;
   itemMaxQty: number;
   defaultSalePeriod: Period | null;
+  requireSignature: boolean;
 }
 
 export async function updateSalesSettings(client: Client, businessId: string, form: SalesSettingsForm): Promise<void> {
@@ -53,6 +54,7 @@ export async function updateSalesSettings(client: Client, businessId: string, fo
       sale_max_cents: form.saleMaxCents,
       item_max_qty: form.itemMaxQty,
       default_sale_period: form.defaultSalePeriod,
+      require_signature: form.requireSignature,
     })
     .eq('business_id', businessId)
     .select('business_id');

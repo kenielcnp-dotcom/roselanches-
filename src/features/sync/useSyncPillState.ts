@@ -7,13 +7,16 @@ export function useSyncPillState(): SyncPillState {
   const { status, lastOkAt } = useConnectionStatus();
   const sync = useOptionalSync();
   const counts = sync?.counts;
-  const waiting = counts ? counts.pendingSales - counts.failed : 0;
+  const waiting = counts ? counts.pendingSales + counts.pendingSignatures - counts.failed : 0;
 
   if (counts?.failed) return { kind: 'failed', count: counts.failed };
   if (counts?.authPaused) return { kind: 'auth', pending: waiting };
   if (status === 'offline') return { kind: 'offline', pending: waiting };
   if (counts?.syncing) return { kind: 'sending' };
-  if (waiting > 0) return { kind: 'pending', sales: waiting, signatures: 0 };
+  if (waiting > 0) {
+    const signatures = counts?.pendingSignatures ?? 0;
+    return { kind: 'pending', sales: Math.max(0, waiting - signatures), signatures };
+  }
   if (status === 'checking') return { kind: 'checking' };
   return { kind: 'synced', at: lastOkAt };
 }

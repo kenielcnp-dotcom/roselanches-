@@ -433,14 +433,14 @@ isOneToOne: false
                   ]
                 },"sale_confirmations": {
                   Row: {
-                    "business_id": string,"captured_at": string | null,"confirmation_status": string,"confirmation_type": string,"confirmed_by_user_id": string | null,"consent_text_version": string,"created_at": string,"customer_id": string,"dispute_reason": string | null,"id": string,"invalidated_at": string | null,"invalidated_by": string | null,"invalidation_reason": string | null,"received_at": string,"resolution_note": string | null,"resolved_at": string | null,"resolved_by": string | null,"sale_id": string,"signature_file_sha256": string | null,"signature_size_bytes": number | null,"signature_storage_path": string | null,"signed_document_hash": string
+                    "business_id": string,"captured_at": string | null,"captured_by": string | null,"confirmation_status": string,"confirmation_type": string,"confirmed_by_user_id": string | null,"consent_text_version": string,"created_at": string,"customer_id": string,"dispute_reason": string | null,"id": string,"invalidated_at": string | null,"invalidated_by": string | null,"invalidation_reason": string | null,"received_at": string,"resolution_note": string | null,"resolved_at": string | null,"resolved_by": string | null,"sale_id": string,"signature_file_sha256": string | null,"signature_size_bytes": number | null,"signature_storage_path": string | null,"signed_document_hash": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "business_id": string,"captured_at"?: string | null,"confirmation_status": string,"confirmation_type": string,"confirmed_by_user_id"?: string | null,"consent_text_version": string,"created_at"?: string,"customer_id": string,"dispute_reason"?: string | null,"id": string,"invalidated_at"?: string | null,"invalidated_by"?: string | null,"invalidation_reason"?: string | null,"received_at"?: string,"resolution_note"?: string | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"sale_id": string,"signature_file_sha256"?: string | null,"signature_size_bytes"?: number | null,"signature_storage_path"?: string | null,"signed_document_hash": string
+                    "business_id": string,"captured_at"?: string | null,"captured_by"?: string | null,"confirmation_status": string,"confirmation_type": string,"confirmed_by_user_id"?: string | null,"consent_text_version": string,"created_at"?: string,"customer_id": string,"dispute_reason"?: string | null,"id": string,"invalidated_at"?: string | null,"invalidated_by"?: string | null,"invalidation_reason"?: string | null,"received_at"?: string,"resolution_note"?: string | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"sale_id": string,"signature_file_sha256"?: string | null,"signature_size_bytes"?: number | null,"signature_storage_path"?: string | null,"signed_document_hash": string
                   }
                   Update: {
-                    "business_id"?: string,"captured_at"?: string | null,"confirmation_status"?: string,"confirmation_type"?: string,"confirmed_by_user_id"?: string | null,"consent_text_version"?: string,"created_at"?: string,"customer_id"?: string,"dispute_reason"?: string | null,"id"?: string,"invalidated_at"?: string | null,"invalidated_by"?: string | null,"invalidation_reason"?: string | null,"received_at"?: string,"resolution_note"?: string | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"sale_id"?: string,"signature_file_sha256"?: string | null,"signature_size_bytes"?: number | null,"signature_storage_path"?: string | null,"signed_document_hash"?: string
+                    "business_id"?: string,"captured_at"?: string | null,"captured_by"?: string | null,"confirmation_status"?: string,"confirmation_type"?: string,"confirmed_by_user_id"?: string | null,"consent_text_version"?: string,"created_at"?: string,"customer_id"?: string,"dispute_reason"?: string | null,"id"?: string,"invalidated_at"?: string | null,"invalidated_by"?: string | null,"invalidation_reason"?: string | null,"received_at"?: string,"resolution_note"?: string | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"sale_id"?: string,"signature_file_sha256"?: string | null,"signature_size_bytes"?: number | null,"signature_storage_path"?: string | null,"signed_document_hash"?: string
                   }
                   Relationships: [
                     {
@@ -690,6 +690,12 @@ isOneToOne: false
                            },
 "save_customer":
 { Args: { "p_establishment_ids": (string)[],"p_full_name": string,"p_id": string,"p_is_active": boolean,"p_notes": string,"p_phone_e164": string }; Returns: string
+                           },
+"signature_finalize":
+{ Args: { "p_captured_at": string,"p_confirmation_id": string,"p_document_hash": string,"p_file_sha256": string,"p_sale_id": string,"p_size": number,"p_terms": string,"p_user": string }; Returns: Json
+                           },
+"signature_prepare":
+{ Args: { "p_captured_at": string,"p_confirmation_id": string,"p_document_hash": string,"p_file_sha256": string,"p_sale_id": string,"p_size": number,"p_terms": string,"p_user": string }; Returns: Json
                            },
 "whoami":
 { Args: Record<PropertyKey, never>; Returns: Json

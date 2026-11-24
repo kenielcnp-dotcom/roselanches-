@@ -21,6 +21,14 @@
    - Senha mínima: **8** caracteres.
 4. *Authentication › URL Configuration*: **Site URL** = endereço publicado (ex.: `https://lanches-da-rose.vercel.app`) e **Redirect URLs** = `https://lanches-da-rose.vercel.app/**`.
 
+## 1.1 Edge Function da assinatura
+
+```bash
+npx supabase functions deploy signature-upload --project-ref <ref-do-projeto>
+```
+
+A função usa as variáveis que o Supabase já entrega (`SUPABASE_URL` e a chave de serviço). Nenhuma chave precisa ir para o app.
+
 ## 2. Conta da Rose
 
 1. Abra o app publicado e crie a conta da Rose pela tela "Criar conta".

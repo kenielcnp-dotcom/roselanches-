@@ -5,7 +5,7 @@
 // recalcula o hash a partir do que gravou e recusa a confirmação se não bater.
 // Texto linha a linha (não JSON) para não depender de ordem de chaves nem de
 // formatação de números; datas em epoch ms; textos em NFC.
-import type { SaleMode } from '@/types/domain';
+import type { SaleDraft, SaleMode } from '@/types/domain';
 
 export const CANONICAL_HEADER = 'LDR-SALE-CONFIRMATION|1';
 
@@ -83,4 +83,18 @@ export async function sha256Hex(value: string): Promise<string> {
 
 export async function canonicalSaleHash(sale: CanonicalSale, termsVersion: string): Promise<string> {
   return sha256Hex(canonicalSaleText(sale, termsVersion));
+}
+
+/** O resumo canônico de uma venda montada no celular (o mesmo que o servidor recalcula). */
+export function canonicalFromDraft(d: SaleDraft): CanonicalSale {
+  return {
+    saleId: d.id,
+    customerId: d.customerId,
+    establishmentId: d.establishmentId,
+    occurredAt: d.occurredAt,
+    mode: d.mode,
+    items: d.mode === 'ITEMS' ? d.items : [],
+    description: d.mode === 'AMOUNT' ? (d.description ?? '').trim() : null,
+    totalCents: d.totalCents,
+  };
 }

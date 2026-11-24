@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
-import { ArrowLeft, ListChecks, RefreshCw, Store } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ListChecks, PenLine, RefreshCw, Store } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { PageHeader } from '@/components/PageHeader';
 import { LoadingState } from '@/components/States';
 import { useToast } from '@/components/Toast';
 import { useConnectionStatus } from '@/app/ConnectionProvider';
+import { canonicalFromDraft, canonicalSaleHash } from '@/domain/canonical';
+import { CURRENT_CONSENT_VERSION } from '@/domain/consent';
 import { formatBRL } from '@/domain/money';
 import { suggestPeriod } from '@/domain/period';
 import { maskPhone } from '@/domain/phone';
@@ -17,6 +19,7 @@ import {
   type CachedEstablishment,
   type CachedProduct,
   type CachedSettings,
+  type LocalSignature,
 } from '@/lib/offline/db';
 import { enqueueSale, type SaleDisplay } from '@/lib/offline/outbox';
 import { useLiveQuery } from '@/lib/offline/useLiveQuery';
@@ -26,6 +29,7 @@ import { linkCustomer } from '@/services/establishments';
 import type { PaymentKind, PaymentMethod, Period, SaleDraft, SaleMode } from '@/types/domain';
 import { useCurrentEstablishmentId } from '@/features/establishments/useCurrentEstablishment';
 import { useSync } from '@/features/sync/SyncProvider';
+import { SignatureScreen, type CapturedSignature } from '@/features/signatures/SignatureScreen';
 import { CustomerStep } from './CustomerStep';
 import { ItemsStep } from './ItemsStep';
 import { SummaryStep } from './SummaryStep';
@@ -81,7 +85,7 @@ export function NewSalePage() {
       settings={settings}
       onSaved={() => void requestSync()}
       refreshCatalog={refreshCatalogNow}
-      enqueue={(draft, display) => enqueueSale(db, draft, display)}
+      enqueue={(draft, display, signature) => enqueueSale(db, draft, display, signature)}
     />
   );
 }
@@ -93,7 +97,7 @@ interface FlowProps {
   settings: CachedSettings;
   onSaved: () => void;
   refreshCatalog: () => Promise<void>;
-  enqueue: (draft: SaleDraft, display: SaleDisplay) => Promise<boolean>;
+  enqueue: (draft: SaleDraft, display: SaleDisplay, signature?: LocalSignature) => Promise<boolean>;
 }
 
 function SaleFlow({ establishments, customers, products, settings, onSaved, refreshCatalog, enqueue }: FlowProps) {
@@ -119,6 +123,9 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
   const [saving, setSaving] = useState(false);
   const [showIssues, setShowIssues] = useState(false);
   const [now, setNow] = useState(() => new Date());
+  const [signing, setSigning] = useState(false);
+  // A assinatura vale para o resumo exato mostrado; mudar a venda a descarta.
+  const [signature, setSignature] = useState<{ confirmationId: string; captured: CapturedSignature } | null>(null);
 
   const productById = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
   const items = useMemo(
@@ -224,25 +231,47 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
     setDescription('');
     setPaymentKind('CREDIT');
     setShowIssues(false);
+    setSignature(null);
     setStep('customer');
   };
 
-  const save = async () => {
+  const go = (next: Step) => {
+    if (next !== 'summary') setSignature(null);
+    setStep(next);
+  };
+
+  // occurredAt = o momento mostrado no resumo (é o que a assinatura cobre).
+  const save = async (withSignature: boolean) => {
     if (!draft || saving) return;
-    const final = { ...draft, occurredAt: new Date().toISOString() };
-    if (validateSaleDraft(final, settings).length > 0) {
+    if (validateSaleDraft(draft, settings).length > 0) {
       setShowIssues(true);
       return;
     }
     setSaving(true);
     try {
-      await enqueue(final, {
-        customerName: customer!.fullName,
-        customerPhone: customer!.phoneE164,
-        establishmentName: establishment.name,
-        summary: final.mode === 'ITEMS' ? describeItems(final.items) : (final.description ?? ''),
-      });
-      toast.show('Venda salva no celular.');
+      let localSignature: LocalSignature | undefined;
+      if (withSignature && signature) {
+        localSignature = {
+          confirmationId: signature.confirmationId,
+          saleId: draft.id,
+          png: signature.captured.png,
+          fileSha256: signature.captured.fileSha256,
+          documentHash: await canonicalSaleHash(canonicalFromDraft(draft), CURRENT_CONSENT_VERSION),
+          termsVersion: CURRENT_CONSENT_VERSION,
+          capturedAt: signature.captured.capturedAt,
+        };
+      }
+      await enqueue(
+        draft,
+        {
+          customerName: customer!.fullName,
+          customerPhone: customer!.phoneE164,
+          establishmentName: establishment.name,
+          summary: draft.mode === 'ITEMS' ? describeItems(draft.items) : (draft.description ?? ''),
+        },
+        localSignature,
+      );
+      toast.show(localSignature ? 'Venda e assinatura salvas no celular.' : 'Venda salva no celular.');
       reset();
       onSaved();
     } catch (e) {
@@ -252,7 +281,15 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
     }
   };
 
-  const goBack = () => setStep(step === 'summary' ? 'items' : 'customer');
+  const goBack = () => go(step === 'summary' ? 'items' : 'customer');
+
+  const askSignature = () => {
+    if (issues.length > 0) {
+      setShowIssues(true);
+      return;
+    }
+    setSigning(true);
+  };
 
   return (
     <>
@@ -263,7 +300,7 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
           </p>
           <button
             type="button"
-            onClick={() => setStep('establishment')}
+            onClick={() => go('establishment')}
             className="min-h-10 shrink-0 rounded-full bg-white px-3 text-sm font-extrabold text-orange-deep ring-1 ring-line"
           >
             Trocar
@@ -281,7 +318,7 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
               <span className="block truncate font-black text-brown">{customer.fullName}</span>
               <span className="text-sm text-brown-soft">{customer.phoneE164 ? maskPhone(customer.phoneE164) : 'Sem telefone'}</span>
             </span>
-            <button type="button" onClick={() => setStep('customer')} className="min-h-10 rounded-full px-2 text-sm font-extrabold text-orange-deep">
+            <button type="button" onClick={() => go('customer')} className="min-h-10 rounded-full px-2 text-sm font-extrabold text-orange-deep">
               Trocar
             </button>
           </div>
@@ -337,7 +374,53 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
             now={now}
           />
         )}
+
+        {step === 'summary' && signature && (
+          <section aria-label="Assinatura" className="rounded-card bg-white p-4 ring-2 ring-success">
+            <p className="flex items-center gap-2 font-extrabold text-success">
+              <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
+              Assinatura capturada
+            </p>
+            <img
+              src={signature.captured.previewUrl}
+              alt={'Assinatura de ' + (customer?.fullName ?? 'cliente')}
+              className="mt-2 h-28 w-full rounded-xl object-contain ring-1 ring-line"
+            />
+            <Button
+              variant="ghost"
+              block
+              onClick={() => {
+                setSignature(null);
+                setSigning(true);
+              }}
+            >
+              Assinar de novo
+            </Button>
+          </section>
+        )}
       </main>
+
+      {signing && customer && (
+        <SignatureScreen
+          customerName={customer.fullName}
+          establishmentName={establishment.name}
+          summary={mode === 'ITEMS' ? describeItems(items) : description.trim()}
+          totalCents={totalCents}
+          onConfirm={(captured) => {
+            setSignature({ confirmationId: crypto.randomUUID(), captured });
+            setSigning(false);
+          }}
+          onSkip={
+            settings.requireSignature
+              ? null
+              : () => {
+                  setSigning(false);
+                  void save(false);
+                }
+          }
+          onClose={() => setSigning(false)}
+        />
+      )}
 
       {step !== 'customer' && (
         <div className="fixed inset-x-0 bottom-[4.75rem] z-20 border-t border-line bg-cream/95 backdrop-blur safe-bottom">
@@ -353,15 +436,30 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
                 onClick={() => {
                   setNow(new Date());
                   setShowIssues(false);
-                  setStep('summary');
+                  go('summary');
                 }}
               >
                 Continuar
               </Button>
-            ) : (
-              <Button className="ml-auto min-h-14 flex-1 text-lg" loading={saving} onClick={() => void save()}>
+            ) : signature ? (
+              <Button className="ml-auto min-h-14 flex-1 text-lg" loading={saving} onClick={() => void save(true)}>
                 Salvar venda
               </Button>
+            ) : settings.requireSignature ? (
+              <Button className="ml-auto min-h-14 flex-1 text-lg" onClick={askSignature}>
+                <PenLine className="h-5 w-5" aria-hidden="true" />
+                Pedir assinatura
+              </Button>
+            ) : (
+              <div className="ml-auto grid flex-1 grid-cols-2 gap-2">
+                <Button variant="secondary" className="min-h-14 px-2" onClick={askSignature}>
+                  <PenLine className="h-5 w-5 shrink-0" aria-hidden="true" />
+                  Pedir assinatura
+                </Button>
+                <Button className="min-h-14 px-2" loading={saving} onClick={() => void save(false)}>
+                  Salvar sem assinatura
+                </Button>
+              </div>
             )}
           </div>
         </div>

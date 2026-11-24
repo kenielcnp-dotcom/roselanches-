@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/Button';
-import { MoneyField } from '@/components/Controls';
+import { MoneyField, Switch } from '@/components/Controls';
 import { SelectField, TextField } from '@/components/Field';
 import { PageHeader } from '@/components/PageHeader';
 import { ErrorState, LoadingState } from '@/components/States';
@@ -17,6 +17,7 @@ import { errorMessage } from '@/lib/supabase/errors';
 import type { BusinessSettings } from '@/services/settings';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useSaveSalesSettings, useSettings } from '@/features/registry/queries';
+import { useOptionalSync } from '@/features/sync/SyncProvider';
 
 export function SettingsPage() {
   const { identity, signOut } = useAuth();
@@ -39,7 +40,7 @@ export function SettingsPage() {
           </dl>
         </section>
         {staff && <SalesSettingsSection businessId={staff.businessId} canEdit={staff.role === 'OWNER'} />}
-        <p className="px-1 text-brown-soft">Pix e assinatura obrigatória ficam aqui nas próximas etapas.</p>
+        <p className="px-1 text-brown-soft">Os dados do Pix ficam aqui na etapa de recebimentos.</p>
         <Button variant="secondary" block onClick={() => void signOut()}>
           <LogOut className="h-5 w-5" aria-hidden="true" />
           Sair da conta
@@ -61,6 +62,7 @@ const AUTO = 'AUTO';
 const schema = z.object({
   timezone: z.string().refine(isBrazilTimeZone, 'Escolha um fuso da lista.'),
   defaultSalePeriod: z.enum([AUTO, 'MORNING', 'AFTERNOON', 'NIGHT']),
+  requireSignature: z.boolean(),
   saleMaxCents: z
     .number()
     .int()
@@ -73,6 +75,7 @@ type Form = z.infer<typeof schema>;
 function SalesSettingsForm({ businessId, canEdit, settings }: { businessId: string; canEdit: boolean; settings: BusinessSettings }) {
   const save = useSaveSalesSettings(businessId);
   const { refreshIdentity } = useAuth();
+  const sync = useOptionalSync();
   const toast = useToast();
   const [serverError, setServerError] = useState<string | null>(null);
   const device = deviceTimeZone();
@@ -89,6 +92,7 @@ function SalesSettingsForm({ businessId, canEdit, settings }: { businessId: stri
     defaultValues: {
       timezone: settings.timezone,
       defaultSalePeriod: settings.defaultSalePeriod ?? AUTO,
+      requireSignature: settings.requireSignature,
       saleMaxCents: settings.saleMaxCents,
       itemMaxQty: settings.itemMaxQty,
     },
@@ -101,6 +105,7 @@ function SalesSettingsForm({ businessId, canEdit, settings }: { businessId: stri
       await save.mutateAsync({
         timezone: form.timezone,
         defaultSalePeriod: form.defaultSalePeriod === AUTO ? null : form.defaultSalePeriod,
+        requireSignature: form.requireSignature,
         saleMaxCents: form.saleMaxCents,
         itemMaxQty: form.itemMaxQty,
       });
@@ -110,6 +115,8 @@ function SalesSettingsForm({ businessId, canEdit, settings }: { businessId: stri
     }
     // O fuso vale para o app inteiro (datas, "hoje", períodos).
     await refreshIdentity();
+    // O celular passa a usar as novas regras de venda (assinatura obrigatória, limites) já.
+    await sync?.refreshCatalogNow();
     reset(form);
     toast.show('Configurações salvas.');
   });
@@ -148,6 +155,21 @@ function SalesSettingsForm({ businessId, canEdit, settings }: { businessId: stri
             ]}
             hint="Dá para trocar em cada venda."
             {...register('defaultSalePeriod')}
+          />
+          <Controller
+            control={control}
+            name="requireSignature"
+            render={({ field }) => (
+              <div className="rounded-2xl bg-cream p-4 ring-1 ring-line">
+                <Switch
+                  label="Assinatura obrigatória"
+                  description="Ligado, toda venda pede a assinatura do cliente na tela. Desligado, você escolhe em cada venda."
+                  checked={field.value}
+                  onChange={field.onChange}
+                  disabled={!canEdit}
+                />
+              </div>
+            )}
           />
           <Controller
             control={control}

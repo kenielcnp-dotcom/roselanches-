@@ -60,7 +60,8 @@ Saldo = vendas ativas + saldo anterior + ajustes de débito − pagamentos confi
 | `DISPUTED` | o cliente contestou; a dívida continua até a Rose analisar |
 | `CANCELLED` | a venda foi cancelada e a confirmação invalidada |
 
-- A assinatura é opcional por padrão (`require_signature = false`).
+- A assinatura é opcional por padrão (`require_signature = false`). No resumo da venda: "Pedir assinatura" ou "Salvar sem assinatura". Com a opção "Assinatura obrigatória" ligada em Configurações, só "Pedir assinatura".
+- A tela de assinatura mostra cliente, lugar, compra, total e o texto v1. "Confirmar assinatura" só libera com um traço de verdade (um toque ou ponto não vale).
 - Assinatura é evidência de concordância com o conteúdo mostrado, não prova de identidade. Não há extração biométrica.
 - Venda assinada não é alterada em silêncio: cancelamento invalida a confirmação.
 

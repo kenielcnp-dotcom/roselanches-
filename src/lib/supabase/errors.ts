@@ -61,6 +61,10 @@ const LDR_MESSAGES: Record<string, string> = {
   LDR_PAYMENT_ID_CONFLICT: 'Este pagamento já foi usado em outra venda.',
   LDR_SALE_NOT_FOUND: 'Venda não encontrada.',
   LDR_INVALID_REASON: 'Escreva o motivo (pelo menos 3 letras).',
+  LDR_HASH_MISMATCH: 'A assinatura não confere com os dados desta venda.',
+  LDR_ALREADY_SIGNED: 'Esta venda já tem uma assinatura válida.',
+  LDR_CONFIRMATION_CONFLICT: 'Já existe outra assinatura com este código.',
+  LDR_INVALID_SIGNATURE: 'O arquivo da assinatura é inválido.',
 };
 
 const AUTH_MESSAGES: Record<string, string> = {

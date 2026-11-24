@@ -38,6 +38,8 @@ Cada RPC descobre o negócio a partir de `auth.uid()` e nunca confia em `busines
 
 - Privado, até 200 KB, só `image/png`.
 - Nenhuma política de escrita para usuários: só a Edge Function `signature-upload`, depois de validar arquivo, venda e hash.
+- A função confere o JWT no servidor de Auth (`getUser`), aceita só PNG de verdade (bytes iniciais + bloco IHDR, até 4000 px e 200 KB) e chama `signature_prepare`/`signature_finalize`, que só o `service_role` executa. O caminho do arquivo é calculado no banco: ninguém escolhe onde gravar.
+- Um mesmo código de confirmação não serve para outra venda, e uma venda tem no máximo uma assinatura válida.
 - Leitura: membro do negócio dono da pasta; cliente só no arquivo das próprias confirmações. Acesso por URL assinada de 120 s.
 
 ## Portal do cliente

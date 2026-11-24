@@ -3,7 +3,7 @@
 import Dexie from 'dexie';
 import { toCreateSalePayload } from '@/services/sales';
 import type { OutboxOp, SaleDraft } from '@/types/domain';
-import type { LocalDb, LocalSale } from './db';
+import type { LocalDb, LocalSale, LocalSignature } from './db';
 
 export interface SaleDisplay {
   customerName: string;
@@ -32,13 +32,28 @@ function newOp(type: OutboxOp['type'], entityId: string, payload: unknown, depen
  * gravar de novo o mesmo id (toque duplo) não cria outra venda.
  * Devolve false se a venda já estava salva.
  */
-export async function enqueueSale(db: LocalDb, draft: SaleDraft, display: SaleDisplay, now = Date.now()): Promise<boolean> {
+export async function enqueueSale(
+  db: LocalDb,
+  draft: SaleDraft,
+  display: SaleDisplay,
+  signature?: LocalSignature,
+  now = Date.now(),
+): Promise<boolean> {
   const op = newOp('CREATE_SALE', draft.id, toCreateSalePayload(draft), [], now);
   const sale: LocalSale = { id: draft.id, opId: op.opId, draft, ...display, createdAt: now };
+  // A assinatura só sobe depois que a venda existir no servidor.
+  const signatureOp = signature
+    ? newOp('UPLOAD_SIGNATURE', signature.confirmationId, { sale_id: draft.id }, [op.opId], now + 1)
+    : null;
+  if (signature && signature.saleId !== draft.id) throw new Error('Assinatura de outra venda.');
   try {
-    await db.transaction('rw', db.localSales, db.outbox, async () => {
+    await db.transaction('rw', db.localSales, db.outbox, db.localSignatures, async () => {
       await db.localSales.add(sale);
       await db.outbox.add(op);
+      if (signature && signatureOp) {
+        await db.localSignatures.add(signature);
+        await db.outbox.add(signatureOp);
+      }
     });
     return true;
   } catch (e) {
@@ -73,11 +88,12 @@ export async function retryOp(db: LocalDb, opId: string, now = Date.now()): Prom
  * Só vale para operação em FAILED; vendas pendentes nunca são descartadas.
  */
 export async function discardFailedSale(db: LocalDb, saleId: string): Promise<boolean> {
-  return db.transaction('rw', db.localSales, db.outbox, async () => {
-    const ops = await db.outbox.where('entityId').equals(saleId).toArray();
-    const create = ops.find((o) => o.type === 'CREATE_SALE');
+  return db.transaction('rw', db.localSales, db.outbox, db.localSignatures, async () => {
+    const create = (await db.outbox.where('entityId').equals(saleId).toArray()).find((o) => o.type === 'CREATE_SALE');
     if (!create || create.state !== 'FAILED') return false;
-    await db.outbox.bulkDelete(ops.map((o) => o.opId));
+    const dependents = (await db.outbox.toArray()).filter((o) => o.dependsOn.includes(create.opId));
+    await db.outbox.bulkDelete([create.opId, ...dependents.map((o) => o.opId)]);
+    await db.localSignatures.where('saleId').equals(saleId).delete();
     await db.localSales.delete(saleId);
     return true;
   });
@@ -91,6 +107,7 @@ export async function resumeInterrupted(db: LocalDb, now = Date.now()): Promise<
 export interface OutboxCounts {
   /** Vendas ainda não confirmadas pelo servidor (inclui as com falha). */
   pendingSales: number;
+  pendingSignatures: number;
   pendingOther: number;
   failed: number;
   syncing: boolean;
@@ -99,6 +116,7 @@ export interface OutboxCounts {
 
 export function countOutbox(ops: readonly OutboxOp[]): OutboxCounts {
   let pendingSales = 0;
+  let pendingSignatures = 0;
   let pendingOther = 0;
   let failed = 0;
   let syncing = false;
@@ -109,9 +127,10 @@ export function countOutbox(ops: readonly OutboxOp[]): OutboxCounts {
     if (o.state === 'SYNCING') syncing = true;
     if (o.lastError?.kind === 'auth' && o.state === 'PENDING') authPaused = true;
     if (o.type === 'CREATE_SALE') pendingSales += 1;
+    else if (o.type === 'UPLOAD_SIGNATURE') pendingSignatures += 1;
     else pendingOther += 1;
   }
-  return { pendingSales, pendingOther, failed, syncing, authPaused };
+  return { pendingSales, pendingSignatures, pendingOther, failed, syncing, authPaused };
 }
 
 /** Itens já confirmados ficam 7 dias (para a tela de vendas) e depois saem. */
