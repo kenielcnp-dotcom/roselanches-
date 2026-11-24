@@ -98,3 +98,12 @@ export function formatDateTime(date: Date, timeZone = currentTimeZone): string {
 export function firstName(fullName: string): string {
   return fullName.trim().split(/\s+/)[0] ?? '';
 }
+
+/** Início do dia (meia-noite) no fuso do negócio, como instante. */
+export function startOfLocalDay(date: Date, timeZone = currentTimeZone): Date {
+  const { year, month, day } = localParts(date, timeZone);
+  const guess = Date.UTC(year, month - 1, day);
+  const p = localParts(new Date(guess), timeZone);
+  const offset = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute) - guess;
+  return new Date(guess - offset);
+}

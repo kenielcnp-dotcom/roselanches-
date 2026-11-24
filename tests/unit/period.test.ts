@@ -1,4 +1,4 @@
-import { businessTimeZone, firstName, formatDate, formatDateTime, formatTime, greeting, localDateISO, setBusinessTimeZone, suggestPeriod } from '@/domain/period';
+import { businessTimeZone, firstName, formatDate, formatDateTime, formatTime, greeting, localDateISO, setBusinessTimeZone, startOfLocalDay, suggestPeriod } from '@/domain/period';
 import { BRAZIL_TIME_ZONES, isBrazilTimeZone, timeZoneLabel } from '@/domain/timezone';
 
 // Horários em UTC; Brasília é UTC−3 (fuso padrão).
@@ -63,5 +63,14 @@ describe('lista de fusos', () => {
     expect(isBrazilTimeZone('UTC')).toBe(false);
     expect(timeZoneLabel('America/Cuiaba')).toMatch(/Mato Grosso/);
     expect(new Set(BRAZIL_TIME_ZONES.map((z) => z.id)).size).toBe(BRAZIL_TIME_ZONES.length);
+  });
+});
+
+describe('início do dia no fuso do negócio', () => {
+  it('meia-noite local, não UTC', () => {
+    // 02:30 UTC do dia 24 = 23:30 do dia 23 em Brasília.
+    expect(startOfLocalDay(at('2026-11-24T02:30:00Z'), 'America/Sao_Paulo').toISOString()).toBe('2026-11-23T03:00:00.000Z');
+    expect(startOfLocalDay(at('2026-11-24T02:30:00Z'), 'America/Cuiaba').toISOString()).toBe('2026-11-23T04:00:00.000Z');
+    expect(startOfLocalDay(at('2026-11-24T12:00:00Z'), 'America/Noronha').toISOString()).toBe('2026-11-24T02:00:00.000Z');
   });
 });

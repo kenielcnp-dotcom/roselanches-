@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, CloudOff, Loader2, Clock } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, CloudOff, Loader2, Clock, LogIn } from 'lucide-react';
 import { formatTime } from '@/domain/period';
 
 export type SyncPillState =
@@ -7,6 +7,7 @@ export type SyncPillState =
   | { kind: 'sending' }
   | { kind: 'pending'; sales: number; signatures: number }
   | { kind: 'offline'; pending: number }
+  | { kind: 'auth'; pending: number }
   | { kind: 'failed'; count: number };
 
 function plural(n: number, one: string, many: string): string {
@@ -55,6 +56,12 @@ export function SyncPill({ state }: { state: SyncPillState }) {
       title = 'Sem internet';
       detail = state.pending > 0 ? `${plural(state.pending, 'venda', 'vendas')} no celular` : 'Vendas ficam salvas no celular';
       tone = 'text-brown';
+      break;
+    case 'auth':
+      icon = <LogIn className="h-5 w-5 text-orange-deep" strokeWidth={2.5} />;
+      title = 'Entre de novo';
+      detail = state.pending > 0 ? `para enviar ${plural(state.pending, 'venda', 'vendas')}` : 'Sua sessão expirou';
+      tone = 'text-orange-deep';
       break;
     case 'failed':
       icon = <AlertTriangle className="h-5 w-5 text-danger" strokeWidth={2.5} />;

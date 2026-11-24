@@ -46,6 +46,21 @@ const LDR_MESSAGES: Record<string, string> = {
   LDR_CONSENT_TEXT_IMMUTABLE: 'O texto de confirmação publicado não pode ser alterado.',
   LDR_AUDIT_IMMUTABLE: 'O histórico de auditoria não pode ser alterado.',
   LDR_UNKNOWN_TERMS: 'Versão do texto de confirmação desconhecida.',
+  LDR_TOO_MANY_ESTABLISHMENTS: 'Escolha no máximo 50 estabelecimentos.',
+  LDR_INVALID_SALE: 'Os dados da venda estão incompletos. Confira e registre de novo.',
+  LDR_SALE_IN_FUTURE: 'A data da venda está no futuro. Confira o relógio do celular.',
+  LDR_SALE_TOO_OLD: 'Esta venda tem mais de 30 dias e não pode mais ser enviada. Registre de novo com a data de hoje.',
+  LDR_SALE_OVER_LIMIT: 'Valor acima do limite por venda. Verifique o valor antes de continuar.',
+  LDR_CUSTOMER_NOT_FOUND: 'Cliente não encontrado. Ele pode ter sido apagado do celular; atualize os dados.',
+  LDR_ESTABLISHMENT_NOT_FOUND: 'Estabelecimento não encontrado. Atualize os dados.',
+  LDR_INVALID_DESCRIPTION: 'Escreva uma descrição de até 150 caracteres.',
+  LDR_INVALID_ITEMS: 'Confira os produtos da venda.',
+  LDR_ITEM_QUANTITY: 'Quantidade fora do limite. Verifique antes de continuar.',
+  LDR_PRODUCT_NOT_FOUND: 'Um dos produtos não foi encontrado. Atualize os dados.',
+  LDR_INVALID_PAYMENT: 'Informe como o cliente pagou.',
+  LDR_PAYMENT_ID_CONFLICT: 'Este pagamento já foi usado em outra venda.',
+  LDR_SALE_NOT_FOUND: 'Venda não encontrada.',
+  LDR_INVALID_REASON: 'Escreva o motivo (pelo menos 3 letras).',
 };
 
 const AUTH_MESSAGES: Record<string, string> = {

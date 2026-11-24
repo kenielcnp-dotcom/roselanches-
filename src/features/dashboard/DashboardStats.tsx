@@ -57,7 +57,7 @@ export function DashboardStats() {
         <CoinsArt className="pointer-events-none absolute -right-2 -bottom-3 h-28 w-28 opacity-90" />
       </Link>
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-card bg-peach px-4 py-4 shadow-soft ring-1 ring-line">
+        <Link to="/vendas" className="rounded-card bg-peach px-4 py-4 shadow-soft ring-1 ring-line active:bg-cream-deep">
           <ReceiptText className="h-7 w-7 text-orange" strokeWidth={2.5} aria-hidden="true" />
           <p className="mt-1 font-bold text-brown">Vendas de hoje</p>
           {d.todaySalesCount === 0 ? (
@@ -70,7 +70,7 @@ export function DashboardStats() {
               </p>
             </>
           )}
-        </div>
+        </Link>
         <Link to="/clientes" className="rounded-card bg-white/90 px-4 py-4 shadow-soft ring-1 ring-line active:bg-cream-deep">
           <Users className="h-7 w-7 text-orange" strokeWidth={2.5} aria-hidden="true" />
           <p className="mt-1 font-bold text-brown">Clientes com saldo</p>

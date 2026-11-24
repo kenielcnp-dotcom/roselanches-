@@ -19,6 +19,12 @@ Toda venda tem: UUID gerado no celular, cliente, estabelecimento, modo, período
 - **Fiada** (`CREDIT`) gera dívida. **Paga na hora** (`PAID_NOW`) grava a venda e o pagamento juntos, com líquido zero.
 - Depois de gravada, a venda não muda. Correção = cancelamento com motivo (e, se for o caso, nova venda).
 
+### Fluxo de venda
+
+Lugar atual (lembrado no aparelho) → cliente (busca prioriza o lugar; "Buscar em todos os estabelecimentos"; aviso para cliente de fora, que não bloqueia) → Produtos ou Valor direto (o último modo usado fica lembrado) → conferência (cliente com telefone mascarado, lugar, data, período, itens ou descrição, total, fiado ou pago agora em dinheiro/Pix) → "Salvar venda". A venda é gravada no celular primeiro ("Venda salva no celular.") e enviada em seguida ("Venda sincronizada."). Tudo funciona sem internet, a partir da cópia do catálogo no celular.
+
+Cancelar exige motivo e vai pela mesma fila; a venda continua no histórico como cancelada.
+
 ## Estabelecimentos e grupos
 
 - Um estabelecimento tem vários clientes e um cliente pode estar em vários estabelecimentos (`customer_establishments`), sem cadastro duplicado.

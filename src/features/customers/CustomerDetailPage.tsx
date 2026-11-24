@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router';
-import { MessageCircle, Pencil, Store, UserRound } from 'lucide-react';
+import { MessageCircle, Pencil, Plus, Store, UserRound } from 'lucide-react';
 import { PageHeader } from '@/components/PageHeader';
 import { ErrorState, LoadingState } from '@/components/States';
 import { formatBRL } from '@/domain/money';
@@ -7,6 +7,7 @@ import { formatDate } from '@/domain/period';
 import { formatPhone, whatsappLink } from '@/domain/phone';
 import { errorMessage } from '@/lib/supabase/errors';
 import { useCustomers, useEstablishments } from '@/features/registry/queries';
+import { CustomerStatement } from './CustomerStatement';
 
 export function CustomerDetailPage() {
   const { id } = useParams();
@@ -97,10 +98,17 @@ export function CustomerDetailPage() {
           </div>
         </section>
 
-        <section className="rounded-card bg-white/70 p-5 ring-1 ring-line">
-          <h2 className="text-lg font-extrabold text-brown">Compras e pagamentos</h2>
-          <p className="mt-1 text-brown-soft">O extrato aparece aqui assim que as vendas começarem a ser registradas pelo app.</p>
-        </section>
+        {c.isActive && (
+          <Link
+            to={`/vender?cliente=${c.id}`}
+            className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-orange-deep px-5 text-lg font-extrabold text-white shadow-warm active:bg-orange-darker"
+          >
+            <Plus className="h-6 w-6" strokeWidth={3} aria-hidden="true" />
+            Nova venda para {firstName}
+          </Link>
+        )}
+
+        <CustomerStatement customerId={c.id} />
       </main>
     </>
   );

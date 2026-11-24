@@ -249,6 +249,12 @@ isOneToOne: false
       foreignKeyName: "financial_adjustments_related_sale_id_business_id_customer_fkey"
       columns: ["related_sale_id","business_id","customer_id"]
 isOneToOne: false
+      referencedRelation: "sale_list"
+      referencedColumns: ["id","business_id","customer_id"]
+    },{
+      foreignKeyName: "financial_adjustments_related_sale_id_business_id_customer_fkey"
+      columns: ["related_sale_id","business_id","customer_id"]
+isOneToOne: false
       referencedRelation: "sales"
       referencedColumns: ["id","business_id","customer_id"]
     }
@@ -381,6 +387,12 @@ isOneToOne: false
       foreignKeyName: "payments_sale_id_business_id_customer_id_fkey"
       columns: ["sale_id","business_id","customer_id"]
 isOneToOne: false
+      referencedRelation: "sale_list"
+      referencedColumns: ["id","business_id","customer_id"]
+    },{
+      foreignKeyName: "payments_sale_id_business_id_customer_id_fkey"
+      columns: ["sale_id","business_id","customer_id"]
+isOneToOne: false
       referencedRelation: "sales"
       referencedColumns: ["id","business_id","customer_id"]
     }
@@ -441,6 +453,12 @@ isOneToOne: false
       foreignKeyName: "sale_confirmations_sale_id_business_id_customer_id_fkey"
       columns: ["sale_id","business_id","customer_id"]
 isOneToOne: false
+      referencedRelation: "sale_list"
+      referencedColumns: ["id","business_id","customer_id"]
+    },{
+      foreignKeyName: "sale_confirmations_sale_id_business_id_customer_id_fkey"
+      columns: ["sale_id","business_id","customer_id"]
+isOneToOne: false
       referencedRelation: "sales"
       referencedColumns: ["id","business_id","customer_id"]
     }
@@ -468,6 +486,12 @@ isOneToOne: false
       columns: ["product_id","business_id"]
 isOneToOne: false
       referencedRelation: "products"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "sale_items_sale_id_business_id_fkey"
+      columns: ["sale_id","business_id"]
+isOneToOne: false
+      referencedRelation: "sale_list"
       referencedColumns: ["id","business_id"]
     },{
       foreignKeyName: "sale_items_sale_id_business_id_fkey"
@@ -600,10 +624,65 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"sale_list": {
+                  Row: {
+                    "business_id": string,"cancel_reason": string | null,"cancelled_at": string | null,"confirmation_status": string,"customer_id": string,"customer_name": string,"customer_phone": string | null,"description": string | null,"establishment_id": string,"establishment_name": string,"id": string,"items_summary": string | null,"mode": string,"occurred_at": string,"paid_method": string | null,"payment_kind": string,"period": string,"received_at": string,"status": string,"total_cents": number
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "sales_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "sales_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_balances"
+      referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "sales_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_overview"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "sales_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "sales_establishment_id_business_id_fkey"
+      columns: ["establishment_id","business_id"]
+isOneToOne: false
+      referencedRelation: "establishment_overview"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "sales_establishment_id_business_id_fkey"
+      columns: ["establishment_id","business_id"]
+isOneToOne: false
+      referencedRelation: "establishments"
+      referencedColumns: ["id","business_id"]
+    }
+                  ]
                 }
           }
           Functions: {
-            "dashboard_summary":
+            "cancel_sale":
+{ Args: { "p_reason": string,"p_sale_id": string }; Returns: Json
+                           },
+"create_sale":
+{ Args: { "p_sale": Json }; Returns: Json
+                           },
+"customer_statement":
+{ Args: { "p_before_at"?: string,"p_before_id"?: string,"p_customer": string,"p_limit"?: number }; Returns: {
+              "amount_cents": number,"confirmation_status": string,"description": string,"entry_id": string,"establishment_id": string,"establishment_name": string,"items": Json,"kind": string,"method": string,"mode": string,"occurred_at": string,"open_cents": number,"payment_kind": string,"period": string,"status": string,"status_reason": string
+            }[]
+                           },
+"dashboard_summary":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
 "sale_document_hash":

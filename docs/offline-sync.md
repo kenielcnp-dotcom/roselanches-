@@ -1,6 +1,8 @@
 # Offline e sincronização
 
-> Situação: a Fase 1 entregou a detecção de conexão real (`useConnection`) e a pílula de estado. O banco local, a fila e o motor de sincronização entram nas Fases 3 e 5. Este documento descreve o desenho aprovado e será atualizado conforme as partes forem implementadas.
+> Situação (Fase 3): banco local, fila, motor de sincronização, retomada após fechar o app, espera crescente entre tentativas, pausa por sessão expirada, Web Lock, envio manual ("Enviar agora") e venda sem internet estão implementados e testados (`tests/unit/sync-engine.test.ts` e `tests/e2e/fase3-vendas.spec.ts`). Ficam para a Fase 5: service worker testado sem internet ao recarregar, guarda ao sair da conta, aviso quando o navegador negar armazenamento persistente e saldos do celular nas telas de clientes.
+
+Código: `src/lib/offline/` (`db.ts`, `outbox.ts`, `sync-engine.ts`, `catalog.ts`) e `src/features/sync/SyncProvider.tsx`.
 
 ## Princípio
 
@@ -12,8 +14,8 @@ Nome: `ldr-<userId>`, um por conta.
 
 | Tabela | Conteúdo |
 |---|---|
-| `meta` | deviceId, último estabelecimento usado, lastSyncAt |
-| `establishments`, `customers`, `customerEstablishments`, `products`, `settings`, `balances` | cache renovado por inteiro a cada sincronização (volume pequeno) |
+| `meta` | configurações de venda e hora da última cópia do catálogo |
+| `establishments`, `customers` (com os ids dos estabelecimentos e o saldo da última cópia), `products` | cache renovado por inteiro ao abrir, a cada 5 min e depois de cada envio (volume pequeno) |
 | `localSales` | vendas criadas no celular |
 | `localSignatures` | PNG da assinatura (ArrayBuffer) + sha256 |
 | `outbox` | fila persistente de operações |
@@ -35,7 +37,7 @@ Estados: `PENDING` → `SYNCING` → `SYNCED`, ou `FAILED`.
 | `CANCEL_SALE` | `CREATE_SALE` da mesma venda |
 | `REGISTER_PAYMENT` | — |
 
-- Quando roda: ao abrir o app, no evento `online`, ao voltar o foco, a cada 30 s com pendências e no botão "Enviar agora".
+- Quando roda: ao abrir o app, quando o servidor volta a responder, ao voltar o foco, a cada 30 s com pendências, ao renovar a sessão e no botão "Enviar agora" (que ignora a espera entre tentativas).
 - Web Lock `ldr-sync`: duas abas não sincronizam ao mesmo tempo.
 - Não confia em `navigator.onLine`: só a resposta do servidor decide.
 - Operação que ficou em `SYNCING` (app fechado no meio) volta para `PENDING` ao abrir — seguro por causa da idempotência.

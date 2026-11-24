@@ -16,6 +16,9 @@ import { EstablishmentFormPage } from '@/features/establishments/EstablishmentFo
 import { EstablishmentsPage } from '@/features/establishments/EstablishmentsPage';
 import { ProductFormPage } from '@/features/products/ProductFormPage';
 import { ProductsPage } from '@/features/products/ProductsPage';
+import { NewSalePage } from '@/features/sales/NewSalePage';
+import { SaleDetailPage } from '@/features/sales/SaleDetailPage';
+import { SalesPage } from '@/features/sales/SalesPage';
 
 function NotFoundPage() {
   return (
@@ -38,7 +41,9 @@ export const router = createBrowserRouter([
     element: <RequireStaff><AdminLayout /></RequireStaff>,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'vender', element: <ComingSoonPage title="Nova venda" /> },
+      { path: 'vender', element: <NewSalePage /> },
+      { path: 'vendas', element: <SalesPage /> },
+      { path: 'vendas/:id', element: <SaleDetailPage /> },
       { path: 'clientes', element: <CustomersPage /> },
       { path: 'clientes/novo', element: <CustomerFormPage /> },
       { path: 'clientes/:id', element: <CustomerDetailPage /> },
