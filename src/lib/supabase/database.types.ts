@@ -1,0 +1,625 @@
+
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+
+export type Database = {
+  
+  "public": {
+          Tables: {
+            "audit_logs": {
+                  Row: {
+                    "action": string,"actor_user_id": string | null,"after": Json | null,"before": Json | null,"business_id": string,"created_at": string,"entity": string,"entity_id": string | null,"id": number,"reason": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "action": string,"actor_user_id"?: string | null,"after"?: Json | null,"before"?: Json | null,"business_id": string,"created_at"?: string,"entity": string,"entity_id"?: string | null,"id"?: never,"reason"?: string | null
+                  }
+                  Update: {
+                    "action"?: string,"actor_user_id"?: string | null,"after"?: Json | null,"before"?: Json | null,"business_id"?: string,"created_at"?: string,"entity"?: string,"entity_id"?: string | null,"id"?: never,"reason"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"business_members": {
+                  Row: {
+                    "business_id": string,"created_at": string,"id": string,"is_active": boolean,"role": string,"updated_at": string,"user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id": string,"created_at"?: string,"id"?: string,"is_active"?: boolean,"role": string,"updated_at"?: string,"user_id": string
+                  }
+                  Update: {
+                    "business_id"?: string,"created_at"?: string,"id"?: string,"is_active"?: boolean,"role"?: string,"updated_at"?: string,"user_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "business_members_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"business_settings": {
+                  Row: {
+                    "allow_online_confirmation": boolean,"business_id": string,"created_at": string,"default_sale_period": string | null,"item_max_qty": number,"pix_city": string | null,"pix_key": string | null,"pix_key_type": string | null,"pix_receiver_name": string | null,"require_signature": boolean,"sale_max_cents": number,"signature_retention_months": number,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "allow_online_confirmation"?: boolean,"business_id": string,"created_at"?: string,"default_sale_period"?: string | null,"item_max_qty"?: number,"pix_city"?: string | null,"pix_key"?: string | null,"pix_key_type"?: string | null,"pix_receiver_name"?: string | null,"require_signature"?: boolean,"sale_max_cents"?: number,"signature_retention_months"?: number,"updated_at"?: string
+                  }
+                  Update: {
+                    "allow_online_confirmation"?: boolean,"business_id"?: string,"created_at"?: string,"default_sale_period"?: string | null,"item_max_qty"?: number,"pix_city"?: string | null,"pix_key"?: string | null,"pix_key_type"?: string | null,"pix_receiver_name"?: string | null,"require_signature"?: boolean,"sale_max_cents"?: number,"signature_retention_months"?: number,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "business_settings_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: true
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"businesses": {
+                  Row: {
+                    "created_at": string,"id": string,"name": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"name": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"name"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"consent_texts": {
+                  Row: {
+                    "body": string,"created_at": string,"version": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "body": string,"created_at"?: string,"version": string
+                  }
+                  Update: {
+                    "body"?: string,"created_at"?: string,"version"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"customer_establishments": {
+                  Row: {
+                    "business_id": string,"created_at": string,"created_by": string | null,"customer_id": string,"establishment_id": string,"id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id"?: string,"created_at"?: string,"created_by"?: string | null,"customer_id": string,"establishment_id": string,"id"?: string
+                  }
+                  Update: {
+                    "business_id"?: string,"created_at"?: string,"created_by"?: string | null,"customer_id"?: string,"establishment_id"?: string,"id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "customer_establishments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_balances"
+      referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "customer_establishments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "customer_establishments_establishment_id_business_id_fkey"
+      columns: ["establishment_id","business_id"]
+isOneToOne: false
+      referencedRelation: "establishments"
+      referencedColumns: ["id","business_id"]
+    }
+                  ]
+                },"customer_invites": {
+                  Row: {
+                    "business_id": string,"cancelled_at": string | null,"created_at": string,"created_by": string,"customer_id": string,"expires_at": string,"id": string,"token_hash": string,"used_at": string | null,"used_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id": string,"cancelled_at"?: string | null,"created_at"?: string,"created_by": string,"customer_id": string,"expires_at": string,"id"?: string,"token_hash": string,"used_at"?: string | null,"used_by"?: string | null
+                  }
+                  Update: {
+                    "business_id"?: string,"cancelled_at"?: string | null,"created_at"?: string,"created_by"?: string,"customer_id"?: string,"expires_at"?: string,"id"?: string,"token_hash"?: string,"used_at"?: string | null,"used_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "customer_invites_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_balances"
+      referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "customer_invites_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    }
+                  ]
+                },"customers": {
+                  Row: {
+                    "auth_user_id": string | null,"business_id": string,"created_at": string,"created_by": string | null,"full_name": string,"id": string,"is_active": boolean,"linked_at": string | null,"notes": string | null,"phone_e164": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "auth_user_id"?: string | null,"business_id"?: string,"created_at"?: string,"created_by"?: string | null,"full_name": string,"id"?: string,"is_active"?: boolean,"linked_at"?: string | null,"notes"?: string | null,"phone_e164"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "auth_user_id"?: string | null,"business_id"?: string,"created_at"?: string,"created_by"?: string | null,"full_name"?: string,"id"?: string,"is_active"?: boolean,"linked_at"?: string | null,"notes"?: string | null,"phone_e164"?: string | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "customers_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"establishments": {
+                  Row: {
+                    "address": string | null,"business_id": string,"created_at": string,"created_by": string | null,"id": string,"is_active": boolean,"name": string,"nickname": string | null,"notes": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "address"?: string | null,"business_id"?: string,"created_at"?: string,"created_by"?: string | null,"id"?: string,"is_active"?: boolean,"name": string,"nickname"?: string | null,"notes"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "address"?: string | null,"business_id"?: string,"created_at"?: string,"created_by"?: string | null,"id"?: string,"is_active"?: boolean,"name"?: string,"nickname"?: string | null,"notes"?: string | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "establishments_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"financial_adjustments": {
+                  Row: {
+                    "amount_cents": number,"business_id": string,"cancel_reason": string | null,"cancelled_at": string | null,"cancelled_by": string | null,"created_at": string,"created_by": string,"customer_id": string,"direction": string,"id": string,"occurred_at": string,"reason": string,"related_payment_id": string | null,"related_sale_id": string | null,"status": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_cents": number,"business_id": string,"cancel_reason"?: string | null,"cancelled_at"?: string | null,"cancelled_by"?: string | null,"created_at"?: string,"created_by": string,"customer_id": string,"direction": string,"id": string,"occurred_at"?: string,"reason": string,"related_payment_id"?: string | null,"related_sale_id"?: string | null,"status"?: string,"updated_at"?: string
+                  }
+                  Update: {
+                    "amount_cents"?: number,"business_id"?: string,"cancel_reason"?: string | null,"cancelled_at"?: string | null,"cancelled_by"?: string | null,"created_at"?: string,"created_by"?: string,"customer_id"?: string,"direction"?: string,"id"?: string,"occurred_at"?: string,"reason"?: string,"related_payment_id"?: string | null,"related_sale_id"?: string | null,"status"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "financial_adjustments_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "financial_adjustments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_balances"
+      referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "financial_adjustments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "financial_adjustments_related_payment_id_business_id_custo_fkey"
+      columns: ["related_payment_id","business_id","customer_id"]
+isOneToOne: false
+      referencedRelation: "payments"
+      referencedColumns: ["id","business_id","customer_id"]
+    },{
+      foreignKeyName: "financial_adjustments_related_sale_id_business_id_customer_fkey"
+      columns: ["related_sale_id","business_id","customer_id"]
+isOneToOne: false
+      referencedRelation: "sales"
+      referencedColumns: ["id","business_id","customer_id"]
+    }
+                  ]
+                },"opening_balances": {
+                  Row: {
+                    "amount_cents": number,"business_id": string,"cancel_reason": string | null,"cancelled_at": string | null,"cancelled_by": string | null,"created_at": string,"created_by": string,"customer_id": string,"id": string,"note": string,"reference_date": string,"status": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_cents": number,"business_id": string,"cancel_reason"?: string | null,"cancelled_at"?: string | null,"cancelled_by"?: string | null,"created_at"?: string,"created_by": string,"customer_id": string,"id": string,"note": string,"reference_date": string,"status"?: string,"updated_at"?: string
+                  }
+                  Update: {
+                    "amount_cents"?: number,"business_id"?: string,"cancel_reason"?: string | null,"cancelled_at"?: string | null,"cancelled_by"?: string | null,"created_at"?: string,"created_by"?: string,"customer_id"?: string,"id"?: string,"note"?: string,"reference_date"?: string,"status"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "opening_balances_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "opening_balances_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_balances"
+      referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "opening_balances_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    }
+                  ]
+                },"payment_notifications": {
+                  Row: {
+                    "amount_cents": number | null,"business_id": string,"created_at": string,"created_by": string,"customer_id": string,"id": string,"note": string | null,"payment_id": string | null,"resolution_note": string | null,"resolved_at": string | null,"resolved_by": string | null,"status": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_cents"?: number | null,"business_id": string,"created_at"?: string,"created_by": string,"customer_id": string,"id": string,"note"?: string | null,"payment_id"?: string | null,"resolution_note"?: string | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string,"updated_at"?: string
+                  }
+                  Update: {
+                    "amount_cents"?: number | null,"business_id"?: string,"created_at"?: string,"created_by"?: string,"customer_id"?: string,"id"?: string,"note"?: string | null,"payment_id"?: string | null,"resolution_note"?: string | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_notifications_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_notifications_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_balances"
+      referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "payment_notifications_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payment_notifications_payment_id_business_id_fkey"
+      columns: ["payment_id","business_id"]
+isOneToOne: false
+      referencedRelation: "payments"
+      referencedColumns: ["id","business_id"]
+    }
+                  ]
+                },"payments": {
+                  Row: {
+                    "amount_cents": number,"business_id": string,"created_at": string,"created_by": string,"customer_id": string,"id": string,"method": string,"note": string | null,"notification_id": string | null,"received_at": string,"request_hash": string,"reverse_reason": string | null,"reversed_at": string | null,"reversed_by": string | null,"sale_id": string | null,"source": string,"status": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount_cents": number,"business_id": string,"created_at"?: string,"created_by": string,"customer_id": string,"id": string,"method": string,"note"?: string | null,"notification_id"?: string | null,"received_at": string,"request_hash": string,"reverse_reason"?: string | null,"reversed_at"?: string | null,"reversed_by"?: string | null,"sale_id"?: string | null,"source": string,"status"?: string,"updated_at"?: string
+                  }
+                  Update: {
+                    "amount_cents"?: number,"business_id"?: string,"created_at"?: string,"created_by"?: string,"customer_id"?: string,"id"?: string,"method"?: string,"note"?: string | null,"notification_id"?: string | null,"received_at"?: string,"request_hash"?: string,"reverse_reason"?: string | null,"reversed_at"?: string | null,"reversed_by"?: string | null,"sale_id"?: string | null,"source"?: string,"status"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "payments_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_balances"
+      referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "payments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payments_notification_id_business_id_fkey"
+      columns: ["notification_id","business_id"]
+isOneToOne: false
+      referencedRelation: "payment_notifications"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payments_sale_id_business_id_customer_id_fkey"
+      columns: ["sale_id","business_id","customer_id"]
+isOneToOne: false
+      referencedRelation: "sales"
+      referencedColumns: ["id","business_id","customer_id"]
+    }
+                  ]
+                },"products": {
+                  Row: {
+                    "business_id": string,"category": string | null,"created_at": string,"created_by": string | null,"id": string,"is_active": boolean,"name": string,"price_cents": number,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id"?: string,"category"?: string | null,"created_at"?: string,"created_by"?: string | null,"id"?: string,"is_active"?: boolean,"name": string,"price_cents": number,"updated_at"?: string
+                  }
+                  Update: {
+                    "business_id"?: string,"category"?: string | null,"created_at"?: string,"created_by"?: string | null,"id"?: string,"is_active"?: boolean,"name"?: string,"price_cents"?: number,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "products_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"profiles": {
+                  Row: {
+                    "created_at": string,"display_name": string,"id": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"display_name"?: string,"id": string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"display_name"?: string,"id"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"sale_confirmations": {
+                  Row: {
+                    "business_id": string,"captured_at": string | null,"confirmation_status": string,"confirmation_type": string,"confirmed_by_user_id": string | null,"consent_text_version": string,"created_at": string,"customer_id": string,"dispute_reason": string | null,"id": string,"invalidated_at": string | null,"invalidated_by": string | null,"invalidation_reason": string | null,"received_at": string,"resolution_note": string | null,"resolved_at": string | null,"resolved_by": string | null,"sale_id": string,"signature_file_sha256": string | null,"signature_size_bytes": number | null,"signature_storage_path": string | null,"signed_document_hash": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id": string,"captured_at"?: string | null,"confirmation_status": string,"confirmation_type": string,"confirmed_by_user_id"?: string | null,"consent_text_version": string,"created_at"?: string,"customer_id": string,"dispute_reason"?: string | null,"id": string,"invalidated_at"?: string | null,"invalidated_by"?: string | null,"invalidation_reason"?: string | null,"received_at"?: string,"resolution_note"?: string | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"sale_id": string,"signature_file_sha256"?: string | null,"signature_size_bytes"?: number | null,"signature_storage_path"?: string | null,"signed_document_hash": string
+                  }
+                  Update: {
+                    "business_id"?: string,"captured_at"?: string | null,"confirmation_status"?: string,"confirmation_type"?: string,"confirmed_by_user_id"?: string | null,"consent_text_version"?: string,"created_at"?: string,"customer_id"?: string,"dispute_reason"?: string | null,"id"?: string,"invalidated_at"?: string | null,"invalidated_by"?: string | null,"invalidation_reason"?: string | null,"received_at"?: string,"resolution_note"?: string | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"sale_id"?: string,"signature_file_sha256"?: string | null,"signature_size_bytes"?: number | null,"signature_storage_path"?: string | null,"signed_document_hash"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "sale_confirmations_consent_text_version_fkey"
+      columns: ["consent_text_version"]
+isOneToOne: false
+      referencedRelation: "consent_texts"
+      referencedColumns: ["version"]
+    },{
+      foreignKeyName: "sale_confirmations_sale_id_business_id_customer_id_fkey"
+      columns: ["sale_id","business_id","customer_id"]
+isOneToOne: false
+      referencedRelation: "sales"
+      referencedColumns: ["id","business_id","customer_id"]
+    }
+                  ]
+                },"sale_items": {
+                  Row: {
+                    "business_id": string,"id": string,"position": number,"product_id": string,"product_name": string,"quantity": number,"sale_id": string,"subtotal_cents": number,"unit_price_cents": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id": string,"id"?: string,"position": number,"product_id": string,"product_name": string,"quantity": number,"sale_id": string,"subtotal_cents": number,"unit_price_cents": number
+                  }
+                  Update: {
+                    "business_id"?: string,"id"?: string,"position"?: number,"product_id"?: string,"product_name"?: string,"quantity"?: number,"sale_id"?: string,"subtotal_cents"?: number,"unit_price_cents"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "sale_items_product_id_business_id_fkey"
+      columns: ["product_id","business_id"]
+isOneToOne: false
+      referencedRelation: "products"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "sale_items_sale_id_business_id_fkey"
+      columns: ["sale_id","business_id"]
+isOneToOne: false
+      referencedRelation: "sales"
+      referencedColumns: ["id","business_id"]
+    }
+                  ]
+                },"sales": {
+                  Row: {
+                    "business_id": string,"cancel_reason": string | null,"cancelled_at": string | null,"cancelled_by": string | null,"confirmation_status": string,"created_at": string,"created_by": string,"customer_id": string,"description": string | null,"establishment_id": string,"id": string,"mode": string,"occurred_at": string,"payment_kind": string,"period": string,"received_at": string,"request_hash": string,"status": string,"total_cents": number,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id": string,"cancel_reason"?: string | null,"cancelled_at"?: string | null,"cancelled_by"?: string | null,"confirmation_status"?: string,"created_at"?: string,"created_by": string,"customer_id": string,"description"?: string | null,"establishment_id": string,"id": string,"mode": string,"occurred_at": string,"payment_kind": string,"period": string,"received_at"?: string,"request_hash": string,"status"?: string,"total_cents": number,"updated_at"?: string
+                  }
+                  Update: {
+                    "business_id"?: string,"cancel_reason"?: string | null,"cancelled_at"?: string | null,"cancelled_by"?: string | null,"confirmation_status"?: string,"created_at"?: string,"created_by"?: string,"customer_id"?: string,"description"?: string | null,"establishment_id"?: string,"id"?: string,"mode"?: string,"occurred_at"?: string,"payment_kind"?: string,"period"?: string,"received_at"?: string,"request_hash"?: string,"status"?: string,"total_cents"?: number,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "sales_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "sales_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_balances"
+      referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "sales_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "sales_establishment_id_business_id_fkey"
+      columns: ["establishment_id","business_id"]
+isOneToOne: false
+      referencedRelation: "establishments"
+      referencedColumns: ["id","business_id"]
+    }
+                  ]
+                }
+          }
+          Views: {
+            "customer_balances": {
+                  Row: {
+                    "balance_cents": number | null,"business_id": string,"credit_cents": number | null,"customer_id": string,"debit_cents": number | null,"last_payment_at": string | null,"last_sale_at": string | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "customers_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"customer_ledger": {
+                  Row: {
+                    "business_id": string | null,"credit_cents": number | null,"customer_id": string | null,"debit_cents": number | null,"entry_id": string | null,"establishment_id": string | null,"kind": string | null,"occurred_at": string | null,"settled_at_sale": boolean | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                }
+          }
+          Functions: {
+            "sale_document_hash":
+{ Args: { "p_sale": string,"p_terms": string }; Returns: string
+                           },
+"whoami":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           }
+          }
+          Enums: {
+            [_ in never]: never
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
+        }
+}
+
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+  ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : never
+
+export const Constants = {
+  "public": {
+          Enums: {
+            
+          }
+        }
+} as const
