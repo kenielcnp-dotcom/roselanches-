@@ -8,6 +8,14 @@ import { HomePage } from '@/features/dashboard/HomePage';
 import { ComingSoonPage } from '@/features/shared/ComingSoonPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
 import { PortalHomePage } from '@/features/client-portal/PortalHomePage';
+import { CustomerDetailPage } from '@/features/customers/CustomerDetailPage';
+import { CustomerFormPage } from '@/features/customers/CustomerFormPage';
+import { CustomersPage } from '@/features/customers/CustomersPage';
+import { EstablishmentDetailPage } from '@/features/establishments/EstablishmentDetailPage';
+import { EstablishmentFormPage } from '@/features/establishments/EstablishmentFormPage';
+import { EstablishmentsPage } from '@/features/establishments/EstablishmentsPage';
+import { ProductFormPage } from '@/features/products/ProductFormPage';
+import { ProductsPage } from '@/features/products/ProductsPage';
 
 function NotFoundPage() {
   return (
@@ -31,11 +39,19 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: 'vender', element: <ComingSoonPage title="Nova venda" /> },
-      { path: 'clientes', element: <ComingSoonPage title="Clientes" /> },
+      { path: 'clientes', element: <CustomersPage /> },
+      { path: 'clientes/novo', element: <CustomerFormPage /> },
+      { path: 'clientes/:id', element: <CustomerDetailPage /> },
+      { path: 'clientes/:id/editar', element: <CustomerFormPage /> },
       { path: 'recebimentos', element: <ComingSoonPage title="Recebimentos" /> },
       { path: 'relatorios', element: <ComingSoonPage title="Relatórios" /> },
-      { path: 'produtos', element: <ComingSoonPage title="Produtos" /> },
-      { path: 'estabelecimentos', element: <ComingSoonPage title="Estabelecimentos" /> },
+      { path: 'produtos', element: <ProductsPage /> },
+      { path: 'produtos/novo', element: <ProductFormPage /> },
+      { path: 'produtos/:id/editar', element: <ProductFormPage /> },
+      { path: 'estabelecimentos', element: <EstablishmentsPage /> },
+      { path: 'estabelecimentos/novo', element: <EstablishmentFormPage /> },
+      { path: 'estabelecimentos/:id', element: <EstablishmentDetailPage /> },
+      { path: 'estabelecimentos/:id/editar', element: <EstablishmentFormPage /> },
       { path: 'config', element: <SettingsPage /> },
     ],
   },

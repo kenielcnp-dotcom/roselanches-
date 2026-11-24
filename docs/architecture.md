@@ -45,6 +45,7 @@ src/
   lib/supabase/ client, database.types (gerado), errors
   lib/offline/  net (e, nas próximas fases, db, outbox, sync-engine)
   services/     chamadas ao Supabase por domínio (recebem o client por parâmetro)
+                e convertem linhas em modelos do app (camelCase, centavos)
   styles/       index.css (tokens do Tailwind)
   types/        modelos de domínio compartilhados
 supabase/       config.toml, migrations/, functions/, seed.sql
@@ -57,6 +58,12 @@ scripts/        dev-seed.mjs, juntar-migracoes.mjs, gerar-icones.py
 1. `AuthProvider` lê a sessão do aparelho (`getSession`, funciona sem internet) e chama `whoami()`.
 2. Sem internet, a área da Rose abre com a última identidade de equipe guardada no aparelho. O portal do cliente não abre sem internet.
 3. Os guardas (`RequireStaff`, `RequireCustomer`) só escolhem a tela; o servidor reaplica a regra em cada tabela e RPC.
+
+## Dados nas telas
+
+- Leituras e gravações dos cadastros passam por `src/features/registry/queries.ts` (TanStack Query). Depois de gravar, as consultas afetadas são invalidadas (clientes, estabelecimentos e painel andam juntos).
+- Formulários com React Hook Form + Zod (`src/domain/registry.ts`). O id de um cadastro novo é criado ao abrir a tela: dois toques em "Salvar" não criam dois registros, e um reenvio depois de a resposta se perder é tratado como sucesso.
+- Fuso: `whoami` devolve o fuso do negócio; `src/domain/period.ts` passa a usá-lo em todas as datas, horários e períodos.
 
 ## Conexão
 

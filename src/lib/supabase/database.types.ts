@@ -41,14 +41,14 @@ isOneToOne: false
                   ]
                 },"business_settings": {
                   Row: {
-                    "allow_online_confirmation": boolean,"business_id": string,"created_at": string,"default_sale_period": string | null,"item_max_qty": number,"pix_city": string | null,"pix_key": string | null,"pix_key_type": string | null,"pix_receiver_name": string | null,"require_signature": boolean,"sale_max_cents": number,"signature_retention_months": number,"updated_at": string
+                    "allow_online_confirmation": boolean,"business_id": string,"created_at": string,"default_sale_period": string | null,"item_max_qty": number,"pix_city": string | null,"pix_key": string | null,"pix_key_type": string | null,"pix_receiver_name": string | null,"require_signature": boolean,"sale_max_cents": number,"signature_retention_months": number,"timezone": string,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "allow_online_confirmation"?: boolean,"business_id": string,"created_at"?: string,"default_sale_period"?: string | null,"item_max_qty"?: number,"pix_city"?: string | null,"pix_key"?: string | null,"pix_key_type"?: string | null,"pix_receiver_name"?: string | null,"require_signature"?: boolean,"sale_max_cents"?: number,"signature_retention_months"?: number,"updated_at"?: string
+                    "allow_online_confirmation"?: boolean,"business_id": string,"created_at"?: string,"default_sale_period"?: string | null,"item_max_qty"?: number,"pix_city"?: string | null,"pix_key"?: string | null,"pix_key_type"?: string | null,"pix_receiver_name"?: string | null,"require_signature"?: boolean,"sale_max_cents"?: number,"signature_retention_months"?: number,"timezone"?: string,"updated_at"?: string
                   }
                   Update: {
-                    "allow_online_confirmation"?: boolean,"business_id"?: string,"created_at"?: string,"default_sale_period"?: string | null,"item_max_qty"?: number,"pix_city"?: string | null,"pix_key"?: string | null,"pix_key_type"?: string | null,"pix_receiver_name"?: string | null,"require_signature"?: boolean,"sale_max_cents"?: number,"signature_retention_months"?: number,"updated_at"?: string
+                    "allow_online_confirmation"?: boolean,"business_id"?: string,"created_at"?: string,"default_sale_period"?: string | null,"item_max_qty"?: number,"pix_city"?: string | null,"pix_key"?: string | null,"pix_key_type"?: string | null,"pix_receiver_name"?: string | null,"require_signature"?: boolean,"sale_max_cents"?: number,"signature_retention_months"?: number,"timezone"?: string,"updated_at"?: string
                   }
                   Relationships: [
                     {
@@ -109,7 +109,19 @@ isOneToOne: false
       foreignKeyName: "customer_establishments_customer_id_business_id_fkey"
       columns: ["customer_id","business_id"]
 isOneToOne: false
+      referencedRelation: "customer_overview"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "customer_establishments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
       referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "customer_establishments_establishment_id_business_id_fkey"
+      columns: ["establishment_id","business_id"]
+isOneToOne: false
+      referencedRelation: "establishment_overview"
       referencedColumns: ["id","business_id"]
     },{
       foreignKeyName: "customer_establishments_establishment_id_business_id_fkey"
@@ -137,6 +149,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "customer_balances"
       referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "customer_invites_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_overview"
+      referencedColumns: ["id","business_id"]
     },{
       foreignKeyName: "customer_invites_customer_id_business_id_fkey"
       columns: ["customer_id","business_id"]
@@ -213,6 +231,12 @@ isOneToOne: false
       foreignKeyName: "financial_adjustments_customer_id_business_id_fkey"
       columns: ["customer_id","business_id"]
 isOneToOne: false
+      referencedRelation: "customer_overview"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "financial_adjustments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
       referencedRelation: "customers"
       referencedColumns: ["id","business_id"]
     },{
@@ -257,6 +281,12 @@ isOneToOne: false
       foreignKeyName: "opening_balances_customer_id_business_id_fkey"
       columns: ["customer_id","business_id"]
 isOneToOne: false
+      referencedRelation: "customer_overview"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "opening_balances_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
       referencedRelation: "customers"
       referencedColumns: ["id","business_id"]
     }
@@ -285,6 +315,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "customer_balances"
       referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "payment_notifications_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_overview"
+      referencedColumns: ["id","business_id"]
     },{
       foreignKeyName: "payment_notifications_customer_id_business_id_fkey"
       columns: ["customer_id","business_id"]
@@ -323,6 +359,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "customer_balances"
       referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "payments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_overview"
+      referencedColumns: ["id","business_id"]
     },{
       foreignKeyName: "payments_customer_id_business_id_fkey"
       columns: ["customer_id","business_id"]
@@ -419,6 +461,12 @@ isOneToOne: false
       foreignKeyName: "sale_items_product_id_business_id_fkey"
       columns: ["product_id","business_id"]
 isOneToOne: false
+      referencedRelation: "product_overview"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "sale_items_product_id_business_id_fkey"
+      columns: ["product_id","business_id"]
+isOneToOne: false
       referencedRelation: "products"
       referencedColumns: ["id","business_id"]
     },{
@@ -457,7 +505,19 @@ isOneToOne: false
       foreignKeyName: "sales_customer_id_business_id_fkey"
       columns: ["customer_id","business_id"]
 isOneToOne: false
+      referencedRelation: "customer_overview"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "sales_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
       referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "sales_establishment_id_business_id_fkey"
+      columns: ["establishment_id","business_id"]
+isOneToOne: false
+      referencedRelation: "establishment_overview"
       referencedColumns: ["id","business_id"]
     },{
       foreignKeyName: "sales_establishment_id_business_id_fkey"
@@ -492,11 +552,65 @@ isOneToOne: false
                   Relationships: [
                     
                   ]
+                },"customer_overview": {
+                  Row: {
+                    "balance_cents": number | null,"business_id": string,"created_at": string,"establishment_ids": (string)[] | null,"full_name": string,"id": string,"is_active": boolean,"last_payment_at": string | null,"last_sale_at": string | null,"linked_at": string | null,"notes": string | null,"phone_e164": string | null,"portal_linked": boolean | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "customers_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"establishment_overview": {
+                  Row: {
+                    "address": string | null,"business_id": string,"created_at": string,"customer_count": number | null,"id": string,"is_active": boolean,"name": string,"nickname": string | null,"notes": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "address"?: string | null,"business_id"?: string | null,"created_at"?: string | null,"customer_count"?: never,"id"?: string | null,"is_active"?: boolean | null,"name"?: string | null,"nickname"?: string | null,"notes"?: string | null,"updated_at"?: string | null
+                         }
+                        Update: {
+                           "address"?: string | null,"business_id"?: string | null,"created_at"?: string | null,"customer_count"?: never,"id"?: string | null,"is_active"?: boolean | null,"name"?: string | null,"nickname"?: string | null,"notes"?: string | null,"updated_at"?: string | null
+                         }
+                        Relationships: [
+                    {
+      foreignKeyName: "establishments_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"product_overview": {
+                  Row: {
+                    "business_id": string,"category": string | null,"created_at": string,"id": string,"is_active": boolean,"last_sold_at": string | null,"name": string,"price_cents": number,"units_90d": number | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "products_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Functions: {
-            "sale_document_hash":
+            "dashboard_summary":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"sale_document_hash":
 { Args: { "p_sale": string,"p_terms": string }; Returns: string
+                           },
+"save_customer":
+{ Args: { "p_establishment_ids": (string)[],"p_full_name": string,"p_id": string,"p_is_active": boolean,"p_notes": string,"p_phone_e164": string }; Returns: string
                            },
 "whoami":
 { Args: Record<PropertyKey, never>; Returns: Json

@@ -1,6 +1,7 @@
-import { firstName, formatTime, greeting, localDateISO, suggestPeriod } from '@/domain/period';
+import { businessTimeZone, firstName, formatDate, formatDateTime, formatTime, greeting, localDateISO, setBusinessTimeZone, suggestPeriod } from '@/domain/period';
+import { BRAZIL_TIME_ZONES, isBrazilTimeZone, timeZoneLabel } from '@/domain/timezone';
 
-// Horários em UTC; Brasília é UTC−3.
+// Horários em UTC; Brasília é UTC−3 (fuso padrão).
 const at = (utc: string) => new Date(utc);
 
 describe('períodos no horário de Brasília', () => {
@@ -27,5 +28,40 @@ describe('períodos no horário de Brasília', () => {
   it('primeiro nome', () => {
     expect(firstName('  Rose Maria  ')).toBe('Rose');
     expect(firstName('')).toBe('');
+  });
+});
+
+describe('fuso do negócio', () => {
+  afterEach(() => setBusinessTimeZone(null));
+
+  it('usa o fuso configurado (Cuiabá é UTC−4)', () => {
+    setBusinessTimeZone('America/Cuiaba');
+    expect(businessTimeZone()).toBe('America/Cuiaba');
+    expect(formatTime(at('2026-11-23T13:23:00Z'))).toBe('09:23');
+    // 03:30 UTC = 23:30 do dia 22 em Cuiabá, mas 00:30 do dia 23 em Brasília.
+    expect(localDateISO(at('2026-11-23T03:30:00Z'))).toBe('2026-11-22');
+    expect(localDateISO(at('2026-11-23T03:30:00Z'), 'America/Sao_Paulo')).toBe('2026-11-23');
+    expect(suggestPeriod(at('2026-11-23T15:30:00Z'))).toBe('MORNING'); // 11:30 em Cuiabá
+  });
+
+  it('fuso desconhecido ou vazio volta para Brasília', () => {
+    setBusinessTimeZone('Europe/Lisbon');
+    expect(businessTimeZone()).toBe('America/Sao_Paulo');
+    setBusinessTimeZone(undefined);
+    expect(businessTimeZone()).toBe('America/Sao_Paulo');
+  });
+
+  it('formata data e hora', () => {
+    expect(formatDateTime(at('2026-11-23T13:23:00Z'))).toBe('23/11 às 10:23');
+    expect(formatDate(at('2026-11-23T13:23:00Z'))).toBe('23/11/2026');
+  });
+});
+
+describe('lista de fusos', () => {
+  it('reconhece só fusos do Brasil e tem rótulos', () => {
+    expect(isBrazilTimeZone('America/Cuiaba')).toBe(true);
+    expect(isBrazilTimeZone('UTC')).toBe(false);
+    expect(timeZoneLabel('America/Cuiaba')).toMatch(/Mato Grosso/);
+    expect(new Set(BRAZIL_TIME_ZONES.map((z) => z.id)).size).toBe(BRAZIL_TIME_ZONES.length);
   });
 });

@@ -58,8 +58,16 @@ Saldo = vendas ativas + saldo anterior + ajustes de débito − pagamentos confi
 - Assinatura é evidência de concordância com o conteúdo mostrado, não prova de identidade. Não há extração biométrica.
 - Venda assinada não é alterada em silêncio: cancelamento invalida a confirmação.
 
+## Cadastros
+
+- Cliente: nome com pelo menos duas palavras (nome e sobrenome, ou um apelido que diferencie, como "Zé da Oficina"); telefone opcional, validado e guardado em E.164.
+- Mesmo telefone ou mesmo nome de outro cliente gera **aviso**, não bloqueio: a mesma pessoa em dois lugares deve ser um cadastro com dois estabelecimentos.
+- Estabelecimento e produto: nome único por negócio (sem diferenciar maiúsculas). Desativar tira da seleção de vendas, mas mantém o histórico.
+- O estabelecimento atual fica lembrado no aparelho, por conta, e já vem marcado ao cadastrar um cliente.
+- "Quanto os clientes deste lugar devem, no total" soma o saldo inteiro dos clientes vinculados (inclui compras em outros lugares). Vendas e dívidas originadas em cada lugar entram nos relatórios.
+
 ## Datas
 
 - `occurred_at` vem do relógio do celular; o servidor registra sempre o próprio `received_at`.
 - O servidor recusa `occurred_at` mais de 10 minutos no futuro (e, a partir da RPC de venda, mais de 30 dias no passado).
-- Datas, "hoje" e períodos seguem o fuso do negócio.
+- Datas, "hoje" e períodos seguem o **fuso do negócio** (`business_settings.timezone`, padrão Brasília), não o do aparelho nem o do servidor. A Rose escolhe em Configurações; o app avisa quando o celular está em outro fuso.

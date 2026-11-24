@@ -26,8 +26,9 @@
 1. Abra o app publicado e crie a conta da Rose pela tela "Criar conta".
 2. No *SQL Editor* do painel, rode **uma vez**:
    ```sql
-   select private.bootstrap_owner('email-da-rose@exemplo.com', 'Lanches da Rose');
+   select private.bootstrap_owner('email-da-rose@exemplo.com', 'Lanches da Rose', 'America/Cuiaba');
    ```
+   O terceiro valor é o fuso de onde a Rose vende (por exemplo `America/Sao_Paulo` para Brasília ou `America/Cuiaba` para Mato Grosso). Dá para trocar depois em Configurações.
 3. A Rose sai e entra de novo; a área dela abre.
 
 ## 3. Chave do app

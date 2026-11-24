@@ -6,6 +6,7 @@ import { SyncPill } from '@/components/SyncPill';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useSyncPillState } from '@/features/sync/useSyncPillState';
 import { firstName, greeting } from '@/domain/period';
+import { DashboardStats } from './DashboardStats';
 import { FoodWatermark } from './FoodWatermark';
 
 interface Shortcut {
@@ -51,10 +52,8 @@ export function HomePage() {
         </h1>
         <p className="mt-1 text-lg text-brown">Aqui está o resumo do seu negócio hoje.</p>
 
-        {/* Os cartões com números (total a receber, vendas de hoje, clientes com
-            saldo) entram junto com o cadastro de clientes, já lidos do banco. */}
-        <div className="mt-5 rounded-card border-2 border-dashed border-line bg-white/60 px-5 py-4 text-brown-soft">
-          Os números do dia aparecem aqui assim que os primeiros clientes e vendas forem cadastrados.
+        <div className="mt-5">
+          <DashboardStats />
         </div>
 
         <Link

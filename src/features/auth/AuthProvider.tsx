@@ -2,7 +2,14 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase/client';
 import { toAppError } from '@/lib/supabase/errors';
-import { cacheIdentity, cachedIdentity, clearCachedIdentity, fetchIdentity, type Identity } from '@/services/identity';
+import {
+  applyIdentityTimeZone,
+  cacheIdentity,
+  cachedIdentity,
+  clearCachedIdentity,
+  fetchIdentity,
+  type Identity,
+} from '@/services/identity';
 
 export type AuthStatus = 'loading' | 'signed-out' | 'ready' | 'error';
 
@@ -31,11 +38,13 @@ async function resolveIdentity(userId: string): Promise<LoadedIdentity> {
   try {
     const fresh = await fetchIdentity(supabase);
     cacheIdentity(fresh);
+    applyIdentityTimeZone(fresh);
     return { userId, identity: fresh, fromCache: false, error: null };
   } catch (e) {
     const appError = toAppError(e);
     // Sem internet, a área da Rose abre com a última identidade conhecida.
     const cached = appError.kind === 'network' ? cachedIdentity(userId) : null;
+    if (cached) applyIdentityTimeZone(cached);
     return cached
       ? { userId, identity: cached, fromCache: true, error: null }
       : { userId, identity: null, fromCache: false, error: appError.message };

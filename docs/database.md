@@ -21,6 +21,7 @@ Migrações versionadas em `supabase/migrations/`. Toda mudança de banco é um 
 | `0400_auditoria` | `audit_logs` (imutável), `private.audit`, gatilho genérico `audit_row` |
 | `0500_rls` | RLS em todas as tabelas, privilégios por coluna, grants |
 | `0600_storage` | bucket privado `sale-signatures` e políticas de leitura |
+| `0700_operacao` | fuso do negócio (`business_settings.timezone`), `whoami` com fuso, `bootstrap_owner` com fuso, saldo anterior no fuso do negócio, RPC `dashboard_summary`, views `establishment_overview`/`customer_overview`/`product_overview`, RPC `save_customer` |
 
 ## Tabelas
 
@@ -29,7 +30,7 @@ Migrações versionadas em `supabase/migrations/`. Toda mudança de banco é um 
 | `businesses` | id, name | o tenant |
 | `profiles` | id = `auth.users.id`, display_name | criado por gatilho no cadastro |
 | `business_members` | business_id, user_id, role `OWNER`/`OPERATOR`, is_active | uma pessoa em no máximo um negócio ativo |
-| `business_settings` | require_signature (false), allow_online_confirmation (true), signature_retention_months (60), default_sale_period, sale_max_cents, item_max_qty, pix_* | 1 linha por negócio, criada por gatilho; só a dona altera |
+| `business_settings` | timezone (padrão `America/Sao_Paulo`), require_signature (false), allow_online_confirmation (true), signature_retention_months (60), default_sale_period, sale_max_cents, item_max_qty, pix_* | 1 linha por negócio, criada por gatilho; só a dona altera; fuso só entre os 16 fusos do Brasil (lista igual a `src/domain/timezone.ts`) |
 | `consent_texts` | version, body | imutável; v1 = texto do Adendo §6.4 |
 | `establishments` | name, nickname, address, notes, is_active | nome único por negócio (sem diferenciar maiúsculas); desativa, nunca apaga |
 | `customers` | full_name, phone_e164, notes, is_active, auth_user_id, linked_at | `auth_user_id` só é preenchido pela RPC de convite |
@@ -51,6 +52,18 @@ Migrações versionadas em `supabase/migrations/`. Toda mudança de banco é um 
 - **`sales.confirmation_status`**, por prioridade: `CANCELLED` (venda cancelada) > `DISPUTED` (contestação em aberto) > manifestação válida mais recente (`SIGNED`/`CONFIRMED_ONLINE`) > `PENDING`.
 - **Cancelar uma venda** invalida todas as confirmações dela.
 - **Auditoria**: em UPDATE guarda só as colunas que mudaram; mudanças de estado viram `STATUS:<novo>`. Hash de convite e binários nunca entram.
+
+## Views e RPCs das telas da Rose
+
+| Objeto | Para quê |
+|---|---|
+| `dashboard_summary()` | total a receber (só saldos positivos), clientes com saldo, vendas de hoje no fuso do negócio. Só equipe |
+| `establishment_overview` | estabelecimento + número de clientes ativos vinculados |
+| `customer_overview` | cliente + saldo derivado, última compra, último pagamento, ids dos estabelecimentos |
+| `product_overview` | produto + unidades vendidas nos últimos 90 dias ("mais vendidos") |
+| `save_customer(...)` | grava cliente e vínculos numa transação. `SECURITY INVOKER`: valem o RLS e os privilégios por coluna de quem chama; id vindo do app (repetir não duplica) |
+
+As três views usam `security_invoker`: cliente do portal, outro negócio e anônimo não veem nada.
 
 ## Saldo
 
