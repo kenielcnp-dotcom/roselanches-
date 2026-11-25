@@ -593,6 +593,26 @@ isOneToOne: false
       referencedColumns: ["id","business_id"]
     }
                   ]
+                },"staff_invites": {
+                  Row: {
+                    "business_id": string,"cancelled_at": string | null,"created_at": string,"created_by": string,"expires_at": string,"id": string,"invitee_name": string,"token_hash": string,"used_at": string | null,"used_by": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "business_id": string,"cancelled_at"?: string | null,"created_at"?: string,"created_by": string,"expires_at": string,"id"?: string,"invitee_name": string,"token_hash": string,"used_at"?: string | null,"used_by"?: string | null
+                  }
+                  Update: {
+                    "business_id"?: string,"cancelled_at"?: string | null,"created_at"?: string,"created_by"?: string,"expires_at"?: string,"id"?: string,"invitee_name"?: string,"token_hash"?: string,"used_at"?: string | null,"used_by"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "staff_invites_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    }
+                  ]
                 }
           }
           Views: {
@@ -654,7 +674,7 @@ isOneToOne: false
                   ]
                 },"payment_list": {
                   Row: {
-                    "amount_cents": number,"business_id": string,"created_at": string,"customer_id": string,"customer_name": string,"id": string,"method": string,"note": string | null,"notification_id": string | null,"received_at": string,"reverse_reason": string | null,"reversed_at": string | null,"sale_id": string | null,"source": string,"status": string
+                    "amount_cents": number,"business_id": string,"created_at": string,"created_by": string,"created_by_name": string | null,"customer_id": string,"customer_name": string,"id": string,"method": string,"note": string | null,"notification_id": string | null,"received_at": string,"reverse_reason": string | null,"reversed_at": string | null,"sale_id": string | null,"source": string,"status": string
                   }
                   ComputedFields: never
                   Relationships: [
@@ -806,7 +826,7 @@ isOneToOne: false
                   ]
                 },"sale_list": {
                   Row: {
-                    "business_id": string,"cancel_reason": string | null,"cancelled_at": string | null,"confirmation_status": string,"customer_id": string,"customer_name": string,"customer_phone": string | null,"description": string | null,"establishment_id": string,"establishment_name": string,"id": string,"items_summary": string | null,"mode": string,"occurred_at": string,"paid_method": string | null,"payment_kind": string,"period": string,"received_at": string,"status": string,"total_cents": number
+                    "business_id": string,"cancel_reason": string | null,"cancelled_at": string | null,"confirmation_status": string,"created_by": string,"created_by_name": string | null,"customer_id": string,"customer_name": string,"customer_phone": string | null,"description": string | null,"establishment_id": string,"establishment_name": string,"id": string,"items_summary": string | null,"mode": string,"occurred_at": string,"paid_method": string | null,"payment_kind": string,"period": string,"received_at": string,"status": string,"total_cents": number
                   }
                   ComputedFields: never
                   Relationships: [
@@ -860,6 +880,9 @@ isOneToOne: false
 "cancel_sale":
 { Args: { "p_reason": string,"p_sale_id": string }; Returns: Json
                            },
+"cancel_staff_invite":
+{ Args: { "p_invite": string }; Returns: undefined
+                           },
 "confirm_payment_notification":
 { Args: { "p_amount_cents": number,"p_note"?: string,"p_notification_id": string,"p_payment_id": string,"p_received_at": string }; Returns: Json
                            },
@@ -874,6 +897,9 @@ isOneToOne: false
                            },
 "create_sale":
 { Args: { "p_sale": Json }; Returns: Json
+                           },
+"create_staff_invite":
+{ Args: { "p_name": string }; Returns: Json
                            },
 "customer_statement":
 { Args: { "p_before_at"?: string,"p_before_id"?: string,"p_customer": string,"p_limit"?: number }; Returns: {
@@ -909,6 +935,9 @@ isOneToOne: false
 "redeem_customer_invite":
 { Args: { "p_token": string }; Returns: Json
                            },
+"redeem_staff_invite":
+{ Args: { "p_token": string }; Returns: Json
+                           },
 "register_payment":
 { Args: { "p_payment": Json }; Returns: Json
                            },
@@ -919,12 +948,15 @@ isOneToOne: false
 { Args: { "p_from": string,"p_to": string }; Returns: Json
                            },
 "report_sales":
-{ Args: { "p_confirmation"?: string,"p_customer"?: string,"p_establishment"?: string,"p_from": string,"p_limit"?: number,"p_offset"?: number,"p_payment"?: string,"p_to": string }; Returns: {
-              "cancel_reason": string,"confirmation_status": string,"customer_id": string,"customer_name": string,"establishment_name": string,"occurred_at": string,"open_cents": number,"paid_method": string,"payment_kind": string,"period": string,"sale_id": string,"status": string,"sum_cents": number,"sum_open_cents": number,"summary": string,"total_cents": number,"total_count": number
+{ Args: { "p_confirmation"?: string,"p_customer"?: string,"p_establishment"?: string,"p_from": string,"p_limit"?: number,"p_offset"?: number,"p_payment"?: string,"p_seller"?: string,"p_to": string }; Returns: {
+              "cancel_reason": string,"confirmation_status": string,"customer_id": string,"customer_name": string,"establishment_name": string,"occurred_at": string,"open_cents": number,"paid_method": string,"payment_kind": string,"period": string,"sale_id": string,"seller_name": string,"status": string,"sum_cents": number,"sum_open_cents": number,"summary": string,"total_cents": number,"total_count": number
             }[]
                            },
 "report_summary":
 { Args: { "p_customer"?: string,"p_establishment"?: string,"p_from": string,"p_to": string }; Returns: Json
+                           },
+"report_team":
+{ Args: { "p_from": string,"p_to": string }; Returns: Json
                            },
 "resolve_sale_dispute":
 { Args: { "p_note": string,"p_sale": string }; Returns: undefined
@@ -938,11 +970,17 @@ isOneToOne: false
 "save_customer":
 { Args: { "p_establishment_ids": (string)[],"p_full_name": string,"p_id": string,"p_is_active": boolean,"p_notes": string,"p_phone_e164": string }; Returns: string
                            },
+"set_member_active":
+{ Args: { "p_active": boolean,"p_member": string }; Returns: undefined
+                           },
 "signature_finalize":
 { Args: { "p_captured_at": string,"p_confirmation_id": string,"p_document_hash": string,"p_file_sha256": string,"p_sale_id": string,"p_size": number,"p_terms": string,"p_user": string }; Returns: Json
                            },
 "signature_prepare":
 { Args: { "p_captured_at": string,"p_confirmation_id": string,"p_document_hash": string,"p_file_sha256": string,"p_sale_id": string,"p_size": number,"p_terms": string,"p_user": string }; Returns: Json
+                           },
+"team_overview":
+{ Args: Record<PropertyKey, never>; Returns: Json
                            },
 "unlink_customer_account":
 { Args: { "p_customer": string,"p_reason": string }; Returns: undefined

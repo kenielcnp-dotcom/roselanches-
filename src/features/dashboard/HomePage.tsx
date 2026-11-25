@@ -1,9 +1,10 @@
 import { Link } from 'react-router';
-import { BarChart3, Package, Plus, Store, Users, Wallet, type LucideIcon } from 'lucide-react';
+import { BarChart3, Package, Plus, ReceiptText, Store, UserCog, Users, Wallet, type LucideIcon } from 'lucide-react';
 import { Awning } from '@/components/Awning';
 import { Logo } from '@/components/Logo';
 import { SyncPill } from '@/components/SyncPill';
 import { useAuth } from '@/features/auth/AuthProvider';
+import { useIsOwner } from '@/features/auth/roles';
 import { useSyncPillState } from '@/features/sync/useSyncPillState';
 import { firstName, greeting } from '@/domain/period';
 import { DashboardStats } from './DashboardStats';
@@ -25,10 +26,19 @@ const MAIN_SHORTCUTS: Shortcut[] = [
 const MORE_SHORTCUTS: Shortcut[] = [
   { to: '/produtos', label: 'Produtos', hint: 'Preços e categorias', icon: Package },
   { to: '/estabelecimentos', label: 'Estabelecimentos', hint: 'Locais de venda', icon: Store },
+  { to: '/equipe', label: 'Equipe', hint: 'Vendedores e convites', icon: UserCog },
+];
+
+// Vendedor: só o que ele usa no dia a dia (produtos, locais e relatórios são da dona).
+const SELLER_SHORTCUTS: Shortcut[] = [
+  { to: '/clientes', label: 'Clientes', hint: 'Cadastrar e ver saldo', icon: Users },
+  { to: '/recebimentos', label: 'Recebimentos', hint: 'Pagamentos que você recebeu', icon: Wallet },
+  { to: '/vendas', label: 'Minhas vendas', hint: 'O que você vendeu', icon: ReceiptText },
 ];
 
 export function HomePage() {
   const { identity } = useAuth();
+  const isOwner = useIsOwner();
   const syncState = useSyncPillState();
   const name = firstName(identity?.displayName ?? '');
 
@@ -50,7 +60,9 @@ export function HomePage() {
             👋
           </span>
         </h1>
-        <p className="mt-1 text-lg text-brown">Aqui está o resumo do seu negócio hoje.</p>
+        <p className="mt-1 text-lg text-brown">
+          {isOwner ? 'Aqui está o resumo do seu negócio hoje.' : 'Aqui estão as suas vendas de hoje.'}
+        </p>
 
         <div className="mt-5">
           <DashboardStats />
@@ -71,19 +83,21 @@ export function HomePage() {
 
         <nav aria-label="Atalhos" className="mt-5 space-y-3">
           <ul className="grid grid-cols-3 gap-3">
-            {MAIN_SHORTCUTS.map((s) => (
+            {(isOwner ? MAIN_SHORTCUTS : SELLER_SHORTCUTS).map((s) => (
               <li key={s.to}>
                 <ShortcutCard shortcut={s} />
               </li>
             ))}
           </ul>
-          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {MORE_SHORTCUTS.map((s) => (
-              <li key={s.to}>
-                <ShortcutCard shortcut={s} compact />
-              </li>
-            ))}
-          </ul>
+          {isOwner && (
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {MORE_SHORTCUTS.map((s) => (
+                <li key={s.to}>
+                  <ShortcutCard shortcut={s} compact />
+                </li>
+              ))}
+            </ul>
+          )}
         </nav>
 
         <FoodWatermark className="mx-auto mt-6 h-20 w-40" />

@@ -25,6 +25,8 @@ export function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<Form>({ resolver: zodResolver(schema) });
 
+  const invite = pendingInvite();
+
   const onSubmit = handleSubmit(async (values) => {
     setServerError(null);
     const { error } = await supabase.auth.signInWithPassword({ email: values.email, password: values.password });
@@ -37,7 +39,11 @@ export function LoginPage() {
 
   return (
     <AuthLayout title="Entrar">
-      {pendingInvite() && <p className="mb-4 rounded-2xl bg-peach px-4 py-3 text-brown">Entre para ligar o convite da Rose à sua conta.</p>}
+      {invite && (
+        <p className="mb-4 rounded-2xl bg-peach px-4 py-3 text-brown">
+          {invite.kind === 'team' ? 'Entre para fazer parte da equipe da Rose.' : 'Entre para ligar o convite da Rose à sua conta.'}
+        </p>
+      )}
       <form onSubmit={onSubmit} noValidate className="space-y-4">
         <TextField label="E-mail" type="email" autoComplete="email" inputMode="email" error={errors.email?.message} {...register('email')} />
         <TextField label="Senha" type="password" autoComplete="current-password" error={errors.password?.message} {...register('password')} />

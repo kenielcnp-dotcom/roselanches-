@@ -45,6 +45,8 @@ export function SignupPage() {
     else setNeedsConfirmation(true);
   });
 
+  const invite = pendingInvite();
+
   if (needsConfirmation) {
     return (
       <AuthLayout title="Confirme seu e-mail">
@@ -58,9 +60,12 @@ export function SignupPage() {
 
   return (
     <AuthLayout title="Criar conta">
-      {pendingInvite() && (
+      {invite && (
         <p className="mb-4 rounded-2xl bg-peach px-4 py-3 text-brown">
-          Depois de criar, sua conta já fica ligada ao seu cadastro no Lanches da Rose. Guarde o e-mail e a senha.
+          {invite.kind === 'team'
+            ? 'Depois de criar, você já entra na equipe do Lanches da Rose. Use o seu nome: ele aparece nas vendas que você fizer.'
+            : 'Depois de criar, sua conta já fica ligada ao seu cadastro no Lanches da Rose.'}{' '}
+          Guarde o e-mail e a senha.
         </p>
       )}
       <form onSubmit={onSubmit} noValidate className="space-y-4">

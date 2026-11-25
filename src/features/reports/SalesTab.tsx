@@ -20,6 +20,7 @@ import {
   type ReportFilters,
   type ReportSaleRow,
 } from '@/services/reports';
+import type { TeamMember } from '@/services/team';
 import { ReportError } from './ReportsPage';
 
 const PAGE = 30;
@@ -46,14 +47,19 @@ interface Props {
   filters: ReportFilters;
   payment: PaymentFilter;
   confirmation: ConfirmationFilter;
+  sellerId: string | null;
+  sellers: TeamMember[];
   onPayment: (v: PaymentFilter) => void;
   onConfirmation: (v: ConfirmationFilter) => void;
+  onSeller: (userId: string | null) => void;
 }
 
-export function SalesTab({ filters, payment, confirmation, onPayment, onConfirmation }: Props) {
+export function SalesTab({ filters, payment, confirmation, sellerId, sellers, onPayment, onConfirmation, onSeller }: Props) {
   const toast = useToast();
   const [exporting, setExporting] = useState(false);
-  const all = { ...filters, payment, confirmation };
+  const all = { ...filters, payment, confirmation, sellerId };
+  // Com uma pessoa só no app, "vendedor" não acrescenta nada à tela.
+  const hasTeam = sellers.length > 1 || !!sellerId;
   const query = useInfiniteQuery({
     queryKey: ['report', 'sales', all],
     initialPageParam: 0,
@@ -71,7 +77,7 @@ export function SalesTab({ filters, payment, confirmation, onPayment, onConfirma
     try {
       const page = await fetchReportSales(supabase, all, CSV_LIMIT, 0);
       const csv = toCsv(
-        ['Data', 'Hora', 'Turno', 'Cliente', 'Local', 'Compra', 'Total', 'Pagamento', 'Em aberto', 'Situação', 'Confirmação'],
+        ['Data', 'Hora', 'Turno', 'Cliente', 'Local', 'Compra', 'Total', 'Pagamento', 'Em aberto', 'Situação', 'Confirmação', 'Vendedor'],
         page.rows.map((r) => {
           const when = new Date(r.occurredAt);
           return [
@@ -86,6 +92,7 @@ export function SalesTab({ filters, payment, confirmation, onPayment, onConfirma
             csvMoney(r.openCents),
             r.status === 'CANCELLED' ? `Cancelada: ${r.cancelReason ?? ''}` : 'Ativa',
             CONFIRMATION_LABELS[r.confirmationStatus],
+            r.sellerName,
           ];
         }),
       );
@@ -123,6 +130,17 @@ export function SalesTab({ filters, payment, confirmation, onPayment, onConfirma
         onChange={(e) => onConfirmation(e.target.value as ConfirmationFilter)}
         options={CONFIRMATION_OPTIONS}
       />
+      {hasTeam && (
+        <SelectField
+          label="Vendedor"
+          value={sellerId ?? ''}
+          onChange={(e) => onSeller(e.target.value || null)}
+          options={[
+            { value: '', label: 'Todos' },
+            ...sellers.map((m) => ({ value: m.userId, label: m.role === 'OWNER' ? `${m.name} (dona)` : m.name })),
+          ]}
+        />
+      )}
 
       {query.isPending ? (
         <LoadingState />
@@ -147,7 +165,7 @@ export function SalesTab({ filters, payment, confirmation, onPayment, onConfirma
           ) : (
             <ul className="divide-y divide-line overflow-hidden rounded-card bg-white shadow-soft ring-1 ring-line">
               {rows.map((r) => (
-                <SaleRow key={r.id} sale={r} />
+                <SaleRow key={r.id} sale={r} showSeller={hasTeam} />
               ))}
             </ul>
           )}
@@ -168,7 +186,7 @@ export function SalesTab({ filters, payment, confirmation, onPayment, onConfirma
   );
 }
 
-function SaleRow({ sale: s }: { sale: ReportSaleRow }) {
+function SaleRow({ sale: s, showSeller }: { sale: ReportSaleRow; showSeller: boolean }) {
   const cancelled = s.status === 'CANCELLED';
   return (
     <li>
@@ -178,6 +196,7 @@ function SaleRow({ sale: s }: { sale: ReportSaleRow }) {
           <span className="block truncate text-sm text-brown">{s.summary}</span>
           <span className="block text-xs text-brown-soft">
             {formatDateTime(new Date(s.occurredAt))} · {s.establishmentName}
+            {showSeller && s.sellerName ? ` · por ${s.sellerName}` : ''}
           </span>
           <span className="mt-0.5 flex flex-wrap gap-1.5 text-xs font-bold">
             {cancelled ? (

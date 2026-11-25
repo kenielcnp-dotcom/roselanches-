@@ -8,9 +8,11 @@ import { supabase } from '@/lib/supabase/client';
 import { toAppError } from '@/lib/supabase/errors';
 import { useCustomers, useEstablishments } from '@/features/registry/queries';
 import { fetchPlacesReport, fetchReportSummary } from '@/services/reports';
+import { fetchTeam } from '@/services/team';
 import { PlacesTab } from './PlacesTab';
 import { SalesTab } from './SalesTab';
 import { SummaryTab } from './SummaryTab';
+import { TeamTab } from './TeamTab';
 import { useReportParams, type ReportTab } from './useReportParams';
 
 const PRESET_LABELS: Record<PeriodPreset, string> = {
@@ -21,7 +23,7 @@ const PRESET_LABELS: Record<PeriodPreset, string> = {
   CUSTOM: 'Escolher datas',
 };
 
-const TAB_LABELS: Record<ReportTab, string> = { resumo: 'Resumo', locais: 'Por local', vendas: 'Vendas' };
+const TAB_LABELS: Record<ReportTab, string> = { resumo: 'Resumo', locais: 'Por local', vendas: 'Vendas', equipe: 'Equipe' };
 
 /** Relatórios: período, filtros e três visões (resumo, locais, lista de vendas). */
 export function ReportsPage() {
@@ -40,6 +42,10 @@ export function ReportsPage() {
     queryFn: () => fetchPlacesReport(supabase, p.range),
     enabled: ready && p.tab === 'locais',
   });
+
+  // Lista da equipe para o filtro de vendedor (só aparece quando há vendedores).
+  const team = useQuery({ queryKey: ['team'], queryFn: () => fetchTeam(supabase), retry: false });
+  const sellers = team.data?.members ?? [];
 
   const placeName = establishments.data?.find((e) => e.id === p.filters.establishmentId)?.name;
   const customerName = customers.data?.find((c) => c.id === p.filters.customerId)?.fullName;
@@ -75,7 +81,7 @@ export function ReportsPage() {
               {p.problem}
             </p>
           )}
-          {p.tab !== 'locais' && (
+          {(p.tab === 'resumo' || p.tab === 'vendas') && (
             <div className="grid grid-cols-2 gap-3">
               <SelectField
                 label="Local"
@@ -98,12 +104,12 @@ export function ReportsPage() {
           )}
           <p className="text-sm text-brown-soft">
             {formatRange(p.range.from && p.range.to ? p.range : presetRange('TODAY'))}
-            {p.tab !== 'locais' && placeName ? ` · ${placeName}` : ''}
-            {p.tab !== 'locais' && customerName ? ` · ${customerName}` : ''}
+            {(p.tab === 'resumo' || p.tab === 'vendas') && placeName ? ` · ${placeName}` : ''}
+            {(p.tab === 'resumo' || p.tab === 'vendas') && customerName ? ` · ${customerName}` : ''}
           </p>
         </section>
 
-        <div className="grid grid-cols-3 gap-1 rounded-2xl bg-cream-deep p-1" role="tablist" aria-label="Visão do relatório">
+        <div className="grid grid-cols-4 gap-1 rounded-2xl bg-cream-deep p-1" role="tablist" aria-label="Visão do relatório">
           {(Object.keys(TAB_LABELS) as ReportTab[]).map((key) => (
             <button
               key={key}
@@ -111,7 +117,7 @@ export function ReportsPage() {
               role="tab"
               aria-selected={p.tab === key}
               onClick={() => p.update({ aba: key === 'resumo' ? null : key })}
-              className={`min-h-11 rounded-xl text-base font-extrabold ${p.tab === key ? 'bg-white text-brown shadow-soft' : 'text-brown-soft'}`}
+              className={`min-h-11 rounded-xl text-[0.95rem] leading-tight font-extrabold ${p.tab === key ? 'bg-white text-brown shadow-soft' : 'text-brown-soft'}`}
             >
               {TAB_LABELS[key]}
             </button>
@@ -125,10 +131,14 @@ export function ReportsPage() {
             filters={p.filters}
             payment={p.payment}
             confirmation={p.confirmation}
+            sellerId={p.sellerId}
+            sellers={sellers}
             onPayment={(v) => p.update({ pagamento: v === 'ALL' ? null : v })}
             onConfirmation={(v) => p.update({ confirmacao: v === 'ALL' ? null : v })}
+            onSeller={(v) => p.update({ vendedor: v })}
           />
         )}
+        {ready && p.tab === 'equipe' && <TeamTab range={p.range} onSeeSales={(id) => p.update({ aba: 'vendas', vendedor: id })} />}
       </main>
     </>
   );

@@ -97,7 +97,7 @@ test('lista de vendas: em aberto, pagas em parte e planilha CSV', async ({ page 
   await page.getByRole('button', { name: 'Baixar planilha (CSV)' }).click();
   const file = await (await download).path();
   const csv = await readFile(file, 'utf8');
-  expect(csv.split('\r\n')[0]).toBe('﻿Data;Hora;Turno;Cliente;Local;Compra;Total;Pagamento;Em aberto;Situação;Confirmação');
+  expect(csv.split('\r\n')[0]).toBe('﻿Data;Hora;Turno;Cliente;Local;Compra;Total;Pagamento;Em aberto;Situação;Confirmação;Vendedor');
   expect(csv).toContain(`${NAME};${PLACE};Almoço ${suffix};25,00;Fiado;15,00;Ativa`);
   expect(csv).toContain(`${NAME};${PLACE};Lanche ${suffix};15,00;Fiado;15,00;Ativa`);
 });

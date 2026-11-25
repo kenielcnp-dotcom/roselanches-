@@ -37,6 +37,8 @@ function fromLocal(l: LocalSale, ops: Map<string, OutboxOp>): SaleView {
     cancelReason: l.cancel?.reason ?? null,
     confirmationStatus: 'PENDING',
     occurredAt: l.draft.occurredAt,
+    createdBy: null,
+    createdByName: null,
     sync: op?.state ?? 'SYNCED',
     syncError: op?.state === 'FAILED' || op?.state === 'PENDING' ? (op.lastError?.message ?? null) : null,
     pendingCancel: l.cancel && cancelOp && cancelOp.state !== 'SYNCED' ? { reason: l.cancel.reason, state: cancelOp.state } : null,
@@ -64,9 +66,13 @@ function useLocalSales(filter: (l: LocalSale) => boolean, deps: unknown[]): Sale
   }, [db, ...deps]);
 }
 
-export function useSalesSince(days: number) {
+/** createdBy: só as vendas desta pessoa (vendedor). As do celular são sempre de quem está usando. */
+export function useSalesSince(days: number, createdBy?: string) {
   const since = new Date(startOfLocalDay(new Date()).getTime() - (days - 1) * 86_400_000).toISOString();
-  const server = useQuery({ queryKey: ['sales', 'since', since], queryFn: () => listSales(supabase, { since }) });
+  const server = useQuery({
+    queryKey: ['sales', 'since', since, createdBy ?? 'all'],
+    queryFn: () => listSales(supabase, createdBy ? { since, createdBy } : { since }),
+  });
   const local = useLocalSales((l) => l.draft.occurredAt >= since, [since]);
   return { server, sales: local ? merge(server.data, local) : undefined };
 }

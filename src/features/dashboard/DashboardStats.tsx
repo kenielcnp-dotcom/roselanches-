@@ -1,11 +1,12 @@
 import { Link } from 'react-router';
-import { MessageSquareWarning, ReceiptText, RefreshCw, Users } from 'lucide-react';
+import { Banknote, MessageSquareWarning, ReceiptText, RefreshCw, Users } from 'lucide-react';
 import { formatBRL } from '@/domain/money';
 import { formatTime } from '@/domain/period';
 import { errorMessage } from '@/lib/supabase/errors';
 import { cachedAt } from '@/lib/offline/fallback';
 import { useDashboard } from '@/features/registry/queries';
 import { useOptionalSync } from '@/features/sync/SyncProvider';
+import type { DashboardSummary } from '@/services/dashboard';
 import { CoinsArt } from './CoinsArt';
 
 /** Total a receber, vendas de hoje e clientes com saldo, sempre vindos do banco. */
@@ -46,6 +47,9 @@ export function DashboardStats() {
   const d = query.data;
   // Sem internet, os números da última leitura continuam na tela, com a hora.
   const stale = query.isError || cachedAt(d) !== null;
+  const freshness = stale ? `Sem internet · números de ${formatTime(d.asOf)}` : `Atualizado às ${formatTime(d.asOf)}`;
+
+  if (d.scope === 'MINE' || d.receivableCents === null) return <SellerStats d={d} freshness={freshness} onPhone={onPhone} />;
 
   return (
     <div className="space-y-3">
@@ -55,9 +59,7 @@ export function DashboardStats() {
       >
         <p className="text-lg font-bold text-white/95">Total a receber</p>
         <p className="tabular mt-1 text-[2.6rem] leading-none font-black">{formatBRL(d.receivableCents)}</p>
-        <p className="mt-2 text-sm font-semibold text-white/90">
-          {stale ? `Sem internet · números de ${formatTime(d.asOf)}` : `Atualizado às ${formatTime(d.asOf)}`}
-        </p>
+        <p className="mt-2 text-sm font-semibold text-white/90">{freshness}</p>
         {onPhone > 0 && (
           <p className="mt-1 text-sm font-bold text-white">
             + {onPhone === 1 ? '1 venda' : `${onPhone} vendas`} no celular, ainda fora destes números
@@ -109,6 +111,46 @@ export function DashboardStats() {
           {d.openDisputes === 1 ? '1 compra contestada pelo cliente' : `${d.openDisputes} compras contestadas pelos clientes`}
         </Link>
       )}
+    </div>
+  );
+}
+
+/** Vendedor: só os números que ele mesmo registrou hoje. */
+function SellerStats({ d, freshness, onPhone }: { d: DashboardSummary; freshness: string; onPhone: number }) {
+  return (
+    <div className="space-y-3">
+      <Link
+        to="/vendas"
+        className="relative block overflow-hidden rounded-card bg-linear-to-br from-orange-deep via-[#8a3510] to-brown px-5 py-5 text-white shadow-warm"
+      >
+        <p className="text-lg font-bold text-white/95">Suas vendas hoje</p>
+        <p className="tabular mt-1 text-[2.6rem] leading-none font-black">{formatBRL(d.todaySalesCents)}</p>
+        <p className="mt-1 text-base font-semibold">
+          {d.todaySalesCount === 0 ? 'Nenhuma venda ainda' : `${d.todaySalesCount} ${d.todaySalesCount === 1 ? 'venda' : 'vendas'}`}
+          {d.todayCreditCents > 0 && ` · fiado ${formatBRL(d.todayCreditCents)}`}
+        </p>
+        <p className="mt-2 text-sm font-semibold text-white/90">{freshness}</p>
+        {onPhone > 0 && (
+          <p className="mt-1 text-sm font-bold text-white">
+            + {onPhone === 1 ? '1 venda' : `${onPhone} vendas`} no celular, ainda fora destes números
+          </p>
+        )}
+        <CoinsArt className="pointer-events-none absolute -right-2 -bottom-3 h-28 w-28 opacity-90" />
+      </Link>
+      <div className="grid grid-cols-2 gap-3">
+        <Link to="/recebimentos" className="rounded-card bg-peach px-4 py-4 shadow-soft ring-1 ring-line active:bg-cream-deep">
+          <Banknote className="h-7 w-7 text-orange" strokeWidth={2.5} aria-hidden="true" />
+          <p className="mt-1 font-bold text-brown">Você recebeu hoje</p>
+          <p className="tabular text-2xl leading-tight font-black text-success">{formatBRL(d.todayReceivedCents)}</p>
+          <p className="text-sm text-brown-soft">em dinheiro {formatBRL(d.todayReceivedCashCents)}</p>
+        </Link>
+        <Link to="/clientes" className="rounded-card bg-white/90 px-4 py-4 shadow-soft ring-1 ring-line active:bg-cream-deep">
+          <Users className="h-7 w-7 text-orange" strokeWidth={2.5} aria-hidden="true" />
+          <p className="mt-1 font-bold text-brown">Clientes com saldo</p>
+          <p className="tabular text-2xl leading-tight font-black text-brown">{d.customersWithBalance}</p>
+          <p className="text-sm text-brown-soft">devendo agora</p>
+        </Link>
+      </div>
     </div>
   );
 }

@@ -28,14 +28,15 @@ export function InvitePage() {
   const navigate = useNavigate();
   const { status, identity, refreshIdentity } = useAuth();
   const fromHash = inviteFromHash(location.hash);
-  const token = fromHash ?? pendingInvite();
+  const stored = pendingInvite();
+  const token = fromHash ?? (stored?.kind === 'customer' ? stored.token : null);
   const [state, setState] = useState<State>({ kind: 'idle' });
   const started = useRef(false);
 
   // Tira o token da barra de endereço (e do histórico) assim que a tela abre.
   useEffect(() => {
     if (!fromHash) return;
-    savePendingInvite(fromHash);
+    savePendingInvite('customer', fromHash);
     void navigate('/convite', { replace: true });
   }, [fromHash, navigate]);
 

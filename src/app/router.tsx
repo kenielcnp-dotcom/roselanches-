@@ -4,6 +4,9 @@ import { LoginPage } from '@/features/auth/LoginPage';
 import { SignupPage } from '@/features/auth/SignupPage';
 import { NoAccessPage } from '@/features/auth/NoAccessPage';
 import { PublicOnly, RequireAuth, RequireCustomer, RequireStaff } from '@/features/auth/guards';
+import { OwnerOnly } from '@/features/auth/roles';
+import { TeamInvitePage } from '@/features/team/TeamInvitePage';
+import { TeamPage } from '@/features/team/TeamPage';
 import { HomePage } from '@/features/dashboard/HomePage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
 import { ReportsPage } from '@/features/reports/ReportsPage';
@@ -47,6 +50,7 @@ export const router = createBrowserRouter([
   { path: '/criar-conta', element: <PublicOnly><SignupPage /></PublicOnly> },
   { path: '/sem-acesso', element: <RequireAuth><NoAccessPage /></RequireAuth> },
   { path: '/convite', element: <InvitePage /> },
+  { path: '/convite-equipe', element: <TeamInvitePage /> },
   {
     path: '/conta',
     element: <RequireCustomer><PortalLayout /></RequireCustomer>,
@@ -65,7 +69,7 @@ export const router = createBrowserRouter([
       { path: 'vender', element: <NewSalePage /> },
       { path: 'vendas', element: <SalesPage /> },
       { path: 'vendas/:id', element: <SaleDetailPage /> },
-      { path: 'contestacoes', element: <DisputesPage /> },
+      { path: 'contestacoes', element: <OwnerOnly><DisputesPage /></OwnerOnly> },
       { path: 'clientes', element: <CustomersPage /> },
       { path: 'clientes/novo', element: <CustomerFormPage /> },
       { path: 'clientes/:id', element: <CustomerDetailPage /> },
@@ -73,17 +77,18 @@ export const router = createBrowserRouter([
       { path: 'recebimentos', element: <ReceivablesPage /> },
       { path: 'recebimentos/novo', element: <PaymentFormPage /> },
       { path: 'recebimentos/:id', element: <PaymentDetailPage /> },
-      { path: 'clientes/:id/saldo-anterior', element: <EntryFormPage kind="OPENING_BALANCE" /> },
-      { path: 'clientes/:id/ajuste', element: <EntryFormPage kind="ADJUSTMENT" /> },
+      { path: 'clientes/:id/saldo-anterior', element: <OwnerOnly><EntryFormPage kind="OPENING_BALANCE" /></OwnerOnly> },
+      { path: 'clientes/:id/ajuste', element: <OwnerOnly><EntryFormPage kind="ADJUSTMENT" /></OwnerOnly> },
       { path: 'clientes/:id/lancamentos/:entryId', element: <EntryDetailPage /> },
-      { path: 'relatorios', element: <ReportsPage /> },
-      { path: 'produtos', element: <ProductsPage /> },
-      { path: 'produtos/novo', element: <ProductFormPage /> },
-      { path: 'produtos/:id/editar', element: <ProductFormPage /> },
-      { path: 'estabelecimentos', element: <EstablishmentsPage /> },
-      { path: 'estabelecimentos/novo', element: <EstablishmentFormPage /> },
-      { path: 'estabelecimentos/:id', element: <EstablishmentDetailPage /> },
-      { path: 'estabelecimentos/:id/editar', element: <EstablishmentFormPage /> },
+      { path: 'relatorios', element: <OwnerOnly><ReportsPage /></OwnerOnly> },
+      { path: 'produtos', element: <OwnerOnly><ProductsPage /></OwnerOnly> },
+      { path: 'produtos/novo', element: <OwnerOnly><ProductFormPage /></OwnerOnly> },
+      { path: 'produtos/:id/editar', element: <OwnerOnly><ProductFormPage /></OwnerOnly> },
+      { path: 'estabelecimentos', element: <OwnerOnly><EstablishmentsPage /></OwnerOnly> },
+      { path: 'estabelecimentos/novo', element: <OwnerOnly><EstablishmentFormPage /></OwnerOnly> },
+      { path: 'estabelecimentos/:id', element: <OwnerOnly><EstablishmentDetailPage /></OwnerOnly> },
+      { path: 'estabelecimentos/:id/editar', element: <OwnerOnly><EstablishmentFormPage /></OwnerOnly> },
+      { path: 'equipe', element: <OwnerOnly><TeamPage /></OwnerOnly> },
       { path: 'config', element: <SettingsPage /> },
     ],
   },

@@ -75,6 +75,12 @@ const LDR_MESSAGES: Record<string, string> = {
   LDR_INVALID_NOTE: 'O recado pode ter até 200 caracteres.',
   LDR_TOO_MANY_NOTICES: 'Você já tem 5 avisos esperando a Rose conferir. Aguarde ela responder.',
   LDR_INVALID_RANGE: 'Período inválido: a data inicial vem antes da final, e no máximo um ano.',
+  LDR_OWNER_ONLY: 'Só a Rose pode fazer isso. Peça para ela.',
+  LDR_INVALID_NAME: 'Escreva o nome do vendedor (de 2 a 60 letras).',
+  LDR_TOO_MANY_INVITES: 'Já há 5 convites de vendedor sem usar. Cancele algum antes de gerar outro.',
+  LDR_MEMBER_NOT_FOUND: 'Esta pessoa não faz parte da equipe.',
+  LDR_CANNOT_CHANGE_OWNER: 'O acesso da dona do negócio não pode ser desativado.',
+  LDR_ACCOUNT_IN_USE: 'Esta conta já está em uso em outro negócio ou como cliente. Convide com outra conta.',
   LDR_NO_OPEN_DISPUTE: 'Esta compra não tem contestação em aberto.',
 };
 

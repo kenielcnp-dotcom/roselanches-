@@ -94,10 +94,13 @@ export interface SaleRow {
   cancelReason: string | null;
   confirmationStatus: ConfirmationStatus;
   occurredAt: string;
+  /** Quem registrou (null = venda que ainda só existe neste celular). */
+  createdBy: string | null;
+  createdByName: string | null;
 }
 
 const SALE_LIST_COLUMNS =
-  'id, customer_id, customer_name, customer_phone, establishment_id, establishment_name, mode, period, description, items_summary, total_cents, payment_kind, paid_method, status, cancel_reason, confirmation_status, occurred_at';
+  'id, customer_id, customer_name, customer_phone, establishment_id, establishment_name, mode, period, description, items_summary, total_cents, payment_kind, paid_method, status, cancel_reason, confirmation_status, occurred_at, created_by, created_by_name';
 
 interface SaleListRow {
   id: string | null;
@@ -117,6 +120,8 @@ interface SaleListRow {
   cancel_reason: string | null;
   confirmation_status: string | null;
   occurred_at: string | null;
+  created_by: string | null;
+  created_by_name: string | null;
 }
 
 function toSaleRow(r: SaleListRow): SaleRow {
@@ -137,10 +142,15 @@ function toSaleRow(r: SaleListRow): SaleRow {
     cancelReason: r.cancel_reason,
     confirmationStatus: need(r.confirmation_status, 'confirmation_status') as ConfirmationStatus,
     occurredAt: need(r.occurred_at, 'occurred_at'),
+    createdBy: r.created_by,
+    createdByName: r.created_by_name,
   };
 }
 
-export async function listSales(client: Client, filter: { since: string; customerId?: string }): Promise<SaleRow[]> {
+export async function listSales(
+  client: Client,
+  filter: { since: string; customerId?: string; createdBy?: string },
+): Promise<SaleRow[]> {
   let q = client
     .from('sale_list')
     .select(SALE_LIST_COLUMNS)
@@ -148,6 +158,7 @@ export async function listSales(client: Client, filter: { since: string; custome
     .order('occurred_at', { ascending: false })
     .limit(200);
   if (filter.customerId) q = q.eq('customer_id', filter.customerId);
+  if (filter.createdBy) q = q.eq('created_by', filter.createdBy);
   const { data, error } = await q;
   throwIfError(error);
   return (data ?? []).map(toSaleRow);

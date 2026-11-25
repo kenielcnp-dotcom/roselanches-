@@ -101,6 +101,16 @@ Saldo = vendas ativas + saldo anterior + ajustes de débito − pagamentos confi
 - Relatórios precisam de internet; sem conexão, a tela avisa em vez de mostrar números velhos.
 - Planilha (CSV com ";" e vírgula decimal, para Excel/Planilhas em português) das vendas filtradas, até 2.000 por vez. Textos que começam com "=", "+", "-" ou "@" são neutralizados para não virarem fórmula.
 
+## Equipe (vendedores)
+
+- Cada vendedor usa o próprio celular e a própria conta (e-mail e senha). Entra por um convite de uso único que a Rose gera na tela **Equipe** e manda pelo WhatsApp, link ou QR. O convite vale 3 dias; no máximo 5 em aberto.
+- O vendedor vende (mesma tela, mesmas regras, sem internet também), recebe pagamentos, cadastra clientes e vê o saldo deles. No início vê só os números dele (vendas e recebido hoje, com quanto foi em dinheiro); a lista de vendas e a de recebimentos mostram só o que ele registrou.
+- Só a Rose: cancelar venda, estornar, saldo anterior e ajustes, conferir aviso de Pix, resolver contestação, produtos, locais, configurações, relatórios e equipe. O vendedor que errou uma venda pede para a Rose cancelar.
+- Cada venda e cada pagamento guardam quem registrou ("Vendido por", "Recebido por"). Relatórios: aba **Equipe** (vendido, fiado, recebido em dinheiro e em Pix por pessoa), filtro e coluna "Vendedor" na lista de vendas e na planilha.
+- "Recebeu em dinheiro" inclui as vendas pagas na hora em dinheiro: é o dinheiro que ficou na mão do vendedor. O acerto com a Rose é feito fora do app.
+- Desativar um vendedor tira o acesso na hora e não apaga nada. Antes, peça para ele enviar as vendas que estão no celular. Reativar (ou um convite novo) devolve o acesso.
+- Conta de cliente não vira conta de vendedor, nem o contrário.
+
 ## Datas
 
 - `occurred_at` vem do relógio do celular; o servidor registra sempre o próprio `received_at`.

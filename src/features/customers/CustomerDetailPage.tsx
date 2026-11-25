@@ -68,15 +68,21 @@ export function CustomerDetailPage() {
             {places.length === 0 ? (
               <span className="text-brown-soft">Nenhum estabelecimento</span>
             ) : (
-              places.map((p) => (
-                <Link
-                  key={p.id}
-                  to={`/estabelecimentos/${p.id}`}
-                  className="rounded-full bg-peach px-3 py-1 text-sm font-bold text-brown active:bg-cream-deep"
-                >
-                  {p.name}
-                </Link>
-              ))
+              places.map((p) =>
+                isOwner ? (
+                  <Link
+                    key={p.id}
+                    to={`/estabelecimentos/${p.id}`}
+                    className="rounded-full bg-peach px-3 py-1 text-sm font-bold text-brown active:bg-cream-deep"
+                  >
+                    {p.name}
+                  </Link>
+                ) : (
+                  <span key={p.id} className="rounded-full bg-peach px-3 py-1 text-sm font-bold text-brown">
+                    {p.name}
+                  </span>
+                ),
+              )
             )}
           </div>
           {!c.isActive && <p className="font-bold text-danger">Cliente desativado</p>}

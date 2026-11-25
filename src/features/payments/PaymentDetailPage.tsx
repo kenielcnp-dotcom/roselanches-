@@ -68,6 +68,9 @@ export function PaymentDetailPage() {
             <Row label="Forma" value={METHOD_LABELS[view.method]} />
             <Row label="Recebido em" value={formatDateTime(new Date(view.receivedAt))} />
             <Row label="Origem" value={SOURCE_LABELS[view.source]} />
+            {p?.createdByName && (
+              <Row label="Recebido por" value={p.createdBy === identity?.userId ? 'Você' : p.createdByName} />
+            )}
             {view.note && <Row label="Observação" value={view.note} />}
             {op && <Row label="Envio" value={SYNC_LABELS[op.state]} />}
           </dl>

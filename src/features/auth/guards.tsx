@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router';
 import { Button } from '@/components/Button';
 import { ErrorState, LoadingState } from '@/components/States';
-import { afterAuthPath, pendingInvite } from '@/features/client-portal/pendingInvite';
+import { afterAuthPath, invitePath, pendingInvite } from '@/features/client-portal/pendingInvite';
 import { useAuth } from './AuthProvider';
 
 function FullScreen({ children }: { children: ReactNode }) {
@@ -51,7 +51,8 @@ export function RequireStaff({ children }: { children: ReactNode }) {
 function StaffOnly({ children }: { children: ReactNode }) {
   const { identity } = useAuth();
   if (identity?.staff) return <>{children}</>;
-  return <Navigate to={identity?.customer ? '/conta' : pendingInvite() ? '/convite' : '/sem-acesso'} replace />;
+  const invite = pendingInvite();
+  return <Navigate to={identity?.customer ? '/conta' : invite ? invitePath(invite.kind) : '/sem-acesso'} replace />;
 }
 
 /** Portal do cliente. */
@@ -66,7 +67,8 @@ export function RequireCustomer({ children }: { children: ReactNode }) {
 function CustomerOnly({ children }: { children: ReactNode }) {
   const { identity } = useAuth();
   if (identity?.customer) return <>{children}</>;
-  return <Navigate to={identity?.staff ? '/' : pendingInvite() ? '/convite' : '/sem-acesso'} replace />;
+  const invite = pendingInvite();
+  return <Navigate to={identity?.staff ? '/' : invite ? invitePath(invite.kind) : '/sem-acesso'} replace />;
 }
 
 /** Telas de login/cadastro: quem já entrou vai direto para a sua área. */

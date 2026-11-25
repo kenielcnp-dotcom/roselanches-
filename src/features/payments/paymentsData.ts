@@ -34,10 +34,14 @@ function useInvalidateMoney() {
     );
 }
 
-export function usePaymentsSince(days: number) {
+/** createdBy: só os recebimentos desta pessoa (vendedor). */
+export function usePaymentsSince(days: number, createdBy?: string) {
   const { db } = useSync();
   const since = new Date(startOfLocalDay(new Date()).getTime() - (days - 1) * 86_400_000).toISOString();
-  const server = useQuery({ queryKey: ['payments', 'since', since], queryFn: () => listPayments(supabase, { since }) });
+  const server = useQuery({
+    queryKey: ['payments', 'since', since, createdBy ?? 'all'],
+    queryFn: () => listPayments(supabase, createdBy ? { since, createdBy } : { since }),
+  });
   const local = useLiveQuery(async () => {
     const [rows, ops] = await Promise.all([db.localPayments.toArray(), db.outbox.toArray()]);
     const byId = new Map(ops.map((o) => [o.opId, o]));
@@ -81,8 +85,8 @@ export function usePayment(id: string) {
   return useQuery({ queryKey: ['payments', 'one', id], queryFn: async () => (await listPayments(supabase, { id }))[0] ?? null });
 }
 
-export function useNotices() {
-  return useQuery({ queryKey: ['notices'], queryFn: () => listPendingNotices(supabase), refetchInterval: 60_000 });
+export function useNotices(enabled = true) {
+  return useQuery({ queryKey: ['notices'], queryFn: () => listPendingNotices(supabase), refetchInterval: 60_000, enabled });
 }
 
 export function useConfirmNotice() {

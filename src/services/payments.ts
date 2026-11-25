@@ -80,16 +80,23 @@ export interface PaymentRow {
   note: string | null;
   status: 'CONFIRMED' | 'REVERSED';
   reverseReason: string | null;
+  /** Quem registrou o recebimento. */
+  createdBy?: string | null;
+  createdByName?: string | null;
 }
 
-export async function listPayments(client: Client, filter: { since?: string; id?: string }): Promise<PaymentRow[]> {
+export async function listPayments(
+  client: Client,
+  filter: { since?: string; id?: string; createdBy?: string },
+): Promise<PaymentRow[]> {
   let q = client
     .from('payment_list')
-    .select('id, customer_id, customer_name, amount_cents, method, source, received_at, note, status, reverse_reason')
+    .select('id, customer_id, customer_name, amount_cents, method, source, received_at, note, status, reverse_reason, created_by, created_by_name')
     .order('received_at', { ascending: false })
     .limit(200);
   if (filter.since) q = q.gte('received_at', filter.since);
   if (filter.id) q = q.eq('id', filter.id);
+  if (filter.createdBy) q = q.eq('created_by', filter.createdBy);
   const { data, error } = await q;
   throwIfError(error);
   return (data ?? []).map((r) => ({
@@ -103,6 +110,8 @@ export async function listPayments(client: Client, filter: { since?: string; id?
     note: r.note,
     status: need(r.status, 'status') as PaymentRow['status'],
     reverseReason: r.reverse_reason,
+    createdBy: r.created_by,
+    createdByName: r.created_by_name,
   }));
 }
 

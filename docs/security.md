@@ -13,7 +13,7 @@
 |---|---|---|
 | Deslogado (`anon`) | sem JWT | nada: nenhum privilégio em tabela, view ou função |
 | Dona (`OWNER`) | `business_members` ativo | lê tudo do próprio negócio; escreve cadastros direto (por coluna); escrita financeira só por RPC; lê auditoria; altera configurações |
-| Operador (`OPERATOR`) | `business_members` ativo | preparado para o futuro; não lê auditoria nem altera configurações |
+| Vendedor (`OPERATOR`) | `business_members` ativo, entrou por convite de uso único da dona | vende, recebe, cadastra cliente e vê saldos; NÃO cancela venda, estorna, lança saldo anterior/ajuste, confere aviso de Pix, altera produtos, locais ou configurações, vê relatórios, auditoria ou equipe. Desativado, perde o acesso na hora (o servidor recusa tudo, inclusive vendas que ainda estavam no celular dele) |
 | Cliente | `customers.auth_user_id = auth.uid()` | nenhuma tabela; só RPCs `portal_*`, sempre filtradas por `private.current_customer_id()` |
 
 Cada RPC descobre o negócio a partir de `auth.uid()` e nunca confia em `business_id` vindo do app. Uma pessoa pertence a no máximo um negócio ativo.

@@ -184,6 +184,8 @@ export interface ReportSaleRow {
   status: 'ACTIVE' | 'CANCELLED';
   cancelReason: string | null;
   confirmationStatus: ConfirmationStatus;
+  /** Quem registrou a venda. */
+  sellerName: string | null;
 }
 
 export interface ReportSalesPage {
@@ -195,7 +197,7 @@ export interface ReportSalesPage {
 
 export async function fetchReportSales(
   client: Client,
-  f: ReportFilters & { payment: PaymentFilter; confirmation: ConfirmationFilter },
+  f: ReportFilters & { payment: PaymentFilter; confirmation: ConfirmationFilter; sellerId?: string | null },
   limit: number,
   offset: number,
 ): Promise<ReportSalesPage> {
@@ -208,6 +210,7 @@ export async function fetchReportSales(
     p_confirmation: f.confirmation,
     p_limit: limit,
     p_offset: offset,
+    p_seller: f.sellerId ?? undefined,
   });
   throwIfError(error);
   const rows = data ?? [];
@@ -228,6 +231,7 @@ export async function fetchReportSales(
       status: r.status as 'ACTIVE' | 'CANCELLED',
       cancelReason: r.cancel_reason,
       confirmationStatus: r.confirmation_status as ConfirmationStatus,
+      sellerName: r.seller_name,
     })),
     totalCount: first?.total_count ?? 0,
     sumCents: first?.sum_cents ?? 0,

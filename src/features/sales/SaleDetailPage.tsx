@@ -43,7 +43,9 @@ export function SaleDetailPage() {
     serverItems ??
     local?.draft.items.map((i) => ({ productName: i.productName, quantity: i.quantity, unitPriceCents: i.unitPriceCents, subtotalCents: i.subtotalCents })) ??
     null;
-  const canCancel = sale.status === 'ACTIVE' && !sale.pendingCancel && sale.sync !== 'FAILED';
+  const cancellable = sale.status === 'ACTIVE' && !sale.pendingCancel && sale.sync !== 'FAILED';
+  // Só a dona cancela; o vendedor que errou pede para ela.
+  const canCancel = cancellable && isOwner;
 
   const confirmCancel = async () => {
     if (reason.trim().length < 3) return;
@@ -102,6 +104,12 @@ export function SaleDetailPage() {
               <dt className="text-brown-soft">Pagamento</dt>
               <dd className="font-bold text-brown">{paymentLabel(sale.paymentKind, sale.paidMethod)}</dd>
             </div>
+            {sale.createdByName && (
+              <div className="flex justify-between gap-3">
+                <dt className="text-brown-soft">Vendido por</dt>
+                <dd className="font-bold text-brown">{sale.createdBy === identity?.userId ? 'Você' : sale.createdByName}</dd>
+              </div>
+            )}
             <div className="flex justify-between gap-3">
               <dt className="text-brown-soft">Confirmação</dt>
               <dd className="font-bold text-brown">{CONFIRMATION_LABELS[sale.confirmationStatus]}</dd>
@@ -188,6 +196,11 @@ export function SaleDetailPage() {
               Cancelar esta venda
             </Button>
           ))}
+        {cancellable && !isOwner && (
+          <p className="rounded-2xl bg-white/80 px-4 py-3 text-center text-brown-soft ring-1 ring-line">
+            Errou alguma coisa nesta venda? Peça para a Rose cancelar.
+          </p>
+        )}
       </main>
     </>
   );

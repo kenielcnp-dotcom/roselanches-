@@ -13,12 +13,16 @@ import { formatDateTime, formatShortDate, formatTime, localDateISO } from '@/dom
 import { maskPhone } from '@/domain/phone';
 import { errorMessage } from '@/lib/supabase/errors';
 import type { PaymentNotice } from '@/services/payments';
+import { useAuth } from '@/features/auth/AuthProvider';
 import { useConfirmNotice, useNotices, usePaymentsSince, useRejectNotice } from './paymentsData';
 
 export function ReceivablesPage() {
   const [days, setDays] = useState(1);
-  const notices = useNotices();
-  const { server, payments } = usePaymentsSince(days);
+  const { identity } = useAuth();
+  const isOwner = identity?.staff?.role === 'OWNER';
+  // Aviso de Pix cai na conta da Rose: só ela confere. O vendedor vê o que ele recebeu.
+  const notices = useNotices(isOwner);
+  const { server, payments } = usePaymentsSince(days, isOwner ? undefined : identity?.userId);
   const confirmed = payments?.filter((p) => p.status === 'CONFIRMED') ?? [];
   const total = confirmed.reduce((sum, p) => sum + p.amountCents, 0);
   const today = localDateISO(new Date());
@@ -35,30 +39,34 @@ export function ReceivablesPage() {
           Registrar pagamento
         </Link>
 
-        <section aria-labelledby="avisos" className="space-y-2">
-          <h2 id="avisos" className="flex items-center gap-2 text-xl font-black text-brown">
-            <BellRing className="h-6 w-6 text-orange" aria-hidden="true" />
-            Avisos de Pix dos clientes
-          </h2>
-          <p className="text-sm text-brown-soft">O aviso do cliente não prova o pagamento. Confira no app do seu banco antes de confirmar.</p>
-          {notices.isPending ? (
-            <LoadingState />
-          ) : notices.isError ? (
-            <p className="rounded-2xl bg-white/70 px-4 py-3 text-brown-soft ring-1 ring-line">
-              Os avisos aparecem quando houver internet. ({errorMessage(notices.error)})
+        {isOwner && (
+          <section aria-labelledby="avisos" className="space-y-2">
+            <h2 id="avisos" className="flex items-center gap-2 text-xl font-black text-brown">
+              <BellRing className="h-6 w-6 text-orange" aria-hidden="true" />
+              Avisos de Pix dos clientes
+            </h2>
+            <p className="text-sm text-brown-soft">
+              O aviso do cliente não prova o pagamento. Confira no app do seu banco antes de confirmar.
             </p>
-          ) : notices.data.length === 0 ? (
-            <p className="rounded-2xl bg-white/70 px-4 py-3 text-brown-soft ring-1 ring-line">Nenhum aviso esperando você.</p>
-          ) : (
-            <ul className="space-y-3">
-              {notices.data.map((n) => (
-                <li key={n.id}>
-                  <NoticeCard notice={n} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+            {notices.isPending ? (
+              <LoadingState />
+            ) : notices.isError ? (
+              <p className="rounded-2xl bg-white/70 px-4 py-3 text-brown-soft ring-1 ring-line">
+                Os avisos aparecem quando houver internet. ({errorMessage(notices.error)})
+              </p>
+            ) : notices.data.length === 0 ? (
+              <p className="rounded-2xl bg-white/70 px-4 py-3 text-brown-soft ring-1 ring-line">Nenhum aviso esperando você.</p>
+            ) : (
+              <ul className="space-y-3">
+                {notices.data.map((n) => (
+                  <li key={n.id}>
+                    <NoticeCard notice={n} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
 
         <section aria-labelledby="pagamentos" className="space-y-2">
           <h2 id="pagamentos" className="flex items-center gap-2 text-xl font-black text-brown">
@@ -81,7 +89,10 @@ export function ReceivablesPage() {
           {!payments ? (
             <LoadingState />
           ) : payments.length === 0 && !server.isPending ? (
-            <EmptyState icon={<HandCoins className="h-10 w-10" />} title={days === 1 ? 'Nenhum pagamento hoje' : 'Nenhum pagamento nesses dias'} />
+            <EmptyState
+              icon={<HandCoins className="h-10 w-10" />}
+              title={days === 1 ? 'Nenhum pagamento hoje' : 'Nenhum pagamento nesses dias'}
+            />
           ) : (
             <>
               <p className="text-brown-soft">
@@ -105,8 +116,15 @@ export function ReceivablesPage() {
                           <span className="flex flex-wrap gap-1.5 text-xs font-bold">
                             <span className="rounded-full bg-cream-deep px-2 py-0.5 text-brown">
                               {METHOD_LABELS[p.method]}
-                              {p.source === 'SALE_PAID_NOW' ? ' · venda paga na hora' : p.source === 'PIX_NOTIFICATION' ? ' · aviso do cliente' : ''}
+                              {p.source === 'SALE_PAID_NOW'
+                                ? ' · venda paga na hora'
+                                : p.source === 'PIX_NOTIFICATION'
+                                  ? ' · aviso do cliente'
+                                  : ''}
                             </span>
+                            {isOwner && p.createdBy && p.createdBy !== identity?.userId && (
+                              <span className="rounded-full bg-peach px-2 py-0.5 text-orange-deep">por {p.createdByName ?? 'vendedor'}</span>
+                            )}
                             {reversed && <span className="rounded-full bg-danger/10 px-2 py-0.5 text-danger">Estornado</span>}
                             {p.sync === 'PENDING' && (
                               <span className="inline-flex items-center gap-1 rounded-full bg-cream-deep px-2 py-0.5 text-orange-deep">
@@ -166,7 +184,9 @@ function NoticeCard({ notice: n }: { notice: PaymentNotice }) {
           {n.note && <p className="mt-1 text-brown">"{n.note}"</p>}
           <p className="mt-1 text-sm text-brown-soft">Deve hoje: {formatBRL(Math.max(0, n.customerBalanceCents))}</p>
         </div>
-        <p className="tabular shrink-0 text-right text-2xl font-black text-brown">{n.amountCents ? formatBRL(n.amountCents) : 'Sem valor'}</p>
+        <p className="tabular shrink-0 text-right text-2xl font-black text-brown">
+          {n.amountCents ? formatBRL(n.amountCents) : 'Sem valor'}
+        </p>
       </div>
 
       {mode === 'idle' && (
@@ -180,7 +200,12 @@ function NoticeCard({ notice: n }: { notice: PaymentNotice }) {
 
       {mode === 'confirm' && (
         <div className="space-y-3">
-          <MoneyField label="Valor que chegou na sua conta" valueCents={amount} onChange={setAmount} hint="Confira no app do banco. Pode ser diferente do avisado." />
+          <MoneyField
+            label="Valor que chegou na sua conta"
+            valueCents={amount}
+            onChange={setAmount}
+            hint="Confira no app do banco. Pode ser diferente do avisado."
+          />
           <Button
             block
             loading={confirm.isPending}

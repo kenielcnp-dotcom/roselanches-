@@ -1,6 +1,7 @@
 // Cria dados de DESENVOLVIMENTO no Supabase LOCAL (nunca na nuvem):
 //   rose@teste.local    / SenhaForte123  → dona do "Lanches da Rose (teste)"
 //   cliente@teste.local / SenhaForte123  → conta do portal ligada a "Maria Silva"
+//   vendedor@teste.local / SenhaForte123 → vendedor (OPERATOR) do mesmo negócio
 // Pode rodar várias vezes: o que já existe é reaproveitado.
 //
 //   npm run db:seed-dev
@@ -44,6 +45,7 @@ async function one(query) {
 
 const roseId = await ensureUser('rose@teste.local', 'Rose');
 const clientUserId = await ensureUser('cliente@teste.local', 'Maria');
+const sellerId = await ensureUser('vendedor@teste.local', 'Zeca');
 
 let member = await one(db.from('business_members').select('business_id').eq('user_id', roseId).maybeSingle());
 if (!member) {
@@ -52,6 +54,11 @@ if (!member) {
   member = { business_id: business.id };
 }
 const businessId = member.business_id;
+
+const sellerMember = await one(db.from('business_members').select('id').eq('user_id', sellerId).maybeSingle());
+if (!sellerMember) {
+  await one(db.from('business_members').insert({ business_id: businessId, user_id: sellerId, role: 'OPERATOR' }));
+}
 
 async function ensure(table, match, values) {
   const existing = await one(db.from(table).select('id').match({ business_id: businessId, ...match }).maybeSingle());
@@ -105,3 +112,4 @@ if (!maria.auth_user_id) {
 console.log('Dados de desenvolvimento prontos:');
 console.log('  Rose (dona):     rose@teste.local    /', PASSWORD);
 console.log('  Cliente (Maria): cliente@teste.local /', PASSWORD);
+console.log('  Vendedor (Zeca): vendedor@teste.local /', PASSWORD);

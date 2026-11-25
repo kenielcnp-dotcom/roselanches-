@@ -15,6 +15,10 @@ export function NoAccessPage() {
         <p>
           <strong>Cliente:</strong> abra o link de convite que a Rose mandou para você.
         </p>
+        <p>
+          <strong>Vendedor:</strong> abra o link de convite da equipe que a Rose mandou. Se a Rose desativou o seu acesso,
+          fale com ela.
+        </p>
         <p className="text-sm text-brown-soft">
           Dona do negócio: a liberação é feita uma única vez por quem instalou o aplicativo.
         </p>

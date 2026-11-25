@@ -61,3 +61,8 @@ export function maskPhone(e164: string): string {
 export function whatsappLink(e164: string, message: string): string {
   return `https://wa.me/${e164.replace(/^\+/, '')}?text=${encodeURIComponent(message)}`;
 }
+
+/** WhatsApp sem destinatário: a pessoa escolhe para quem mandar. */
+export function whatsappShareLink(message: string): string {
+  return `https://wa.me/?text=${encodeURIComponent(message)}`;
+}

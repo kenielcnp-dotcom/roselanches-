@@ -11,10 +11,15 @@ import { errorMessage } from '@/lib/supabase/errors';
 import { SaleBadges } from './SaleBadges';
 import { useSalesSince } from './salesData';
 import { useSync } from '@/features/sync/SyncProvider';
+import { useAuth } from '@/features/auth/AuthProvider';
 
 export function SalesPage() {
   const [days, setDays] = useState(1);
-  const { server, sales } = useSalesSince(days);
+  const { identity } = useAuth();
+  const isOwner = identity?.staff?.role === 'OWNER';
+  const userId = identity?.userId;
+  // Vendedor vê as vendas que ele fez; a Rose vê todas, com o nome de quem vendeu.
+  const { server, sales } = useSalesSince(days, isOwner ? undefined : userId);
   const active = sales?.filter((s) => s.status === 'ACTIVE') ?? [];
   const total = active.reduce((sum, s) => sum + s.totalCents, 0);
   const today = localDateISO(new Date());
@@ -24,7 +29,7 @@ export function SalesPage() {
 
   return (
     <>
-      <PageHeader title="Vendas" back="/" showSync compactSync={false} />
+      <PageHeader title={isOwner ? 'Vendas' : 'Minhas vendas'} back="/" showSync compactSync={false} />
       <main className="mx-auto max-w-lg space-y-3 px-4 pt-2 pb-6">
         <Link
           to="/vender"
@@ -93,6 +98,9 @@ export function SalesPage() {
                         <span className="block truncate text-sm text-brown-soft">
                           {s.establishmentName} · {s.summary}
                         </span>
+                        {isOwner && s.createdBy && s.createdBy !== userId && (
+                          <span className="block truncate text-sm font-bold text-orange-deep">Vendido por {s.createdByName ?? 'vendedor'}</span>
+                        )}
                         <SaleBadges sale={s} />
                       </span>
                       <span className={`tabular shrink-0 font-black ${cancelled ? 'text-brown-soft line-through' : 'text-brown'}`}>

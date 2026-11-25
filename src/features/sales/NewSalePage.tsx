@@ -33,6 +33,7 @@ import { SignatureScreen, type CapturedSignature } from '@/features/signatures/S
 import { CustomerStep } from './CustomerStep';
 import { ItemsStep } from './ItemsStep';
 import { SummaryStep } from './SummaryStep';
+import { useIsOwner } from '@/features/auth/roles';
 
 type Step = 'establishment' | 'customer' | 'items' | 'summary';
 
@@ -101,6 +102,7 @@ interface FlowProps {
 }
 
 function SaleFlow({ establishments, customers, products, settings, onSaved, refreshCatalog, enqueue }: FlowProps) {
+  const isOwner = useIsOwner();
   const toast = useToast();
   const { status: connection } = useConnectionStatus();
   const [params] = useSearchParams();
@@ -168,9 +170,13 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
           {active.length === 0 ? (
             <p className="rounded-card bg-white p-5 text-brown ring-1 ring-line">
               Cadastre pelo menos um estabelecimento.{' '}
-              <Link to="/estabelecimentos/novo" className="font-extrabold text-orange-deep underline">
-                Cadastrar
-              </Link>
+              {isOwner ? (
+                <Link to="/estabelecimentos/novo" className="font-extrabold text-orange-deep underline">
+                  Cadastrar
+                </Link>
+              ) : (
+                'Peça para a Rose cadastrar.'
+              )}
             </p>
           ) : (
             active.map((e) => (
@@ -311,14 +317,23 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
       <main className="mx-auto max-w-lg space-y-4 px-4 pt-2 pb-44">
         {step !== 'customer' && customer && (
           <div className="flex items-center gap-3 rounded-2xl bg-white/90 px-4 py-2.5 ring-1 ring-line">
-            <button type="button" onClick={goBack} aria-label="Voltar uma etapa" className="-ml-2 flex h-11 w-11 items-center justify-center rounded-full active:bg-peach">
+            <button
+              type="button"
+              onClick={goBack}
+              aria-label="Voltar uma etapa"
+              className="-ml-2 flex h-11 w-11 items-center justify-center rounded-full active:bg-peach"
+            >
               <ArrowLeft className="h-6 w-6 text-brown" aria-hidden="true" />
             </button>
             <span className="min-w-0 flex-1">
               <span className="block truncate font-black text-brown">{customer.fullName}</span>
               <span className="text-sm text-brown-soft">{customer.phoneE164 ? maskPhone(customer.phoneE164) : 'Sem telefone'}</span>
             </span>
-            <button type="button" onClick={() => go('customer')} className="min-h-10 rounded-full px-2 text-sm font-extrabold text-orange-deep">
+            <button
+              type="button"
+              onClick={() => go('customer')}
+              className="min-h-10 rounded-full px-2 text-sm font-extrabold text-orange-deep"
+            >
               Trocar
             </button>
           </div>
@@ -326,7 +341,12 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
 
         {step === 'customer' && (
           <>
-            <CustomerStep establishment={establishment} customers={customers} onSelect={(c, link) => void selectCustomer(c, link)} canLink={connection === 'online'} />
+            <CustomerStep
+              establishment={establishment}
+              customers={customers}
+              onSelect={(c, link) => void selectCustomer(c, link)}
+              canLink={connection === 'online'}
+            />
             <Link to="/vendas" className="flex min-h-12 items-center justify-center gap-2 font-extrabold text-brown-soft">
               <ListChecks className="h-5 w-5" aria-hidden="true" />
               Ver vendas de hoje

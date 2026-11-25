@@ -15,6 +15,7 @@ import { errorMessage } from '@/lib/supabase/errors';
 import type { Customer } from '@/services/customers';
 import { useCurrentEstablishmentId } from '@/features/establishments/useCurrentEstablishment';
 import { useCustomers, useEstablishments, useSaveCustomer } from '@/features/registry/queries';
+import { useIsOwner } from '@/features/auth/roles';
 
 export function CustomerFormPage() {
   const { id } = useParams();
@@ -35,6 +36,7 @@ export function CustomerFormPage() {
 }
 
 function CustomerFormView({ existing, customers }: { existing: Customer | undefined; customers: Customer[] }) {
+  const isOwner = useIsOwner();
   const navigate = useNavigate();
   const toast = useToast();
   const save = useSaveCustomer();
@@ -65,11 +67,7 @@ function CustomerFormView({ existing, customers }: { existing: Customer | undefi
 
   const [fullName, phone] = useWatch({ control, name: ['fullName', 'phone'] });
   const duplicates = useMemo(
-    () =>
-      findPossibleDuplicates(
-        { id: existing?.id ?? null, fullName, phoneE164: phoneToE164(phone) },
-        customers,
-      ),
+    () => findPossibleDuplicates({ id: existing?.id ?? null, fullName, phoneE164: phoneToE164(phone) }, customers),
     [customers, existing?.id, fullName, phone],
   );
 
@@ -146,9 +144,13 @@ function CustomerFormView({ existing, customers }: { existing: Customer | undefi
                 {places.length === 0 ? (
                   <p className="text-brown-soft">
                     Nenhum estabelecimento cadastrado.{' '}
-                    <Link to="/estabelecimentos/novo" className="font-extrabold text-orange-deep underline">
-                      Cadastrar
-                    </Link>
+                    {isOwner ? (
+                      <Link to="/estabelecimentos/novo" className="font-extrabold text-orange-deep underline">
+                        Cadastrar
+                      </Link>
+                    ) : (
+                      'Peça para a Rose cadastrar.'
+                    )}
                   </p>
                 ) : (
                   <div className="flex flex-wrap gap-2">

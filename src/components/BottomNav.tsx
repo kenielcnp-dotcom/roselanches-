@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router';
-import { BarChart3, CirclePlus, House, Settings, Users, type LucideIcon } from 'lucide-react';
+import { BarChart3, CirclePlus, House, ReceiptText, Settings, Users, type LucideIcon } from 'lucide-react';
+import { useIsOwner } from '@/features/auth/roles';
 
 interface Tab {
   to: string;
@@ -8,22 +9,24 @@ interface Tab {
   end?: boolean;
 }
 
-const TABS: Tab[] = [
-  { to: '/', label: 'Início', icon: House, end: true },
-  { to: '/vender', label: 'Vender', icon: CirclePlus },
-  { to: '/clientes', label: 'Clientes', icon: Users },
-  { to: '/relatorios', label: 'Relatórios', icon: BarChart3 },
-  { to: '/config', label: 'Config.', icon: Settings },
-];
+const HOME: Tab = { to: '/', label: 'Início', icon: House, end: true };
+const SELL: Tab = { to: '/vender', label: 'Vender', icon: CirclePlus };
+const CUSTOMERS: Tab = { to: '/clientes', label: 'Clientes', icon: Users };
+const SETTINGS: Tab = { to: '/config', label: 'Config.', icon: Settings };
+
+// Vendedor: no lugar dos relatórios (só da dona), as vendas que ele fez.
+const OWNER_TABS: Tab[] = [HOME, SELL, CUSTOMERS, { to: '/relatorios', label: 'Relatórios', icon: BarChart3 }, SETTINGS];
+const SELLER_TABS: Tab[] = [HOME, SELL, CUSTOMERS, { to: '/vendas', label: 'Vendas', icon: ReceiptText }, SETTINGS];
 
 export function BottomNav() {
+  const tabs = useIsOwner() ? OWNER_TABS : SELLER_TABS;
   return (
     <nav
       aria-label="Navegação principal"
       className="safe-bottom fixed inset-x-0 bottom-0 z-30 rounded-t-3xl bg-brown-nav shadow-[0_-6px_20px_-8px_rgb(84_39_19/0.5)]"
     >
       <ul className="mx-auto grid max-w-lg grid-cols-5 gap-1 px-2 pt-2 pb-2">
-        {TABS.map(({ to, label, icon: Icon, end }) => (
+        {tabs.map(({ to, label, icon: Icon, end }) => (
           <li key={to}>
             <NavLink
               to={to}

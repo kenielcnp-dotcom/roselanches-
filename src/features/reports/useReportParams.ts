@@ -5,10 +5,10 @@ import { useSearchParams } from 'react-router';
 import { presetRange, rangeProblem, type DateRange, type PeriodPreset } from '@/domain/report-period';
 import type { ConfirmationFilter, PaymentFilter, ReportFilters } from '@/services/reports';
 
-export type ReportTab = 'resumo' | 'locais' | 'vendas';
+export type ReportTab = 'resumo' | 'locais' | 'vendas' | 'equipe';
 
 const PRESETS: PeriodPreset[] = ['TODAY', 'WEEK', 'MONTH', 'LAST_MONTH', 'CUSTOM'];
-const TABS: ReportTab[] = ['resumo', 'locais', 'vendas'];
+const TABS: ReportTab[] = ['resumo', 'locais', 'vendas', 'equipe'];
 const PAYMENTS: PaymentFilter[] = ['ALL', 'OPEN', 'PARTIAL', 'SETTLED', 'PAID_NOW', 'CANCELLED'];
 const CONFIRMATIONS: ConfirmationFilter[] = ['ALL', 'PENDING', 'SIGNED', 'CONFIRMED_ONLINE', 'DISPUTED'];
 
@@ -25,6 +25,7 @@ export function useReportParams() {
   const custom: DateRange = { from: params.get('de') ?? '', to: params.get('ate') ?? '' };
   const establishmentId = params.get('local');
   const customerId = params.get('cliente');
+  const sellerId = params.get('vendedor');
 
   const range = useMemo<DateRange>(
     () => (preset === 'CUSTOM' ? custom : presetRange(preset)),
@@ -54,5 +55,5 @@ export function useReportParams() {
     [setParams],
   );
 
-  return { preset, tab, payment, confirmation, range, problem, filters, update };
+  return { preset, tab, payment, confirmation, sellerId, range, problem, filters, update };
 }
