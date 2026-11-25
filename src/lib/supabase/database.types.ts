@@ -915,6 +915,17 @@ isOneToOne: false
 "reject_payment_notification":
 { Args: { "p_notification_id": string,"p_reason": string }; Returns: Json
                            },
+"report_establishments":
+{ Args: { "p_from": string,"p_to": string }; Returns: Json
+                           },
+"report_sales":
+{ Args: { "p_confirmation"?: string,"p_customer"?: string,"p_establishment"?: string,"p_from": string,"p_limit"?: number,"p_offset"?: number,"p_payment"?: string,"p_to": string }; Returns: {
+              "cancel_reason": string,"confirmation_status": string,"customer_id": string,"customer_name": string,"establishment_name": string,"occurred_at": string,"open_cents": number,"paid_method": string,"payment_kind": string,"period": string,"sale_id": string,"status": string,"sum_cents": number,"sum_open_cents": number,"summary": string,"total_cents": number,"total_count": number
+            }[]
+                           },
+"report_summary":
+{ Args: { "p_customer"?: string,"p_establishment"?: string,"p_from": string,"p_to": string }; Returns: Json
+                           },
 "resolve_sale_dispute":
 { Args: { "p_note": string,"p_sale": string }; Returns: undefined
                            },

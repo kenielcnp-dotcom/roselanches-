@@ -74,6 +74,7 @@ const LDR_MESSAGES: Record<string, string> = {
   LDR_INVALID_AMOUNT: 'Valor inválido.',
   LDR_INVALID_NOTE: 'O recado pode ter até 200 caracteres.',
   LDR_TOO_MANY_NOTICES: 'Você já tem 5 avisos esperando a Rose conferir. Aguarde ela responder.',
+  LDR_INVALID_RANGE: 'Período inválido: a data inicial vem antes da final, e no máximo um ano.',
   LDR_NO_OPEN_DISPUTE: 'Esta compra não tem contestação em aberto.',
 };
 

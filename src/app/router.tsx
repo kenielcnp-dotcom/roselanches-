@@ -5,8 +5,8 @@ import { SignupPage } from '@/features/auth/SignupPage';
 import { NoAccessPage } from '@/features/auth/NoAccessPage';
 import { PublicOnly, RequireAuth, RequireCustomer, RequireStaff } from '@/features/auth/guards';
 import { HomePage } from '@/features/dashboard/HomePage';
-import { ComingSoonPage } from '@/features/shared/ComingSoonPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
+import { ReportsPage } from '@/features/reports/ReportsPage';
 import { DisputesPage } from '@/features/client-portal/DisputesPage';
 import { InvitePage } from '@/features/client-portal/InvitePage';
 import { PortalHomePage } from '@/features/client-portal/PortalHomePage';
@@ -76,7 +76,7 @@ export const router = createBrowserRouter([
       { path: 'clientes/:id/saldo-anterior', element: <EntryFormPage kind="OPENING_BALANCE" /> },
       { path: 'clientes/:id/ajuste', element: <EntryFormPage kind="ADJUSTMENT" /> },
       { path: 'clientes/:id/lancamentos/:entryId', element: <EntryDetailPage /> },
-      { path: 'relatorios', element: <ComingSoonPage title="Relatórios" /> },
+      { path: 'relatorios', element: <ReportsPage /> },
       { path: 'produtos', element: <ProductsPage /> },
       { path: 'produtos/novo', element: <ProductFormPage /> },
       { path: 'produtos/:id/editar', element: <ProductFormPage /> },

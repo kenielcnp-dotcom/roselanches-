@@ -146,7 +146,11 @@ export const MoneyField = forwardRef<HTMLInputElement, MoneyFieldProps>(function
         onChange={(e) => onChange(centsFromDigits(e.target.value))}
         onFocus={(e) => {
           const el = e.currentTarget;
-          requestAnimationFrame(() => el.setSelectionRange(el.value.length, el.value.length));
+          // Cursor no fim (máscara de maquininha), mas sem desfazer uma seleção:
+          // quem selecionou tudo para trocar o valor substitui, não acrescenta.
+          requestAnimationFrame(() => {
+            if (el.selectionStart === el.selectionEnd) el.setSelectionRange(el.value.length, el.value.length);
+          });
         }}
         className={`tabular block min-h-14 w-full rounded-2xl border-2 bg-white px-4 text-2xl font-extrabold text-brown focus:border-orange-deep focus:outline-none ${
           error ? 'border-danger' : 'border-line'

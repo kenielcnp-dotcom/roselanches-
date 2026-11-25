@@ -88,6 +88,19 @@ Saldo = vendas ativas + saldo anterior + ajustes de débito − pagamentos confi
 - O estabelecimento atual fica lembrado no aparelho, por conta, e já vem marcado ao cadastrar um cliente.
 - "Quanto os clientes deste lugar devem, no total" soma o saldo inteiro dos clientes vinculados (inclui compras em outros lugares). Vendas e dívidas originadas em cada lugar entram nos relatórios.
 
+## Relatórios
+
+- Período: hoje, semana (segunda até hoje), mês (dia 1 até hoje), mês passado ou datas escolhidas (até um ano), sempre no fuso do negócio. Filtros por local e por cliente; a lista de vendas filtra também por situação do pagamento (em aberto, paga em parte, quitada, paga na hora, cancelada) e por confirmação.
+- **Por local, três números separados, que não se somam entre si:**
+  - **Vendido aqui:** vendas feitas no local, no período.
+  - **Dívida que nasceu aqui:** quanto falta receber hoje de compras feitas no local. Os pagamentos quitam primeiro as dívidas mais antigas, de qualquer local (FIFO derivado).
+  - **Saldo dos clientes daqui:** quanto os clientes vinculados devem hoje no total, incluindo compras em outros locais. O mesmo cliente aparece em todos os locais a que pertence, por isso este número não se soma entre locais.
+  - A dívida originada de todos os locais + a dívida sem local (saldo anterior e ajustes) = total em aberto. Os testes conferem essa conta.
+- "Recebido" conta os pagamentos de fiado (dinheiro e Pix); a venda paga na hora aparece em "Pago na hora". Pagamento não tem local: com filtro de local, o recebido não se aplica.
+- "Em aberto agora" e a idade da dívida (até 7, 8 a 30, 31 a 60, mais de 60 dias) não dependem do período escolhido.
+- Relatórios precisam de internet; sem conexão, a tela avisa em vez de mostrar números velhos.
+- Planilha (CSV com ";" e vírgula decimal, para Excel/Planilhas em português) das vendas filtradas, até 2.000 por vez. Textos que começam com "=", "+", "-" ou "@" são neutralizados para não virarem fórmula.
+
 ## Datas
 
 - `occurred_at` vem do relógio do celular; o servidor registra sempre o próprio `received_at`.
