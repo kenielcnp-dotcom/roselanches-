@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { ChevronRight, Package, Plus, TrendingUp } from 'lucide-react';
+import { CachedNotice } from '@/components/CachedNotice';
 import { SearchField } from '@/components/Controls';
 import { PageHeader } from '@/components/PageHeader';
 import { EmptyState, ErrorState, LoadingState } from '@/components/States';
@@ -53,6 +54,7 @@ export function ProductsPage() {
           <Plus className="h-6 w-6" strokeWidth={3} aria-hidden="true" />
           Novo produto
         </Link>
+        <CachedNotice data={query.data} />
         {(query.data?.length ?? 0) > 0 && <SearchField label="Buscar produto" value={search} onChange={setSearch} />}
 
         {query.isPending ? (

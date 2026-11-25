@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { CheckCircle2, ChevronRight, Plus, Store } from 'lucide-react';
+import { CachedNotice } from '@/components/CachedNotice';
 import { SearchField } from '@/components/Controls';
 import { PageHeader } from '@/components/PageHeader';
 import { EmptyState, ErrorState, LoadingState } from '@/components/States';
@@ -31,6 +32,7 @@ export function EstablishmentsPage() {
     <>
       <PageHeader title="Estabelecimentos" back="/" />
       <main className="mx-auto max-w-lg space-y-4 px-4 pt-2 pb-6">
+        <CachedNotice data={query.data} />
         <p className="text-brown-soft">Toque no lugar onde você está vendendo agora.</p>
         <Link
           to="/estabelecimentos/novo"

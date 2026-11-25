@@ -4,6 +4,7 @@ import { defineConfig } from '@playwright/test';
 // navegadores). Pré-requisitos: npm run db:start e npm run db:seed-dev.
 // O servidor de desenvolvimento sobe sozinho se ainda não estiver rodando.
 const BASE_URL = process.env.E2E_URL ?? 'http://localhost:5173';
+const PREVIEW_URL = 'http://localhost:4173';
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -24,10 +25,20 @@ export default defineConfig({
     hasTouch: true,
     trace: 'retain-on-failure',
   },
-  webServer: {
-    command: 'npm run dev -- --port 5173 --strictPort',
-    url: BASE_URL,
-    reuseExistingServer: true,
-    timeout: 60_000,
-  },
+  webServer: [
+    {
+      command: 'npm run dev -- --port 5173 --strictPort',
+      url: BASE_URL,
+      reuseExistingServer: true,
+      timeout: 60_000,
+    },
+    // App de PRODUÇÃO (service worker ativo) apontando para o Supabase local:
+    // usado pelos testes de abrir o app sem internet.
+    {
+      command: 'npm run build:e2e && npm run preview:e2e',
+      url: PREVIEW_URL,
+      reuseExistingServer: true,
+      timeout: 180_000,
+    },
+  ],
 });

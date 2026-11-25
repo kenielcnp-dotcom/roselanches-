@@ -51,7 +51,8 @@ Cada RPC descobre o negócio a partir de `auth.uid()` e nunca confia em `busines
 ## Dados no aparelho
 
 - Nada de senhas ou tokens privilegiados. A sessão do Supabase Auth fica no `localStorage` (padrão do supabase-js).
-- Só dados mínimos para vender offline. Tudo é apagado ao sair da conta. O celular não é backup.
+- Só dados mínimos para vender offline (observação do cliente encurtada). Tudo é apagado ao sair da conta, e sair é bloqueado enquanto houver registros não enviados. O celular não é backup.
+- Sem internet, a sessão vencida guardada no aparelho só serve para abrir a área da Rose e gravar no celular; nada chega ao servidor sem renovar o login.
 
 ## LGPD
 

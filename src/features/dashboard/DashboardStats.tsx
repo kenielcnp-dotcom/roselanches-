@@ -3,12 +3,16 @@ import { ReceiptText, RefreshCw, Users } from 'lucide-react';
 import { formatBRL } from '@/domain/money';
 import { formatTime } from '@/domain/period';
 import { errorMessage } from '@/lib/supabase/errors';
+import { cachedAt } from '@/lib/offline/fallback';
 import { useDashboard } from '@/features/registry/queries';
+import { useOptionalSync } from '@/features/sync/SyncProvider';
 import { CoinsArt } from './CoinsArt';
 
 /** Total a receber, vendas de hoje e clientes com saldo, sempre vindos do banco. */
 export function DashboardStats() {
   const query = useDashboard();
+  const sync = useOptionalSync();
+  const onPhone = sync ? sync.counts.pendingSales - sync.counts.failed : 0;
 
   if (query.isPending) {
     return (
@@ -41,7 +45,7 @@ export function DashboardStats() {
 
   const d = query.data;
   // Sem internet, os números da última leitura continuam na tela, com a hora.
-  const stale = query.isError;
+  const stale = query.isError || cachedAt(d) !== null;
 
   return (
     <div className="space-y-3">
@@ -54,6 +58,11 @@ export function DashboardStats() {
         <p className="mt-2 text-sm font-semibold text-white/90">
           {stale ? `Sem internet · números de ${formatTime(d.asOf)}` : `Atualizado às ${formatTime(d.asOf)}`}
         </p>
+        {onPhone > 0 && (
+          <p className="mt-1 text-sm font-bold text-white">
+            + {onPhone === 1 ? '1 venda' : `${onPhone} vendas`} no celular, ainda fora destes números
+          </p>
+        )}
         <CoinsArt className="pointer-events-none absolute -right-2 -bottom-3 h-28 w-28 opacity-90" />
       </Link>
       <div className="grid grid-cols-2 gap-3">

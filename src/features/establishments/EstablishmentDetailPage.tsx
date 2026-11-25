@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { CheckCircle2, MapPin, Pencil, Plus, Store, UserMinus, UserPlus, Users } from 'lucide-react';
 import { Button } from '@/components/Button';
+import { CachedNotice } from '@/components/CachedNotice';
 import { SearchField } from '@/components/Controls';
 import { PageHeader } from '@/components/PageHeader';
 import { EmptyState, ErrorState, LoadingState } from '@/components/States';
@@ -48,6 +49,7 @@ export function EstablishmentDetailPage() {
     <>
       <PageHeader title={establishment.name} back="/estabelecimentos" />
       <main className="mx-auto max-w-lg space-y-4 px-4 pt-2 pb-6">
+        <CachedNotice data={customers.data} />
         <section className="rounded-card bg-white p-5 shadow-soft ring-1 ring-line">
           <div className="flex items-start gap-3">
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-peach text-orange-deep">

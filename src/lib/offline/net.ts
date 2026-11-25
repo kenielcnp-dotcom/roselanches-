@@ -20,3 +20,28 @@ export async function probeServer(
     return false;
   }
 }
+
+/**
+ * O navegador dizer "sem rede" é confiável (o contrário é que não é). Usado para
+ * não esperar à toa: sem rede, vai direto para os dados do celular.
+ */
+export function browserSaysOffline(): boolean {
+  return typeof navigator !== 'undefined' && navigator.onLine === false;
+}
+
+/** Falha como erro de rede se a resposta demorar demais (internet ruim). */
+export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const id = setTimeout(() => reject(new TypeError('Failed to fetch (tempo esgotado)')), ms);
+    promise.then(
+      (v) => {
+        clearTimeout(id);
+        resolve(v);
+      },
+      (e: unknown) => {
+        clearTimeout(id);
+        reject(e);
+      },
+    );
+  });
+}

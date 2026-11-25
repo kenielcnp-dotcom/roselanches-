@@ -27,32 +27,9 @@ export async function refreshCatalog(db: LocalDb, client: Client, businessId: st
 
   await db.transaction('rw', [db.establishments, db.customers, db.products, db.meta], async () => {
     await Promise.all([db.establishments.clear(), db.customers.clear(), db.products.clear()]);
-    await db.establishments.bulkPut(
-      establishments.map((e) => ({ id: e.id, name: e.name, nickname: e.nickname, isActive: e.isActive, customerCount: e.customerCount })),
-    );
-    await db.customers.bulkPut(
-      customers.map((c) => ({
-        id: c.id,
-        fullName: c.fullName,
-        phoneE164: c.phoneE164,
-        // Só o começo da observação: basta para diferenciar homônimos.
-        notes: c.notes ? c.notes.slice(0, 60) : null,
-        isActive: c.isActive,
-        establishmentIds: c.establishmentIds,
-        balanceCents: c.balanceCents,
-        lastSaleAt: c.lastSaleAt,
-      })),
-    );
-    await db.products.bulkPut(
-      products.map((p) => ({
-        id: p.id,
-        name: p.name,
-        priceCents: p.priceCents,
-        category: p.category,
-        isActive: p.isActive,
-        units90d: p.units90d,
-      })),
-    );
+    await db.establishments.bulkPut(establishments);
+    await db.customers.bulkPut(customers.map((c) => ({ ...c, notes: c.notes ? c.notes.slice(0, 60) : null })));
+    await db.products.bulkPut(products);
     await setMeta(db, SETTINGS_KEY, cachedSettings);
     await setMeta(db, CATALOG_UPDATED_AT, now);
   });

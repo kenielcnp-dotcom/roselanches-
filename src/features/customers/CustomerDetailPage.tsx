@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router';
 import { MessageCircle, Pencil, Plus, Store, UserRound } from 'lucide-react';
+import { CachedNotice } from '@/components/CachedNotice';
 import { PageHeader } from '@/components/PageHeader';
 import { ErrorState, LoadingState } from '@/components/States';
 import { formatBRL } from '@/domain/money';
@@ -7,6 +8,8 @@ import { formatDate } from '@/domain/period';
 import { formatPhone, whatsappLink } from '@/domain/phone';
 import { errorMessage } from '@/lib/supabase/errors';
 import { useCustomers, useEstablishments } from '@/features/registry/queries';
+import { useSync } from '@/features/sync/SyncProvider';
+import { useLiveQuery } from '@/lib/offline/useLiveQuery';
 import { CustomerStatement } from './CustomerStatement';
 
 export function CustomerDetailPage() {
@@ -32,6 +35,7 @@ export function CustomerDetailPage() {
     <>
       <PageHeader title={c.fullName} back="/clientes" />
       <main className="mx-auto max-w-lg space-y-4 px-4 pt-2 pb-6">
+        <CachedNotice data={customers.data} />
         <section
           className={`rounded-card p-5 text-white shadow-warm ${
             c.balanceCents > 0 ? 'bg-linear-to-br from-orange-deep to-brown' : 'bg-linear-to-br from-success to-[#1a6437]'
@@ -39,6 +43,7 @@ export function CustomerDetailPage() {
         >
           <p className="font-bold text-white/90">{c.balanceCents > 0 ? 'Saldo devedor' : c.balanceCents < 0 ? 'Crédito do cliente' : 'Saldo'}</p>
           <p className="tabular text-4xl font-black">{formatBRL(Math.abs(c.balanceCents))}</p>
+          <LocalPendingLine customerId={c.id} />
           <p className="mt-1 text-sm text-white/90">
             {c.lastSaleAt ? `Última compra: ${formatDate(new Date(c.lastSaleAt))}` : 'Nenhuma compra registrada'}
             {c.lastPaymentAt ? ` · Último pagamento: ${formatDate(new Date(c.lastPaymentAt))}` : ''}
@@ -112,4 +117,18 @@ export function CustomerDetailPage() {
       </main>
     </>
   );
+}
+
+/** Vendas fiadas deste cliente que estão no celular e ainda não entram no saldo do servidor. */
+function LocalPendingLine({ customerId }: { customerId: string }) {
+  const { db } = useSync();
+  const pending = useLiveQuery(async () => {
+    const [sales, ops] = await Promise.all([db.localSales.toArray(), db.outbox.toArray()]);
+    const open = new Set(ops.filter((o) => o.type === 'CREATE_SALE' && o.state !== 'SYNCED').map((o) => o.opId));
+    return sales
+      .filter((s) => s.draft.customerId === customerId && s.draft.paymentKind === 'CREDIT' && open.has(s.opId) && !s.cancel)
+      .reduce((sum, s) => sum + s.draft.totalCents, 0);
+  }, [db, customerId]);
+  if (!pending) return null;
+  return <p className="mt-1 text-sm font-bold text-white">+ {formatBRL(pending)} em vendas no celular, ainda não enviadas</p>;
 }

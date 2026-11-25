@@ -25,7 +25,11 @@ export function RequireAuth({ children }: { children: ReactNode }) {
     return (
       <FullScreen>
         <ErrorState message={error ?? 'Não foi possível carregar sua conta.'} onRetry={() => void refreshIdentity()} />
-        <Button variant="ghost" className="mt-4" onClick={() => void signOut()}>
+        <Button variant="ghost" className="mt-4" onClick={async () => {
+            if ((await signOut()) === 'pending') {
+              window.alert('Há vendas neste celular que ainda não chegaram ao servidor. Conecte à internet e envie antes de sair.');
+            }
+          }}>
           Sair da conta
         </Button>
       </FullScreen>

@@ -8,7 +8,9 @@ import { router } from './router';
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { retry: 1, staleTime: 30_000, refetchOnWindowFocus: true },
+    // networkMode 'always': sem internet a consulta roda mesmo assim e cai na
+    // cópia do celular (o navegador dizer "offline" não é a palavra final).
+    queries: { retry: 1, staleTime: 30_000, refetchOnWindowFocus: true, networkMode: 'always' },
     // Escritas nunca "esperam a internet" escondidas: ou vão para a fila do
     // celular (vendas) ou falham na hora com mensagem clara.
     mutations: { retry: false, networkMode: 'always' },

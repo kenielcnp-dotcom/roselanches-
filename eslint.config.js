@@ -3,7 +3,7 @@ import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default tseslint.config(
-  { ignores: ['dist', 'dev-dist', 'node_modules', 'supabase/functions', 'src/lib/supabase/database.types.ts', 'test-results'] },
+  { ignores: ['dist', 'dist-e2e', 'dev-dist', 'node_modules', 'supabase/functions', 'src/lib/supabase/database.types.ts', 'test-results'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

@@ -7,36 +7,15 @@
 //
 // Nada de senha, token ou dado financeiro além do necessário para vender.
 import Dexie, { type Table } from 'dexie';
+import type { Customer } from '@/services/customers';
+import type { Establishment } from '@/services/establishments';
+import type { Product } from '@/services/products';
 import type { OutboxOp, Period, SaleDraft } from '@/types/domain';
 
-export interface CachedEstablishment {
-  id: string;
-  name: string;
-  nickname: string | null;
-  isActive: boolean;
-  customerCount: number;
-}
-
-export interface CachedCustomer {
-  id: string;
-  fullName: string;
-  phoneE164: string | null;
-  /** Observação curta da Rose, para diferenciar homônimos. */
-  notes: string | null;
-  isActive: boolean;
-  establishmentIds: string[];
-  balanceCents: number;
-  lastSaleAt: string | null;
-}
-
-export interface CachedProduct {
-  id: string;
-  name: string;
-  priceCents: number;
-  category: string | null;
-  isActive: boolean;
-  units90d: number;
-}
+/** Mesmos modelos das telas; no cliente, a observação vai só no começo (basta para diferenciar homônimos). */
+export type CachedEstablishment = Establishment;
+export type CachedCustomer = Customer;
+export type CachedProduct = Product;
 
 export interface CachedSettings {
   saleMaxCents: number;

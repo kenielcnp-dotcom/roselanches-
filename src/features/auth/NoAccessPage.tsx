@@ -23,7 +23,11 @@ export function NoAccessPage() {
         <Button block variant="secondary" onClick={() => void refreshIdentity()}>
           Verificar de novo
         </Button>
-        <Button block variant="ghost" onClick={() => void signOut()}>
+        <Button block variant="ghost" onClick={async () => {
+            if ((await signOut()) === 'pending') {
+              window.alert('Há vendas neste celular que ainda não chegaram ao servidor. Conecte à internet e envie antes de sair.');
+            }
+          }}>
           Sair da conta
         </Button>
       </div>

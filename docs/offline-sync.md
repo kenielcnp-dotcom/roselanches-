@@ -1,6 +1,17 @@
 # Offline e sincronização
 
-> Situação (Fase 3): banco local, fila, motor de sincronização, retomada após fechar o app, espera crescente entre tentativas, pausa por sessão expirada, Web Lock, envio manual ("Enviar agora") e venda sem internet estão implementados e testados (`tests/unit/sync-engine.test.ts` e `tests/e2e/fase3-vendas.spec.ts`). Ficam para a Fase 5: service worker testado sem internet ao recarregar, guarda ao sair da conta, aviso quando o navegador negar armazenamento persistente e saldos do celular nas telas de clientes.
+> Situação (Fase 3): banco local, fila, motor de sincronização, retomada após fechar o app, espera crescente entre tentativas, pausa por sessão expirada, Web Lock, envio manual ("Enviar agora") e venda sem internet estão implementados e testados (`tests/unit/sync-engine.test.ts` e `tests/e2e/fase3-vendas.spec.ts`). Fase 5 (concluída): o app abre sem internet a partir do service worker, inclusive com o login vencido; telas de consulta caem na cópia do celular com a hora indicada; sair da conta é bloqueado com operações pendentes e apaga os dados do aparelho; aviso quando o navegador não garante o armazenamento. Testado com o build de PRODUÇÃO (`tests/e2e/fase5-offline.spec.ts`). Falta só o teste manual num Android real (ver abaixo).
+
+## Abrir o app sem internet
+
+- **Casco:** o service worker (vite-plugin-pwa, `generateSW`) guarda HTML, JS, CSS, ícones e fontes latinas; qualquer rota interna cai no `index.html` guardado.
+- **Login vencido sem internet:** o supabase-js tenta renovar por até 30 s antes de desistir. O `AuthProvider` não espera: sem rede (ou após 4 s), usa a sessão guardada no aparelho (`localStorage`, chave `ldr-auth`). Só uma saída pedida (`SIGNED_OUT`) ou a recusa do servidor desloga. A identidade vem do aparelho e a renovação continua sozinha quando a conexão volta.
+- **Telas de consulta** (painel, clientes, detalhe do cliente, estabelecimentos, produtos): servidor primeiro, com limite de 8 s; sem rede, a cópia do celular, com o aviso "Mostrando os dados guardados no celular em dd/mm às hh:mm" (`src/lib/offline/fallback.ts`). O detalhe do cliente soma "+ R$ X em vendas no celular, ainda não enviadas". O extrato completo só aparece com internet.
+- **Consultas sempre rodam** (`networkMode: 'always'`): o TanStack Query não fica "pausado" esperando o navegador dizer que voltou a rede.
+
+## Sair da conta
+
+Com qualquer operação ainda não enviada, "Sair da conta" é recusado e oferece "Enviar agora e sair". Ao sair: apaga o banco do celular (`ldr-<userId>`), as preferências do app (`ldr.*`) e a identidade guardada.
 
 Código: `src/lib/offline/` (`db.ts`, `outbox.ts`, `sync-engine.ts`, `catalog.ts`) e `src/features/sync/SyncProvider.tsx`.
 
@@ -82,5 +93,14 @@ No celular: a venda, a assinatura (PNG + sha256 + hash do resumo canônico, com 
 Falha entre upload e registro se resolve repetindo a operação, sem duplicar arquivo nem confirmação.
 
 ## Teste em aparelho real
+
+Checklist (Android, com o app publicado e instalado na tela inicial):
+
+1. Com internet: entrar, escolher o estabelecimento, abrir Vender, Clientes e Produtos uma vez.
+2. Modo avião. Fechar o app (tirar da lista de recentes) e abrir de novo: deve abrir na área da Rose, com "Sem internet".
+3. Registrar 2 vendas (uma com assinatura). A pílula mostra "2 vendas e 1 assinatura".
+4. Reiniciar o celular. Abrir o app, ainda sem internet: as vendas continuam em Vendas, "No celular".
+5. Tentar sair da conta: deve bloquear.
+6. Tirar do modo avião: em até 30 s aparece "Venda sincronizada". Conferir no painel do Supabase uma venda para cada registro, sem duplicatas.
 
 Antes do lançamento: Android real, desligar a internet, registrar vendas com e sem assinatura, fechar o navegador, reiniciar o celular, religar a internet e conferir uma única venda no banco para cada registro.

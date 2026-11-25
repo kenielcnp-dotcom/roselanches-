@@ -8,7 +8,7 @@ import { formatBRL } from '@/domain/money';
 import { formatDate, formatDateTime, PERIOD_LABELS } from '@/domain/period';
 import { useLiveQuery } from '@/lib/offline/useLiveQuery';
 import { supabase } from '@/lib/supabase/client';
-import { errorMessage } from '@/lib/supabase/errors';
+import { errorMessage, toAppError } from '@/lib/supabase/errors';
 import { fetchStatement, type StatementEntry } from '@/services/sales';
 import { useSync } from '@/features/sync/SyncProvider';
 
@@ -64,7 +64,13 @@ export function CustomerStatement({ customerId }: { customerId: string }) {
       {query.isPending ? (
         <LoadingState />
       ) : query.isError ? (
-        <ErrorState message={errorMessage(query.error)} onRetry={() => void query.refetch()} />
+        toAppError(query.error).kind === 'network' ? (
+          <p className="rounded-card bg-white/70 px-5 py-6 text-center text-brown-soft ring-1 ring-line">
+            Sem internet: o extrato completo aparece quando a conexão voltar.
+          </p>
+        ) : (
+          <ErrorState message={errorMessage(query.error)} onRetry={() => void query.refetch()} />
+        )
       ) : entries.length === 0 ? (
         <p className="rounded-card bg-white/70 px-5 py-6 text-center text-brown-soft ring-1 ring-line">Nenhum lançamento ainda.</p>
       ) : (

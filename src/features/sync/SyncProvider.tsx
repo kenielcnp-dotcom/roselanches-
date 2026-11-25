@@ -1,10 +1,11 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useConnectionStatus } from '@/app/ConnectionProvider';
 import { useToast } from '@/components/Toast';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { refreshCatalog, CATALOG_UPDATED_AT } from '@/lib/offline/catalog';
 import { getLocalDb, getMeta, type LocalDb } from '@/lib/offline/db';
+import { setActiveLocalDb } from '@/lib/offline/fallback';
 import { countOutbox, pruneSynced, resumeInterrupted, type OutboxCounts } from '@/lib/offline/outbox';
 import { runSyncRound } from '@/lib/offline/sync-engine';
 import { useLiveQuery } from '@/lib/offline/useLiveQuery';
@@ -19,6 +20,8 @@ interface SyncContextValue {
   counts: OutboxCounts;
   /** Última cópia do catálogo no celular (epoch ms). */
   catalogUpdatedAt: number | null;
+  /** O navegador garantiu que não apaga os dados do app sozinho? (null = não sabe) */
+  persisted: boolean | null;
   /** force: ignora a espera entre tentativas (botão "Enviar agora"). */
   requestSync: (options?: { force?: boolean }) => Promise<void>;
   refreshCatalogNow: () => Promise<void>;
@@ -51,11 +54,19 @@ export function SyncProvider({ children }: { children: ReactNode }) {
 }
 
 function SyncEngine({ userId, businessId, children }: { userId: string; businessId: string; children: ReactNode }) {
-  const db = useMemo(() => getLocalDb(userId), [userId]);
+  // Registrado já na criação (e não num efeito): as telas filhas consultam
+  // antes de os efeitos do provedor rodarem, e o plano B precisa achar o banco.
+  const db = useMemo(() => {
+    const local = getLocalDb(userId);
+    setActiveLocalDb(local);
+    return local;
+  }, [userId]);
+  useEffect(() => () => setActiveLocalDb(null), [db]);
   const queryClient = useQueryClient();
   const toast = useToast();
   const { status: connection } = useConnectionStatus();
   const running = useRef(false);
+  const [persisted, setPersisted] = useState<boolean | null>(null);
 
   const ops = useLiveQuery(() => db.outbox.toArray(), [db]);
   const counts = useMemo(() => (ops ? countOutbox(ops) : EMPTY), [ops]);
@@ -105,8 +116,10 @@ function SyncEngine({ userId, businessId, children }: { userId: string; business
     void (async () => {
       await resumeInterrupted(db);
       await pruneSynced(db);
+      // Pede ao navegador para não apagar as vendas guardadas quando faltar espaço.
       if (typeof navigator !== 'undefined' && navigator.storage?.persist) {
-        void navigator.storage.persist().catch(() => false);
+        const ok = (await navigator.storage.persisted().catch(() => false)) || (await navigator.storage.persist().catch(() => false));
+        setPersisted(ok);
       }
       await requestSync();
       await refreshCatalogNow();
@@ -144,8 +157,8 @@ function SyncEngine({ userId, businessId, children }: { userId: string; business
   }, [refreshCatalogNow, requestSync]);
 
   const value = useMemo<SyncContextValue>(
-    () => ({ db, counts, catalogUpdatedAt, requestSync, refreshCatalogNow }),
-    [db, counts, catalogUpdatedAt, requestSync, refreshCatalogNow],
+    () => ({ db, counts, catalogUpdatedAt, persisted, requestSync, refreshCatalogNow }),
+    [db, counts, catalogUpdatedAt, persisted, requestSync, refreshCatalogNow],
   );
   return <SyncContext.Provider value={value}>{children}</SyncContext.Provider>;
 }

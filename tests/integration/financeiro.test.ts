@@ -342,6 +342,9 @@ describe('resumo canônico: banco e app calculam o mesmo hash', () => {
         item.unitPriceCents,
       ]);
     }
+    // Ids fixos do vetor: numa segunda rodada sem "db reset" a venda já existe.
+    const { rows } = await db.query('select 1 from public.sales where id = $1', [sale.saleId]);
+    if (rows.length > 0) return;
     await insertItemsSale(
       { ...a, customerId: sale.customerId, establishmentId: sale.establishmentId },
       [...sale.items],
@@ -399,7 +402,9 @@ describe('resumo canônico: banco e app calculam o mesmo hash', () => {
   });
 
   it('termo desconhecido é recusado', async () => {
-    const unknown = await a.owner.client.rpc('sale_document_hash', { p_sale: ITEMS_SALE.saleId, p_terms: 'v9' });
+    // Venda desta rodada (a do vetor pode ser de um negócio de rodada anterior).
+    const saleId = await insertAmountSale(db, a, { totalCents: 500 });
+    const unknown = await a.owner.client.rpc('sale_document_hash', { p_sale: saleId, p_terms: 'v9' });
     expect(unknown.error?.message).toMatch(/LDR_UNKNOWN_TERMS/);
   });
 });

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { LogOut } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { MoneyField, Switch } from '@/components/Controls';
 import { SelectField, TextField } from '@/components/Field';
@@ -18,9 +17,10 @@ import type { BusinessSettings } from '@/services/settings';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { useSaveSalesSettings, useSettings } from '@/features/registry/queries';
 import { useOptionalSync } from '@/features/sync/SyncProvider';
+import { DeviceSection, SignOutButton } from './DeviceSection';
 
 export function SettingsPage() {
-  const { identity, signOut } = useAuth();
+  const { identity } = useAuth();
   const staff = identity?.staff;
   return (
     <>
@@ -41,10 +41,8 @@ export function SettingsPage() {
         </section>
         {staff && <SalesSettingsSection businessId={staff.businessId} canEdit={staff.role === 'OWNER'} />}
         <p className="px-1 text-brown-soft">Os dados do Pix ficam aqui na etapa de recebimentos.</p>
-        <Button variant="secondary" block onClick={() => void signOut()}>
-          <LogOut className="h-5 w-5" aria-hidden="true" />
-          Sair da conta
-        </Button>
+        {staff && <DeviceSection />}
+        <SignOutButton />
       </main>
     </>
   );

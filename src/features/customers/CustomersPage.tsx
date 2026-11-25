@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { ChevronRight, Plus, Users } from 'lucide-react';
+import { CachedNotice } from '@/components/CachedNotice';
 import { Chip, SearchField } from '@/components/Controls';
 import { PageHeader } from '@/components/PageHeader';
 import { EmptyState, ErrorState, LoadingState } from '@/components/States';
@@ -60,6 +61,7 @@ export function CustomersPage() {
           <Plus className="h-6 w-6" strokeWidth={3} aria-hidden="true" />
           Novo cliente
         </Link>
+        <CachedNotice data={customers.data} />
         <SearchField label="Buscar por nome ou telefone" value={search} onChange={setSearch} />
 
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1" role="group" aria-label="Filtrar por estabelecimento">

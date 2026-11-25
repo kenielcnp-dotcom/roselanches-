@@ -1,9 +1,10 @@
 // Consultas e gravações dos cadastros, compartilhadas pelas telas de
 // estabelecimentos, clientes, produtos e pela tela inicial.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { recallFromDevice, rememberOnDevice, withOfflineFallback } from '@/lib/offline/fallback';
 import { supabase } from '@/lib/supabase/client';
 import { listCustomers, saveCustomer } from '@/services/customers';
-import { fetchDashboard } from '@/services/dashboard';
+import { fetchDashboard, type DashboardSummary } from '@/services/dashboard';
 import {
   createEstablishment,
   linkCustomer,
@@ -23,20 +24,59 @@ export const queryKeys = {
   settings: (businessId: string) => ['settings', businessId] as const,
 };
 
+// Leituras com plano B: sem conexão, a cópia do celular (marcada com a hora;
+// ver cachedAt). structuralSharing desligado para a marca não se perder.
 export function useDashboard() {
-  return useQuery({ queryKey: queryKeys.dashboard, queryFn: () => fetchDashboard(supabase) });
+  return useQuery({
+    queryKey: queryKeys.dashboard,
+    structuralSharing: false,
+    queryFn: () =>
+      withOfflineFallback(
+        async () => {
+          const summary = await fetchDashboard(supabase);
+          await rememberOnDevice('dashboard', summary);
+          return summary;
+        },
+        (db) => recallFromDevice<DashboardSummary>(db, 'dashboard'),
+        'dashboardAt',
+      ),
+  });
 }
 
 export function useEstablishments() {
-  return useQuery({ queryKey: queryKeys.establishments, queryFn: () => listEstablishments(supabase) });
+  return useQuery({
+    queryKey: queryKeys.establishments,
+    structuralSharing: false,
+    queryFn: () =>
+      withOfflineFallback(
+        () => listEstablishments(supabase),
+        (db) => db.establishments.toArray().then((l) => l.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))),
+      ),
+  });
 }
 
 export function useCustomers() {
-  return useQuery({ queryKey: queryKeys.customers, queryFn: () => listCustomers(supabase) });
+  return useQuery({
+    queryKey: queryKeys.customers,
+    structuralSharing: false,
+    queryFn: () =>
+      withOfflineFallback(
+        () => listCustomers(supabase),
+        (db) => db.customers.toArray().then((l) => l.sort((a, b) => a.fullName.localeCompare(b.fullName, 'pt-BR'))),
+      ),
+  });
 }
 
 export function useProducts() {
-  return useQuery({ queryKey: queryKeys.products, queryFn: () => listProducts(supabase) });
+  return useQuery({
+    queryKey: queryKeys.products,
+    structuralSharing: false,
+    queryFn: () =>
+      withOfflineFallback(
+        () => listProducts(supabase),
+        (db) => db.products.toArray().then((l) => l.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))),
+      ),
+  });
 }
 
 export function useSettings(businessId: string) {
