@@ -13,3 +13,4 @@ test-results
 playwright-report
 tests/e2e/capturas
 supabase/tudo-em-um.sql
+.vercel
