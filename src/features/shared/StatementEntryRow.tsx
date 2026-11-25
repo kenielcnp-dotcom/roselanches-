@@ -75,7 +75,7 @@ export function StatementEntryRow({ entry: e, to, audience }: Props) {
             </span>
           )}
           {!cancelled && e.openCents !== null && e.kind !== 'PAYMENT' && e.paymentKind !== 'PAID_NOW' && (
-            <span className={`rounded-full px-2 py-0.5 ${e.openCents === 0 ? 'bg-success/10 text-success' : 'bg-peach text-orange-deep'}`}>
+            <span className={`rounded-full px-2 py-0.5 ${e.openCents === 0 ? 'bg-success/10 text-success' : 'bg-peach text-orange-darker'}`}>
               {e.openCents === 0 ? 'Quitado' : e.openCents === e.amountCents ? 'Em aberto' : `Falta ${formatBRL(e.openCents)}`}
             </span>
           )}

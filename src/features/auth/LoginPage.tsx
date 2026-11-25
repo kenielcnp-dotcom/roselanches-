@@ -58,7 +58,7 @@ export function LoginPage() {
       </form>
       <p className="mt-5 text-center text-brown-soft">
         Ainda não tem conta?{' '}
-        <Link to="/criar-conta" replace className="font-extrabold text-orange-deep underline-offset-2 hover:underline">
+        <Link to="/criar-conta" replace className="font-extrabold text-orange-darker underline-offset-2 hover:underline">
           Criar conta
         </Link>
       </p>

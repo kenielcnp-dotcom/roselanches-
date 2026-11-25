@@ -149,11 +149,11 @@ export function ReportError({ error, onRetry }: { error: unknown; onRetry: () =>
   const offline = toAppError(error).kind === 'network';
   return (
     <div role="alert" className="space-y-3 rounded-card bg-white/80 px-5 py-6 text-center ring-1 ring-line">
-      {offline && <WifiOff className="mx-auto h-8 w-8 text-orange-deep" aria-hidden="true" />}
+      {offline && <WifiOff className="mx-auto h-8 w-8 text-orange-darker" aria-hidden="true" />}
       <p className="text-brown">
         {offline ? 'Os relatórios precisam de internet. As vendas no celular continuam salvas.' : toAppError(error).message}
       </p>
-      <button type="button" onClick={onRetry} className="min-h-11 font-extrabold text-orange-deep">
+      <button type="button" onClick={onRetry} className="min-h-11 font-extrabold text-orange-darker">
         Tentar de novo
       </button>
     </div>

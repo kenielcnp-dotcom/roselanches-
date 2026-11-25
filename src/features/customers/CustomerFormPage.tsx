@@ -117,13 +117,13 @@ function CustomerFormView({ existing, customers }: { existing: Customer | undefi
 
           {duplicates.length > 0 && (
             <div role="status" className="flex gap-3 rounded-2xl bg-peach px-4 py-3 text-brown">
-              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-orange-deep" aria-hidden="true" />
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-orange-darker" aria-hidden="true" />
               <div className="space-y-1">
                 <p className="font-bold">Confira se não é a mesma pessoa:</p>
                 <ul className="space-y-1">
                   {duplicates.map((d) => (
                     <li key={d.id}>
-                      <Link to={`/clientes/${d.id}`} className="font-extrabold text-orange-deep underline">
+                      <Link to={`/clientes/${d.id}`} className="font-extrabold text-orange-darker underline">
                         {d.fullName}
                       </Link>{' '}
                       ({d.reason === 'phone' ? 'mesmo telefone' : 'mesmo nome'})
@@ -145,7 +145,7 @@ function CustomerFormView({ existing, customers }: { existing: Customer | undefi
                   <p className="text-brown-soft">
                     Nenhum estabelecimento cadastrado.{' '}
                     {isOwner ? (
-                      <Link to="/estabelecimentos/novo" className="font-extrabold text-orange-deep underline">
+                      <Link to="/estabelecimentos/novo" className="font-extrabold text-orange-darker underline">
                         Cadastrar
                       </Link>
                     ) : (

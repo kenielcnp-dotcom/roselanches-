@@ -51,7 +51,7 @@ export function SignupPage() {
     return (
       <AuthLayout title="Confirme seu e-mail">
         <p className="text-brown">Enviamos um link para o seu e-mail. Abra o link e depois entre no app.</p>
-        <Link to="/entrar" replace className="mt-5 block text-center font-extrabold text-orange-deep">
+        <Link to="/entrar" replace className="mt-5 block text-center font-extrabold text-orange-darker">
           Ir para Entrar
         </Link>
       </AuthLayout>
@@ -91,7 +91,7 @@ export function SignupPage() {
       </form>
       <p className="mt-5 text-center text-brown-soft">
         Já tem conta?{' '}
-        <Link to="/entrar" replace className="font-extrabold text-orange-deep underline-offset-2 hover:underline">
+        <Link to="/entrar" replace className="font-extrabold text-orange-darker underline-offset-2 hover:underline">
           Entrar
         </Link>
       </p>

@@ -13,6 +13,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icone.svg', 'apple-touch-icon.png'],
       manifest: {
+        id: '/',
         name: 'Lanches da Rose',
         short_name: 'Lanches Rose',
         description: 'Vendas fiadas, clientes e recebimentos do Lanches da Rose',

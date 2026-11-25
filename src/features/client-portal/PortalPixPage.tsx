@@ -136,7 +136,7 @@ function AlreadyPaid({ suggestedCents }: { suggestedCents: number | null }) {
         <p>
           A Rose vai conferir o Pix{sent ? ` de ${formatBRL(sent)}` : ''} no banco dela. O seu saldo muda quando ela confirmar.
         </p>
-        <Link to="/conta" className="block pt-1 font-extrabold text-orange-deep">
+        <Link to="/conta" className="block pt-1 font-extrabold text-orange-darker">
           Voltar para a minha conta
         </Link>
       </section>

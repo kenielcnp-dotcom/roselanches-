@@ -47,7 +47,7 @@ export function CustomerStatement({ customerId }: { customerId: string }) {
           {onPhone.map((s) => (
             <li key={s.id}>
               <Link to={`/vendas/${s.id}`} className="flex items-center gap-3 rounded-card bg-peach px-4 py-3 ring-1 ring-line">
-                <Clock className="h-5 w-5 shrink-0 text-orange-deep" aria-hidden="true" />
+                <Clock className="h-5 w-5 shrink-0 text-orange-darker" aria-hidden="true" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-bold text-brown">{s.summary}</span>
                   <span className="text-sm text-brown-soft">

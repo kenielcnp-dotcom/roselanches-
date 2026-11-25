@@ -142,7 +142,7 @@ function SalesSettingsForm({ businessId, canEdit, settings }: { businessId: stri
               <button
                 type="button"
                 onClick={() => setValue('timezone', device, { shouldDirty: true })}
-                className="mt-2 text-left text-sm font-extrabold text-orange-deep underline"
+                className="mt-2 text-left text-sm font-extrabold text-orange-darker underline"
               >
                 Este celular está em {timeZoneLabel(device)}. Usar este fuso
               </button>

@@ -72,7 +72,7 @@ export function HomePage() {
           to="/vender"
           className="mt-5 flex min-h-24 items-center gap-4 rounded-card bg-linear-to-br from-orange-deep to-orange-darker px-5 py-4 text-white shadow-warm ring-1 ring-orange/40 active:brightness-95"
         >
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white text-orange-deep shadow-soft">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-white text-orange-darker shadow-soft">
             <Plus className="h-9 w-9" strokeWidth={3} aria-hidden="true" />
           </span>
           <span className="min-w-0">

@@ -156,7 +156,7 @@ export function SalesTab({ filters, payment, confirmation, sellerId, sellers, on
             {(first?.sumOpenCents ?? 0) > 0 && (
               <>
                 {' '}
-                · em aberto <span className="tabular font-black text-orange-deep">{formatBRL(first?.sumOpenCents ?? 0)}</span>
+                · em aberto <span className="tabular font-black text-orange-darker">{formatBRL(first?.sumOpenCents ?? 0)}</span>
               </>
             )}
           </p>
@@ -204,7 +204,7 @@ function SaleRow({ sale: s, showSeller }: { sale: ReportSaleRow; showSeller: boo
             ) : s.paymentKind === 'PAID_NOW' ? (
               <span className="rounded-full bg-success/10 px-2 py-0.5 text-success">{paymentLabel(s.paymentKind, s.paidMethod)}</span>
             ) : (
-              <span className={`rounded-full px-2 py-0.5 ${s.openCents === 0 ? 'bg-success/10 text-success' : 'bg-peach text-orange-deep'}`}>
+              <span className={`rounded-full px-2 py-0.5 ${s.openCents === 0 ? 'bg-success/10 text-success' : 'bg-peach text-orange-darker'}`}>
                 {s.openCents === 0 ? 'Fiado quitado' : s.openCents === s.totalCents ? 'Fiado em aberto' : `Falta ${formatBRL(s.openCents ?? 0)}`}
               </span>
             )}

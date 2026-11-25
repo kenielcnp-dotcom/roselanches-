@@ -89,7 +89,7 @@ test('cliente: cadastrar em dois lugares, aviso de duplicado e busca', async ({ 
 test('estabelecimento: adicionar e remover cliente sem perder o cadastro', async ({ page }) => {
   await loginAsRose(page);
   await page.goto('/estabelecimentos');
-  await page.getByRole('link', { name: `Clientes e dados de Feira ${suffix}` }).click();
+  await page.getByRole('link', { name: `Ver clientes e dados de Feira ${suffix}` }).click();
   await expect(page.getByRole('link', { name: new RegExp(`Paulo Teste ${suffix}`) })).toBeVisible();
 
   await page.getByRole('button', { name: 'Adicionar' }).click();

@@ -28,7 +28,7 @@ export function TeamTab({ range, onSeeSales }: { range: DateRange; onSeeSales: (
       {onlyOwner && (
         <p className="rounded-card bg-peach px-4 py-3 text-brown">
           Por enquanto só você usa o app. Para ter vendedores com conta própria,{' '}
-          <Link to="/equipe" className="font-extrabold text-orange-deep underline">
+          <Link to="/equipe" className="font-extrabold text-orange-darker underline">
             convide pela tela Equipe
           </Link>
           .
@@ -80,7 +80,7 @@ function MemberReport({ row: r, onSeeSales }: { row: TeamReportRow; onSeeSales: 
         <button
           type="button"
           onClick={onSeeSales}
-          className="mt-2 flex min-h-11 w-full items-center justify-center gap-1 font-extrabold text-orange-deep"
+          className="mt-2 flex min-h-11 w-full items-center justify-center gap-1 font-extrabold text-orange-darker"
         >
           Ver as vendas de {r.name.split(' ')[0]}
           <ChevronRight className="h-5 w-5" aria-hidden="true" />

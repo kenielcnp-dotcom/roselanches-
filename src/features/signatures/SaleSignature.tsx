@@ -27,7 +27,7 @@ export function SaleSignature({ saleId, confirmationStatus }: { saleId: string; 
   return (
     <section aria-label="Assinatura do cliente" className="rounded-card bg-white p-4 ring-1 ring-line">
       <p className="flex items-center gap-2 font-extrabold text-brown">
-        {local ? <Clock className="h-5 w-5 text-orange-deep" aria-hidden="true" /> : <PenLine className="h-5 w-5 text-orange" aria-hidden="true" />}
+        {local ? <Clock className="h-5 w-5 text-orange-darker" aria-hidden="true" /> : <PenLine className="h-5 w-5 text-orange" aria-hidden="true" />}
         {local
           ? 'Assinatura salva no celular, aguardando envio'
           : confirmationStatus === 'CANCELLED'

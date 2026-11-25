@@ -46,10 +46,10 @@ export function SyncPill({ state, compact = false }: { state: SyncPillState; com
       tone = 'text-success';
       break;
     case 'sending':
-      icon = <Loader2 className="h-5 w-5 animate-spin text-orange-deep" />;
+      icon = <Loader2 className="h-5 w-5 animate-spin text-orange-darker" />;
       title = 'Enviando…';
       detail = 'Não feche o app';
-      tone = 'text-orange-deep';
+      tone = 'text-orange-darker';
       break;
     case 'pending': {
       const parts = [
@@ -57,10 +57,10 @@ export function SyncPill({ state, compact = false }: { state: SyncPillState; com
         state.signatures > 0 ? plural(state.signatures, 'assinatura', 'assinaturas') : null,
         state.payments ? plural(state.payments, 'pagamento', 'pagamentos') : null,
       ].filter(Boolean);
-      icon = <Clock className="h-5 w-5 text-orange-deep" strokeWidth={2.5} />;
+      icon = <Clock className="h-5 w-5 text-orange-darker" strokeWidth={2.5} />;
       title = 'Aguardando envio';
       detail = parts.join(' e ') || 'Operações no celular';
-      tone = 'text-orange-deep';
+      tone = 'text-orange-darker';
       break;
     }
     case 'offline':
@@ -70,10 +70,10 @@ export function SyncPill({ state, compact = false }: { state: SyncPillState; com
       tone = 'text-brown';
       break;
     case 'auth':
-      icon = <LogIn className="h-5 w-5 text-orange-deep" strokeWidth={2.5} />;
+      icon = <LogIn className="h-5 w-5 text-orange-darker" strokeWidth={2.5} />;
       title = 'Entre de novo';
       detail = state.pending > 0 ? `para enviar ${plural(state.pending, 'venda', 'vendas')}` : 'Sua sessão expirou';
-      tone = 'text-orange-deep';
+      tone = 'text-orange-darker';
       break;
     case 'failed':
       icon = <AlertTriangle className="h-5 w-5 text-danger" strokeWidth={2.5} />;

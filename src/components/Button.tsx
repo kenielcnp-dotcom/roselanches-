@@ -13,7 +13,7 @@ const VARIANTS: Record<Variant, string> = {
   // Branco sobre orange-deep: 4,6:1 (AA).
   primary: 'bg-orange-deep text-white shadow-warm active:bg-orange-darker disabled:bg-orange-deep/60',
   secondary: 'bg-white text-brown ring-1 ring-line shadow-soft active:bg-cream-deep',
-  ghost: 'bg-transparent text-orange-deep active:bg-peach',
+  ghost: 'bg-transparent text-orange-darker active:bg-peach',
   danger: 'bg-danger text-white active:brightness-90',
 };
 

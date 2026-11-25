@@ -6,7 +6,7 @@ export function BalanceTag({ cents }: { cents: number }) {
     return (
       <span className="shrink-0 text-right leading-tight">
         <span className="block text-xs font-bold text-brown-soft">deve</span>
-        <span className="tabular block font-black text-orange-deep">{formatBRL(cents)}</span>
+        <span className="tabular block font-black text-orange-darker">{formatBRL(cents)}</span>
       </span>
     );
   }

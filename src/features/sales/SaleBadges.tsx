@@ -12,13 +12,13 @@ export function SaleBadges({ sale: s }: { sale: SaleView }) {
       {s.status === 'CANCELLED' && <span className="rounded-full bg-danger/10 px-2 py-0.5 text-danger">Cancelada</span>}
       {s.pendingCancel && <span className="rounded-full bg-danger/10 px-2 py-0.5 text-danger">Cancelamento aguardando envio</span>}
       {s.sync === 'PENDING' && (
-        <span className="inline-flex items-center gap-1 rounded-full bg-cream-deep px-2 py-0.5 text-orange-deep">
+        <span className="inline-flex items-center gap-1 rounded-full bg-cream-deep px-2 py-0.5 text-orange-darker">
           <Clock className="h-3 w-3" aria-hidden="true" />
           No celular
         </span>
       )}
       {s.sync === 'SYNCING' && (
-        <span className="inline-flex items-center gap-1 rounded-full bg-cream-deep px-2 py-0.5 text-orange-deep">
+        <span className="inline-flex items-center gap-1 rounded-full bg-cream-deep px-2 py-0.5 text-orange-darker">
           <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
           Enviando
         </span>

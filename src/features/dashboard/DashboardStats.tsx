@@ -35,7 +35,7 @@ export function DashboardStats() {
         <button
           type="button"
           onClick={() => void query.refetch()}
-          className="mt-2 inline-flex min-h-11 items-center gap-2 font-extrabold text-orange-deep"
+          className="mt-2 inline-flex min-h-11 items-center gap-2 font-extrabold text-orange-darker"
         >
           <RefreshCw className="h-5 w-5" aria-hidden="true" />
           Tentar de novo
@@ -107,7 +107,7 @@ export function DashboardStats() {
           to="/contestacoes"
           className="flex min-h-14 items-center gap-3 rounded-card bg-peach px-4 py-3 font-bold text-brown shadow-soft ring-2 ring-orange/40 active:bg-cream-deep"
         >
-          <MessageSquareWarning className="h-6 w-6 shrink-0 text-orange-deep" aria-hidden="true" />
+          <MessageSquareWarning className="h-6 w-6 shrink-0 text-orange-darker" aria-hidden="true" />
           {d.openDisputes === 1 ? '1 compra contestada pelo cliente' : `${d.openDisputes} compras contestadas pelos clientes`}
         </Link>
       )}

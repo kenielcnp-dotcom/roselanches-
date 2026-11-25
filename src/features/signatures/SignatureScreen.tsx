@@ -97,7 +97,7 @@ export function SignatureScreen({ customerName, establishmentName, summary, tota
     <div role="dialog" aria-modal="true" aria-labelledby="titulo-assinatura" className="fixed inset-0 z-50 overflow-y-auto bg-cream">
       <div className="safe-top mx-auto flex min-h-dvh max-w-lg flex-col gap-3 px-4 pt-4 pb-6">
         <h1 id="titulo-assinatura" className="flex items-center gap-2 text-2xl font-black text-brown">
-          <PenLine className="h-7 w-7 text-orange-deep" aria-hidden="true" />
+          <PenLine className="h-7 w-7 text-orange-darker" aria-hidden="true" />
           Confirmação de compra
         </h1>
         <dl className="rounded-card bg-white p-4 text-brown ring-1 ring-line">

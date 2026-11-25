@@ -1,30 +1,15 @@
 import { createBrowserRouter, Link } from 'react-router';
 import { AdminLayout } from './AdminLayout';
+import { lazyPage } from './lazyPage';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { SignupPage } from '@/features/auth/SignupPage';
 import { NoAccessPage } from '@/features/auth/NoAccessPage';
 import { PublicOnly, RequireAuth, RequireCustomer, RequireStaff } from '@/features/auth/guards';
 import { OwnerOnly } from '@/features/auth/roles';
-import { TeamInvitePage } from '@/features/team/TeamInvitePage';
-import { TeamPage } from '@/features/team/TeamPage';
 import { HomePage } from '@/features/dashboard/HomePage';
-import { SettingsPage } from '@/features/settings/SettingsPage';
-import { ReportsPage } from '@/features/reports/ReportsPage';
-import { DisputesPage } from '@/features/client-portal/DisputesPage';
-import { InvitePage } from '@/features/client-portal/InvitePage';
-import { PortalHomePage } from '@/features/client-portal/PortalHomePage';
-import { PortalLayout } from '@/features/client-portal/PortalLayout';
-import { PortalPixPage } from '@/features/client-portal/PortalPixPage';
-import { PortalPrivacyPage } from '@/features/client-portal/PortalPrivacyPage';
-import { PortalSalePage } from '@/features/client-portal/PortalSalePage';
 import { CustomerDetailPage } from '@/features/customers/CustomerDetailPage';
 import { CustomerFormPage } from '@/features/customers/CustomerFormPage';
 import { CustomersPage } from '@/features/customers/CustomersPage';
-import { EstablishmentDetailPage } from '@/features/establishments/EstablishmentDetailPage';
-import { EstablishmentFormPage } from '@/features/establishments/EstablishmentFormPage';
-import { EstablishmentsPage } from '@/features/establishments/EstablishmentsPage';
-import { ProductFormPage } from '@/features/products/ProductFormPage';
-import { ProductsPage } from '@/features/products/ProductsPage';
 import { EntryDetailPage } from '@/features/payments/EntryDetailPage';
 import { EntryFormPage } from '@/features/payments/EntryFormPage';
 import { PaymentDetailPage } from '@/features/payments/PaymentDetailPage';
@@ -34,11 +19,29 @@ import { NewSalePage } from '@/features/sales/NewSalePage';
 import { SaleDetailPage } from '@/features/sales/SaleDetailPage';
 import { SalesPage } from '@/features/sales/SalesPage';
 
+// Partes usadas de vez em quando: baixadas só quando abertas.
+const TeamInvitePage = lazyPage(() => import('@/features/team/TeamInvitePage'), 'TeamInvitePage');
+const TeamPage = lazyPage(() => import('@/features/team/TeamPage'), 'TeamPage');
+const SettingsPage = lazyPage(() => import('@/features/settings/SettingsPage'), 'SettingsPage');
+const ReportsPage = lazyPage(() => import('@/features/reports/ReportsPage'), 'ReportsPage');
+const DisputesPage = lazyPage(() => import('@/features/client-portal/DisputesPage'), 'DisputesPage');
+const InvitePage = lazyPage(() => import('@/features/client-portal/InvitePage'), 'InvitePage');
+const PortalHomePage = lazyPage(() => import('@/features/client-portal/PortalHomePage'), 'PortalHomePage');
+const PortalLayout = lazyPage(() => import('@/features/client-portal/PortalLayout'), 'PortalLayout');
+const PortalPixPage = lazyPage(() => import('@/features/client-portal/PortalPixPage'), 'PortalPixPage');
+const PortalPrivacyPage = lazyPage(() => import('@/features/client-portal/PortalPrivacyPage'), 'PortalPrivacyPage');
+const PortalSalePage = lazyPage(() => import('@/features/client-portal/PortalSalePage'), 'PortalSalePage');
+const EstablishmentDetailPage = lazyPage(() => import('@/features/establishments/EstablishmentDetailPage'), 'EstablishmentDetailPage');
+const EstablishmentFormPage = lazyPage(() => import('@/features/establishments/EstablishmentFormPage'), 'EstablishmentFormPage');
+const EstablishmentsPage = lazyPage(() => import('@/features/establishments/EstablishmentsPage'), 'EstablishmentsPage');
+const ProductFormPage = lazyPage(() => import('@/features/products/ProductFormPage'), 'ProductFormPage');
+const ProductsPage = lazyPage(() => import('@/features/products/ProductsPage'), 'ProductsPage');
+
 function NotFoundPage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
       <h1 className="text-2xl font-black text-brown">Página não encontrada</h1>
-      <Link to="/" className="font-extrabold text-orange-deep">
+      <Link to="/" className="font-extrabold text-orange-darker">
         Voltar para o início
       </Link>
     </main>

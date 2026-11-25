@@ -123,11 +123,11 @@ export function ReceivablesPage() {
                                   : ''}
                             </span>
                             {isOwner && p.createdBy && p.createdBy !== identity?.userId && (
-                              <span className="rounded-full bg-peach px-2 py-0.5 text-orange-deep">por {p.createdByName ?? 'vendedor'}</span>
+                              <span className="rounded-full bg-peach px-2 py-0.5 text-orange-darker">por {p.createdByName ?? 'vendedor'}</span>
                             )}
                             {reversed && <span className="rounded-full bg-danger/10 px-2 py-0.5 text-danger">Estornado</span>}
                             {p.sync === 'PENDING' && (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-cream-deep px-2 py-0.5 text-orange-deep">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-cream-deep px-2 py-0.5 text-orange-darker">
                                 <Clock className="h-3 w-3" aria-hidden="true" />
                                 No celular
                               </span>

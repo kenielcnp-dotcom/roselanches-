@@ -19,7 +19,7 @@ export function PlacesTab({ query }: { query: UseQueryResult<PlacesReport> }) {
     <div className="space-y-4">
       <details className="rounded-card bg-peach px-4 py-3 text-sm text-brown">
         <summary className="flex cursor-pointer items-center gap-2 font-extrabold">
-          <Info className="h-5 w-5 shrink-0 text-orange-deep" aria-hidden="true" />O que cada número quer dizer
+          <Info className="h-5 w-5 shrink-0 text-orange-darker" aria-hidden="true" />O que cada número quer dizer
         </summary>
         <dl className="mt-2 space-y-2">
           <div>

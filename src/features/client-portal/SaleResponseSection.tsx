@@ -37,7 +37,7 @@ export function SaleResponseSection({ saleId, onServer, isOwner }: { saleId: str
   return (
     <section aria-label="Contestação do cliente" className="space-y-3 rounded-card bg-peach p-4 text-brown ring-2 ring-orange/40">
       <p className="flex gap-2 font-extrabold">
-        <MessageSquareWarning className="mt-0.5 h-6 w-6 shrink-0 text-orange-deep" aria-hidden="true" />
+        <MessageSquareWarning className="mt-0.5 h-6 w-6 shrink-0 text-orange-darker" aria-hidden="true" />
         {r.resolvedAt ? 'Contestação encerrada' : 'O cliente contestou esta compra'}
       </p>
       <p>

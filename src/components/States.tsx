@@ -5,7 +5,7 @@ import { Button } from './Button';
 export function LoadingState({ label = 'Carregando…' }: { label?: string }) {
   return (
     <div role="status" className="flex flex-col items-center justify-center gap-3 py-16 text-brown-soft">
-      <Loader2 className="h-8 w-8 animate-spin text-orange-deep" aria-hidden="true" />
+      <Loader2 className="h-8 w-8 animate-spin text-orange-darker" aria-hidden="true" />
       <span className="font-semibold">{label}</span>
     </div>
   );

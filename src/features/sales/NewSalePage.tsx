@@ -171,7 +171,7 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
             <p className="rounded-card bg-white p-5 text-brown ring-1 ring-line">
               Cadastre pelo menos um estabelecimento.{' '}
               {isOwner ? (
-                <Link to="/estabelecimentos/novo" className="font-extrabold text-orange-deep underline">
+                <Link to="/estabelecimentos/novo" className="font-extrabold text-orange-darker underline">
                   Cadastrar
                 </Link>
               ) : (
@@ -191,7 +191,7 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
                   e.id === currentId ? 'ring-3 ring-orange-deep' : 'ring-1 ring-line'
                 }`}
               >
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-peach text-orange-deep">
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-peach text-orange-darker">
                   <Store className="h-7 w-7" aria-hidden="true" />
                 </span>
                 <span>
@@ -307,7 +307,7 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
           <button
             type="button"
             onClick={() => go('establishment')}
-            className="min-h-10 shrink-0 rounded-full bg-white px-3 text-sm font-extrabold text-orange-deep ring-1 ring-line"
+            className="min-h-10 shrink-0 rounded-full bg-white px-3 text-sm font-extrabold text-orange-darker ring-1 ring-line"
           >
             Trocar
           </button>
@@ -332,7 +332,7 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
             <button
               type="button"
               onClick={() => go('customer')}
-              className="min-h-10 rounded-full px-2 text-sm font-extrabold text-orange-deep"
+              className="min-h-10 rounded-full px-2 text-sm font-extrabold text-orange-darker"
             >
               Trocar
             </button>

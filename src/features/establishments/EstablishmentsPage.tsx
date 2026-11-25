@@ -110,7 +110,7 @@ function EstablishmentCard({
         className="flex min-h-22 min-w-0 flex-1 items-center gap-4 px-4 py-3 text-left active:bg-cream-deep"
       >
         <span
-          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${selected ? 'bg-orange-deep text-white' : 'bg-peach text-orange-deep'}`}
+          className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${selected ? 'bg-orange-deep text-white' : 'bg-peach text-orange-darker'}`}
         >
           <Store className="h-8 w-8" strokeWidth={2.2} aria-hidden="true" />
         </span>
@@ -130,7 +130,7 @@ function EstablishmentCard({
       </button>
       <Link
         to={`/estabelecimentos/${e.id}`}
-        aria-label={`Clientes e dados de ${e.name}`}
+        aria-label={`Ver clientes e dados de ${e.name}`}
         className="flex w-16 shrink-0 flex-col items-center justify-center gap-0.5 border-l border-line text-xs font-bold text-brown-soft active:bg-cream-deep"
       >
         <ChevronRight className="h-6 w-6" aria-hidden="true" />

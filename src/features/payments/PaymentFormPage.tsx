@@ -93,7 +93,7 @@ export function PaymentFormPage() {
                     <span className="block truncate text-lg font-extrabold text-brown">{c.fullName}</span>
                     <span className="block text-sm text-brown-soft">{c.phoneE164 ? maskPhone(c.phoneE164) : 'Sem telefone'}</span>
                   </span>
-                  {owed(c) > 0 && <span className="tabular shrink-0 font-black text-orange-deep">{formatBRL(owed(c))}</span>}
+                  {owed(c) > 0 && <span className="tabular shrink-0 font-black text-orange-darker">{formatBRL(owed(c))}</span>}
                   <ChevronRight className="h-5 w-5 shrink-0 text-brown-soft" aria-hidden="true" />
                 </button>
               </li>
@@ -147,7 +147,7 @@ export function PaymentFormPage() {
               {catalogUpdatedAt ? ` · saldo de ${formatDateTime(new Date(catalogUpdatedAt))}` : ''}
             </span>
           </span>
-          <button type="button" onClick={() => setCustomerId(null)} className="min-h-10 px-2 text-sm font-extrabold text-orange-deep">
+          <button type="button" onClick={() => setCustomerId(null)} className="min-h-10 px-2 text-sm font-extrabold text-orange-darker">
             Trocar
           </button>
         </section>
@@ -162,7 +162,7 @@ export function PaymentFormPage() {
         )}
         {amount > 0 && (
           <p className="flex items-start gap-2 rounded-2xl bg-cream-deep px-4 py-3 text-brown">
-            <Info className="mt-0.5 h-5 w-5 shrink-0 text-orange-deep" aria-hidden="true" />
+            <Info className="mt-0.5 h-5 w-5 shrink-0 text-orange-darker" aria-hidden="true" />
             {leftover > 0
               ? `Depois deste pagamento ainda fica devendo ${formatBRL(leftover)}.`
               : leftover === 0

@@ -11,13 +11,13 @@ export function PortalLayout() {
     <div className="min-h-dvh">
       <Awning />
       <header className="mx-auto flex max-w-lg items-center justify-between px-4 pt-3">
-        <Link to="/conta" aria-label="Início da sua conta">
+        <Link to="/conta" aria-label="Lanches da Rose: início da sua conta">
           <Logo />
         </Link>
       </header>
       {status === 'offline' && (
         <p role="status" className="mx-auto mt-3 flex max-w-lg items-center gap-2 px-4 font-bold text-brown">
-          <WifiOff className="h-5 w-5 shrink-0 text-orange-deep" aria-hidden="true" />
+          <WifiOff className="h-5 w-5 shrink-0 text-orange-darker" aria-hidden="true" />
           Sem internet. Sua conta aparece quando a conexão voltar.
         </p>
       )}

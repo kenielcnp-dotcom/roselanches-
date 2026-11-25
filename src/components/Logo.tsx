@@ -12,7 +12,7 @@ export function Logo({ size = 'md', className = '' }: LogoProps) {
     <div className={`flex items-center gap-2 ${className}`} role="img" aria-label="Lanches da Rose">
       <BurgerArt className={big ? 'h-20 w-20 shrink-0' : 'h-16 w-16 shrink-0'} />
       <div className="leading-none" aria-hidden="true">
-        <div className={`font-black tracking-tight whitespace-nowrap text-brown ${big ? 'text-2xl' : 'text-xl'}`}>Lanches da</div>
+        <div className={`font-black tracking-tight whitespace-nowrap text-brown ${big ? 'text-2xl' : 'text-xl'}`}>Lanches da</div>{' '}
         <div className="relative -mt-0.5 inline-block">
           <span className={`font-script text-logo-red ${big ? 'text-5xl' : 'text-4xl'}`}>Rose</span>
           <svg

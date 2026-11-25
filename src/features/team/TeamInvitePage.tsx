@@ -87,7 +87,7 @@ export function TeamInvitePage() {
               Tentar de novo
             </Button>
           )}
-          <Link to="/" className="block py-2 text-center font-extrabold text-orange-deep">
+          <Link to="/" className="block py-2 text-center font-extrabold text-orange-darker">
             {identity?.staff ? 'Voltar para o início' : 'Ir para o app'}
           </Link>
         </div>
@@ -99,7 +99,7 @@ export function TeamInvitePage() {
     return (
       <AuthLayout title="Convite incompleto">
         <p className="text-brown">Este link de convite está incompleto. Abra o link inteiro que a Rose mandou, ou peça um novo.</p>
-        <Link to="/" className="mt-5 block text-center font-extrabold text-orange-deep">
+        <Link to="/" className="mt-5 block text-center font-extrabold text-orange-darker">
           Ir para o app
         </Link>
       </AuthLayout>

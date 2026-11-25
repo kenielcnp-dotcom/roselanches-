@@ -23,7 +23,7 @@ export function OwnerOnly({ children }: { children: ReactNode }) {
           <Lock className="mx-auto h-10 w-10 text-orange" aria-hidden="true" />
           <p className="text-lg font-bold text-brown">Esta parte do app é só da dona do negócio.</p>
           <p className="text-brown-soft">Se precisar de algo daqui, fale com a Rose.</p>
-          <Link to="/" className="inline-block py-2 font-extrabold text-orange-deep">
+          <Link to="/" className="inline-block py-2 font-extrabold text-orange-darker">
             Voltar para o início
           </Link>
         </section>

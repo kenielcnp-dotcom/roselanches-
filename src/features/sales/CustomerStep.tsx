@@ -60,7 +60,7 @@ export function CustomerStep({ establishment, customers, onSelect, canLink }: Pr
           type="button"
           onClick={() => setEverywhere((v) => !v)}
           aria-pressed={everywhere}
-          className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white px-3 text-sm font-extrabold text-orange-deep ring-1 ring-line active:bg-cream-deep"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full bg-white px-3 text-sm font-extrabold text-orange-darker ring-1 ring-line active:bg-cream-deep"
         >
           <Globe className="h-4 w-4" aria-hidden="true" />
           {everywhere ? 'Só deste lugar' : 'Buscar em todos os estabelecimentos'}
@@ -71,7 +71,7 @@ export function CustomerStep({ establishment, customers, onSelect, canLink }: Pr
         <div className="rounded-card bg-white/80 px-5 py-6 text-center ring-1 ring-line">
           <p className="font-bold text-brown">Nenhum cliente encontrado{everywhere ? '' : ' neste lugar'}.</p>
           {!everywhere && elsewhere > 0 && (
-            <button type="button" onClick={() => setEverywhere(true)} className="mt-2 font-extrabold text-orange-deep underline">
+            <button type="button" onClick={() => setEverywhere(true)} className="mt-2 font-extrabold text-orange-darker underline">
               Ver {elsewhere} {elsewhere === 1 ? 'cliente' : 'clientes'} de outros lugares
             </button>
           )}
@@ -110,7 +110,7 @@ export function CustomerStep({ establishment, customers, onSelect, canLink }: Pr
 
       <Link
         to="/clientes/novo"
-        className="flex min-h-12 items-center justify-center gap-2 rounded-2xl font-extrabold text-orange-deep active:bg-peach"
+        className="flex min-h-12 items-center justify-center gap-2 rounded-2xl font-extrabold text-orange-darker active:bg-peach"
       >
         <UserPlus className="h-5 w-5" aria-hidden="true" />
         Cadastrar cliente novo
@@ -120,7 +120,7 @@ export function CustomerStep({ establishment, customers, onSelect, canLink }: Pr
         <div role="dialog" aria-modal="true" aria-labelledby="aviso-fora" className="fixed inset-0 z-40 flex items-end bg-brown/40 p-3 sm:items-center sm:justify-center">
           <div className="w-full max-w-md space-y-3 rounded-card bg-white p-5 shadow-warm">
             <div className="flex gap-3">
-              <AlertTriangle className="mt-1 h-6 w-6 shrink-0 text-orange-deep" aria-hidden="true" />
+              <AlertTriangle className="mt-1 h-6 w-6 shrink-0 text-orange-darker" aria-hidden="true" />
               <div>
                 <h2 id="aviso-fora" className="text-lg font-black text-brown">
                   Este cliente não está cadastrado neste estabelecimento. Deseja continuar?

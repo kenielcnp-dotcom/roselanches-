@@ -67,7 +67,7 @@ export function PortalHomePage() {
               onClick={() => setFilter('TO_CONFIRM')}
               className="flex min-h-14 w-full items-center gap-3 rounded-card bg-peach px-4 py-3 text-left font-bold text-brown ring-2 ring-orange/40 active:bg-cream-deep"
             >
-              <BellRing className="h-6 w-6 shrink-0 text-orange-deep" aria-hidden="true" />
+              <BellRing className="h-6 w-6 shrink-0 text-orange-darker" aria-hidden="true" />
               <span className="flex-1">
                 {summary.data.toConfirm === 1
                   ? '1 compra esperando você confirmar'
@@ -135,7 +135,7 @@ function BalanceCard({ summary: s }: { summary: PortalSummary }) {
           to="/conta/pagar"
           className="mt-4 flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-lg font-extrabold text-brown shadow-soft active:bg-cream"
         >
-          <QrCode className="h-6 w-6 text-orange-deep" aria-hidden="true" />
+          <QrCode className="h-6 w-6 text-orange-darker" aria-hidden="true" />
           Pagar com Pix
         </Link>
       )}
@@ -145,7 +145,7 @@ function BalanceCard({ summary: s }: { summary: PortalSummary }) {
 }
 
 const NOTICE_LOOK = {
-  PENDING: { icon: Clock, text: 'Esperando a Rose conferir', cls: 'text-orange-deep' },
+  PENDING: { icon: Clock, text: 'Esperando a Rose conferir', cls: 'text-orange-darker' },
   CONFIRMED: { icon: CheckCircle2, text: 'Pagamento confirmado', cls: 'text-success' },
   REJECTED: { icon: XCircle, text: 'Não confirmado', cls: 'text-danger' },
 } as const;

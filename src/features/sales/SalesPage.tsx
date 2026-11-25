@@ -99,7 +99,7 @@ export function SalesPage() {
                           {s.establishmentName} · {s.summary}
                         </span>
                         {isOwner && s.createdBy && s.createdBy !== userId && (
-                          <span className="block truncate text-sm font-bold text-orange-deep">Vendido por {s.createdByName ?? 'vendedor'}</span>
+                          <span className="block truncate text-sm font-bold text-orange-darker">Vendido por {s.createdByName ?? 'vendedor'}</span>
                         )}
                         <SaleBadges sale={s} />
                       </span>

@@ -76,7 +76,7 @@ function SaleCard({ sale: s }: { sale: PortalSaleDetail }) {
         {!cancelled && s.paymentKind === 'CREDIT' && s.openCents !== null && (
           <>
             {' · '}
-            <strong className={s.openCents === 0 ? 'text-success' : 'text-orange-deep'}>
+            <strong className={s.openCents === 0 ? 'text-success' : 'text-orange-darker'}>
               {s.openCents === 0 ? 'Já quitada' : s.openCents === s.totalCents ? 'Em aberto' : `Falta ${formatBRL(s.openCents)}`}
             </strong>
           </>
@@ -162,7 +162,7 @@ function Response({ sale: s }: { sale: PortalSaleDetail }) {
       {disputed && s.online && (
         <div className="space-y-1 rounded-2xl bg-peach px-4 py-3 text-brown">
           <p className="flex gap-2 font-bold">
-            <MessageSquareWarning className="mt-0.5 h-5 w-5 shrink-0 text-orange-deep" aria-hidden="true" />
+            <MessageSquareWarning className="mt-0.5 h-5 w-5 shrink-0 text-orange-darker" aria-hidden="true" />
             Você contestou esta compra
           </p>
           <p>"{s.online.disputeReason}"</p>

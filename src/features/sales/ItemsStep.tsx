@@ -95,7 +95,7 @@ function ProductsPicker({ products, quantities, onQuantity, itemMaxQty }: Props)
                 }`}
               >
                 <span className="pr-7 text-base leading-tight font-extrabold text-brown">{p.name}</span>
-                <span className="tabular text-lg font-black text-orange-deep">{formatBRL(p.priceCents)}</span>
+                <span className="tabular text-lg font-black text-orange-darker">{formatBRL(p.priceCents)}</span>
                 {qty > 0 && (
                   <span className="tabular absolute top-2 right-2 flex h-8 min-w-8 items-center justify-center rounded-full bg-orange-deep px-1.5 text-base font-black text-white">
                     {qty}

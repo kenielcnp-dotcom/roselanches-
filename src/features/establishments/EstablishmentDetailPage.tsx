@@ -52,7 +52,7 @@ export function EstablishmentDetailPage() {
         <CachedNotice data={customers.data} />
         <section className="rounded-card bg-white p-5 shadow-soft ring-1 ring-line">
           <div className="flex items-start gap-3">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-peach text-orange-deep">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-peach text-orange-darker">
               <Store className="h-7 w-7" aria-hidden="true" />
             </span>
             <div className="min-w-0 flex-1">
@@ -126,7 +126,7 @@ export function EstablishmentDetailPage() {
           {linked.length === 0 ? (
             <EmptyState title="Nenhum cliente neste lugar">
               Adicione clientes que já existem ou{' '}
-              <Link to="/clientes/novo" className="font-extrabold text-orange-deep underline">
+              <Link to="/clientes/novo" className="font-extrabold text-orange-darker underline">
                 cadastre um novo
               </Link>
               .
@@ -233,7 +233,7 @@ function AddCustomers({
                   <span className="block truncate font-bold text-brown">{c.fullName}</span>
                   <span className="block text-sm text-brown-soft">{c.phoneE164 ? formatPhone(c.phoneE164) : 'Sem telefone'}</span>
                 </span>
-                <Plus className="h-6 w-6 shrink-0 text-orange-deep" strokeWidth={3} aria-hidden="true" />
+                <Plus className="h-6 w-6 shrink-0 text-orange-darker" strokeWidth={3} aria-hidden="true" />
               </button>
             </li>
           ))}

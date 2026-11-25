@@ -53,7 +53,7 @@ export function SalesBars({ days }: { days: readonly DayValue[] }) {
         <span>{buckets[buckets.length - 1]?.label}</span>
       </div>
       <details className="text-sm">
-        <summary className="cursor-pointer py-1 font-bold text-orange-deep">Ver em tabela</summary>
+        <summary className="cursor-pointer py-1 font-bold text-orange-darker">Ver em tabela</summary>
         <table className="mt-1 w-full text-left">
           <thead>
             <tr className="text-brown-soft">

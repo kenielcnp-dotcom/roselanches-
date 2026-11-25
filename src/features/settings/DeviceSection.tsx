@@ -43,7 +43,7 @@ export function DeviceSection() {
       </p>
       {persisted === false && (
         <p role="status" className="flex gap-2 rounded-2xl bg-peach px-4 py-3 text-sm font-semibold text-brown">
-          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-orange-deep" aria-hidden="true" />
+          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-orange-darker" aria-hidden="true" />
           Este navegador pode apagar os dados do app se o celular ficar sem espaço. Envie as vendas sempre que tiver internet.
           Instalar o app na tela inicial ajuda a evitar isso.
         </p>
@@ -107,7 +107,7 @@ export function SignOutButton() {
         <div role="dialog" aria-modal="true" aria-labelledby="sair-bloqueado" className="fixed inset-0 z-40 flex items-end bg-brown/40 p-3 sm:items-center sm:justify-center">
           <div className="w-full max-w-md space-y-3 rounded-card bg-white p-5 shadow-warm">
             <h2 id="sair-bloqueado" className="flex gap-2 text-lg font-black text-brown">
-              <AlertTriangle className="mt-1 h-6 w-6 shrink-0 text-orange-deep" aria-hidden="true" />
+              <AlertTriangle className="mt-1 h-6 w-6 shrink-0 text-orange-darker" aria-hidden="true" />
               Ainda há {unsent === 1 ? '1 registro' : `${unsent} registros`} no celular que não chegaram ao servidor.
             </h2>
             <p className="text-brown">Sair agora apagaria esses registros. Envie primeiro, com internet.</p>
