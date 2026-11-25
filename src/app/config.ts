@@ -9,7 +9,7 @@ export const SUPABASE_KEY = key ?? '';
 /** Mensagem de configuração ausente ou perigosa (mostrada no lugar do app). */
 export function configProblem(): string | null {
   if (!url || !key) {
-    return 'Faltam VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY no arquivo .env.local. Veja docs/deployment.md.';
+    return 'Faltam VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY (no .env.local, ou nas variáveis de ambiente da hospedagem, seguidas de uma nova publicação). Veja docs/deployment.md.';
   }
   return keyProblem(key);
 }
