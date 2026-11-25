@@ -7,6 +7,7 @@ import { Button } from '@/components/Button';
 import { TextField } from '@/components/Field';
 import { supabase } from '@/lib/supabase/client';
 import { errorMessage } from '@/lib/supabase/errors';
+import { afterAuthPath, pendingInvite } from '@/features/client-portal/pendingInvite';
 import { AuthLayout } from './AuthLayout';
 
 const schema = z
@@ -40,7 +41,7 @@ export function SignupPage() {
       setServerError(errorMessage(error));
       return;
     }
-    if (data.session) navigate('/', { replace: true });
+    if (data.session) navigate(afterAuthPath(), { replace: true });
     else setNeedsConfirmation(true);
   });
 
@@ -48,7 +49,7 @@ export function SignupPage() {
     return (
       <AuthLayout title="Confirme seu e-mail">
         <p className="text-brown">Enviamos um link para o seu e-mail. Abra o link e depois entre no app.</p>
-        <Link to="/entrar" className="mt-5 block text-center font-extrabold text-orange-deep">
+        <Link to="/entrar" replace className="mt-5 block text-center font-extrabold text-orange-deep">
           Ir para Entrar
         </Link>
       </AuthLayout>
@@ -57,6 +58,11 @@ export function SignupPage() {
 
   return (
     <AuthLayout title="Criar conta">
+      {pendingInvite() && (
+        <p className="mb-4 rounded-2xl bg-peach px-4 py-3 text-brown">
+          Depois de criar, sua conta já fica ligada ao seu cadastro no Lanches da Rose. Guarde o e-mail e a senha.
+        </p>
+      )}
       <form onSubmit={onSubmit} noValidate className="space-y-4">
         <TextField label="Seu nome" autoComplete="name" error={errors.displayName?.message} {...register('displayName')} />
         <TextField label="E-mail" type="email" autoComplete="email" inputMode="email" error={errors.email?.message} {...register('email')} />
@@ -80,7 +86,7 @@ export function SignupPage() {
       </form>
       <p className="mt-5 text-center text-brown-soft">
         Já tem conta?{' '}
-        <Link to="/entrar" className="font-extrabold text-orange-deep underline-offset-2 hover:underline">
+        <Link to="/entrar" replace className="font-extrabold text-orange-deep underline-offset-2 hover:underline">
           Entrar
         </Link>
       </p>

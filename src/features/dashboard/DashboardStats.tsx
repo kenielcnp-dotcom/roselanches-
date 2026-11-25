@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { ReceiptText, RefreshCw, Users } from 'lucide-react';
+import { MessageSquareWarning, ReceiptText, RefreshCw, Users } from 'lucide-react';
 import { formatBRL } from '@/domain/money';
 import { formatTime } from '@/domain/period';
 import { errorMessage } from '@/lib/supabase/errors';
@@ -100,6 +100,15 @@ export function DashboardStats() {
           </span>
         )}
       </Link>
+      {(d.openDisputes ?? 0) > 0 && (
+        <Link
+          to="/contestacoes"
+          className="flex min-h-14 items-center gap-3 rounded-card bg-peach px-4 py-3 font-bold text-brown shadow-soft ring-2 ring-orange/40 active:bg-cream-deep"
+        >
+          <MessageSquareWarning className="h-6 w-6 shrink-0 text-orange-deep" aria-hidden="true" />
+          {d.openDisputes === 1 ? '1 compra contestada pelo cliente' : `${d.openDisputes} compras contestadas pelos clientes`}
+        </Link>
+      )}
     </div>
   );
 }

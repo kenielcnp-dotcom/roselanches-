@@ -1,6 +1,6 @@
 // Chave Pix da Rose: tipos, validação (com dígitos verificadores) e formato
 // guardado no banco (igual ao CHECK da migração 1100).
-import { normalizePhone } from './phone';
+import { formatPhone, normalizePhone } from './phone';
 
 export type PixKeyType = 'CPF' | 'CNPJ' | 'EMAIL' | 'PHONE' | 'EVP';
 
@@ -65,8 +65,9 @@ export function normalizePixKey(type: PixKeyType, input: string): PixKeyResult {
   }
 }
 
-/** Chave para mostrar ao cliente: CPF e CNPJ com pontuação. */
+/** Chave para mostrar ao cliente: CPF e CNPJ com pontuação, celular como telefone. */
 export function formatPixKey(type: PixKeyType, key: string): string {
+  if (type === 'PHONE' && key.startsWith('+55')) return formatPhone(key);
   if (type === 'CPF' && key.length === 11) return `${key.slice(0, 3)}.${key.slice(3, 6)}.${key.slice(6, 9)}-${key.slice(9)}`;
   if (type === 'CNPJ' && key.length === 14)
     return `${key.slice(0, 2)}.${key.slice(2, 5)}.${key.slice(5, 8)}/${key.slice(8, 12)}-${key.slice(12)}`;

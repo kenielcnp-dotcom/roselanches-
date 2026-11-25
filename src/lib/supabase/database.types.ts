@@ -255,6 +255,12 @@ isOneToOne: false
       foreignKeyName: "financial_adjustments_related_sale_id_business_id_customer_fkey"
       columns: ["related_sale_id","business_id","customer_id"]
 isOneToOne: false
+      referencedRelation: "sale_dispute_list"
+      referencedColumns: ["sale_id","business_id","customer_id"]
+    },{
+      foreignKeyName: "financial_adjustments_related_sale_id_business_id_customer_fkey"
+      columns: ["related_sale_id","business_id","customer_id"]
+isOneToOne: false
       referencedRelation: "sale_list"
       referencedColumns: ["id","business_id","customer_id"]
     },{
@@ -405,6 +411,12 @@ isOneToOne: false
       foreignKeyName: "payments_sale_id_business_id_customer_id_fkey"
       columns: ["sale_id","business_id","customer_id"]
 isOneToOne: false
+      referencedRelation: "sale_dispute_list"
+      referencedColumns: ["sale_id","business_id","customer_id"]
+    },{
+      foreignKeyName: "payments_sale_id_business_id_customer_id_fkey"
+      columns: ["sale_id","business_id","customer_id"]
+isOneToOne: false
       referencedRelation: "sale_list"
       referencedColumns: ["id","business_id","customer_id"]
     },{
@@ -471,6 +483,12 @@ isOneToOne: false
       foreignKeyName: "sale_confirmations_sale_id_business_id_customer_id_fkey"
       columns: ["sale_id","business_id","customer_id"]
 isOneToOne: false
+      referencedRelation: "sale_dispute_list"
+      referencedColumns: ["sale_id","business_id","customer_id"]
+    },{
+      foreignKeyName: "sale_confirmations_sale_id_business_id_customer_id_fkey"
+      columns: ["sale_id","business_id","customer_id"]
+isOneToOne: false
       referencedRelation: "sale_list"
       referencedColumns: ["id","business_id","customer_id"]
     },{
@@ -505,6 +523,12 @@ isOneToOne: false
 isOneToOne: false
       referencedRelation: "products"
       referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "sale_items_sale_id_business_id_fkey"
+      columns: ["sale_id","business_id"]
+isOneToOne: false
+      referencedRelation: "sale_dispute_list"
+      referencedColumns: ["sale_id","business_id"]
     },{
       foreignKeyName: "sale_items_sale_id_business_id_fkey"
       columns: ["sale_id","business_id"]
@@ -674,6 +698,12 @@ isOneToOne: false
       foreignKeyName: "payments_sale_id_business_id_customer_id_fkey"
       columns: ["sale_id","business_id","customer_id"]
 isOneToOne: false
+      referencedRelation: "sale_dispute_list"
+      referencedColumns: ["sale_id","business_id","customer_id"]
+    },{
+      foreignKeyName: "payments_sale_id_business_id_customer_id_fkey"
+      columns: ["sale_id","business_id","customer_id"]
+isOneToOne: false
       referencedRelation: "sale_list"
       referencedColumns: ["id","business_id","customer_id"]
     },{
@@ -742,6 +772,38 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"sale_dispute_list": {
+                  Row: {
+                    "business_id": string,"customer_id": string,"customer_name": string,"dispute_reason": string | null,"disputed_at": string,"establishment_name": string,"occurred_at": string,"sale_id": string,"total_cents": number
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "sales_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "sales_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_balances"
+      referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "sales_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_overview"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "sales_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    }
+                  ]
                 },"sale_list": {
                   Row: {
                     "business_id": string,"cancel_reason": string | null,"cancelled_at": string | null,"confirmation_status": string,"customer_id": string,"customer_name": string,"customer_phone": string | null,"description": string | null,"establishment_id": string,"establishment_name": string,"id": string,"items_summary": string | null,"mode": string,"occurred_at": string,"paid_method": string | null,"payment_kind": string,"period": string,"received_at": string,"status": string,"total_cents": number
@@ -789,7 +851,10 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "cancel_entry":
+            "cancel_customer_invite":
+{ Args: { "p_customer": string }; Returns: undefined
+                           },
+"cancel_entry":
 { Args: { "p_id": string,"p_kind": string,"p_reason": string }; Returns: Json
                            },
 "cancel_sale":
@@ -800,6 +865,9 @@ isOneToOne: false
                            },
 "create_adjustment":
 { Args: { "p_entry": Json }; Returns: Json
+                           },
+"create_customer_invite":
+{ Args: { "p_customer": string }; Returns: Json
                            },
 "create_opening_balance":
 { Args: { "p_entry": Json }; Returns: Json
@@ -815,11 +883,40 @@ isOneToOne: false
 "dashboard_summary":
 { Args: Record<PropertyKey, never>; Returns: Json
                            },
+"portal_confirm_sale":
+{ Args: { "p_confirmation": Json }; Returns: Json
+                           },
+"portal_dispute_sale":
+{ Args: { "p_confirmation": Json }; Returns: Json
+                           },
+"portal_notify_payment":
+{ Args: { "p_notice": Json }; Returns: Json
+                           },
+"portal_pix_info":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"portal_sale_detail":
+{ Args: { "p_sale": string }; Returns: Json
+                           },
+"portal_statement":
+{ Args: { "p_before_at"?: string,"p_before_id"?: string,"p_establishment"?: string,"p_filter"?: string,"p_limit"?: number }; Returns: {
+              "amount_cents": number,"confirmation_status": string,"description": string,"entry_id": string,"establishment_id": string,"establishment_name": string,"items": Json,"kind": string,"method": string,"mode": string,"occurred_at": string,"open_cents": number,"payment_kind": string,"period": string,"status": string,"status_reason": string
+            }[]
+                           },
+"portal_summary":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"redeem_customer_invite":
+{ Args: { "p_token": string }; Returns: Json
+                           },
 "register_payment":
 { Args: { "p_payment": Json }; Returns: Json
                            },
 "reject_payment_notification":
 { Args: { "p_notification_id": string,"p_reason": string }; Returns: Json
+                           },
+"resolve_sale_dispute":
+{ Args: { "p_note": string,"p_sale": string }; Returns: undefined
                            },
 "reverse_payment":
 { Args: { "p_payment_id": string,"p_reason": string }; Returns: Json
@@ -835,6 +932,9 @@ isOneToOne: false
                            },
 "signature_prepare":
 { Args: { "p_captured_at": string,"p_confirmation_id": string,"p_document_hash": string,"p_file_sha256": string,"p_sale_id": string,"p_size": number,"p_terms": string,"p_user": string }; Returns: Json
+                           },
+"unlink_customer_account":
+{ Args: { "p_customer": string,"p_reason": string }; Returns: undefined
                            },
 "whoami":
 { Args: Record<PropertyKey, never>; Returns: Json

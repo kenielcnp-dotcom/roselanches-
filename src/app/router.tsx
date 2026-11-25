@@ -7,7 +7,13 @@ import { PublicOnly, RequireAuth, RequireCustomer, RequireStaff } from '@/featur
 import { HomePage } from '@/features/dashboard/HomePage';
 import { ComingSoonPage } from '@/features/shared/ComingSoonPage';
 import { SettingsPage } from '@/features/settings/SettingsPage';
+import { DisputesPage } from '@/features/client-portal/DisputesPage';
+import { InvitePage } from '@/features/client-portal/InvitePage';
 import { PortalHomePage } from '@/features/client-portal/PortalHomePage';
+import { PortalLayout } from '@/features/client-portal/PortalLayout';
+import { PortalPixPage } from '@/features/client-portal/PortalPixPage';
+import { PortalPrivacyPage } from '@/features/client-portal/PortalPrivacyPage';
+import { PortalSalePage } from '@/features/client-portal/PortalSalePage';
 import { CustomerDetailPage } from '@/features/customers/CustomerDetailPage';
 import { CustomerFormPage } from '@/features/customers/CustomerFormPage';
 import { CustomersPage } from '@/features/customers/CustomersPage';
@@ -40,7 +46,17 @@ export const router = createBrowserRouter([
   { path: '/entrar', element: <PublicOnly><LoginPage /></PublicOnly> },
   { path: '/criar-conta', element: <PublicOnly><SignupPage /></PublicOnly> },
   { path: '/sem-acesso', element: <RequireAuth><NoAccessPage /></RequireAuth> },
-  { path: '/conta', element: <RequireCustomer><PortalHomePage /></RequireCustomer> },
+  { path: '/convite', element: <InvitePage /> },
+  {
+    path: '/conta',
+    element: <RequireCustomer><PortalLayout /></RequireCustomer>,
+    children: [
+      { index: true, element: <PortalHomePage /> },
+      { path: 'compras/:id', element: <PortalSalePage /> },
+      { path: 'pagar', element: <PortalPixPage /> },
+      { path: 'privacidade', element: <PortalPrivacyPage /> },
+    ],
+  },
   {
     path: '/',
     element: <RequireStaff><AdminLayout /></RequireStaff>,
@@ -49,6 +65,7 @@ export const router = createBrowserRouter([
       { path: 'vender', element: <NewSalePage /> },
       { path: 'vendas', element: <SalesPage /> },
       { path: 'vendas/:id', element: <SaleDetailPage /> },
+      { path: 'contestacoes', element: <DisputesPage /> },
       { path: 'clientes', element: <CustomersPage /> },
       { path: 'clientes/novo', element: <CustomerFormPage /> },
       { path: 'clientes/:id', element: <CustomerDetailPage /> },

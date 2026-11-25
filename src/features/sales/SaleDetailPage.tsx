@@ -14,6 +14,8 @@ import { discardFailedSale, enqueueCancel, retryOp } from '@/lib/offline/outbox'
 import { useLiveQuery } from '@/lib/offline/useLiveQuery';
 import { errorMessage } from '@/lib/supabase/errors';
 import { SaleSignature } from '@/features/signatures/SaleSignature';
+import { SaleResponseSection } from '@/features/client-portal/SaleResponseSection';
+import { useAuth } from '@/features/auth/AuthProvider';
 import { useSync } from '@/features/sync/SyncProvider';
 import { SaleBadges } from './SaleBadges';
 import { useSale } from './salesData';
@@ -21,6 +23,8 @@ import { useSale } from './salesData';
 export function SaleDetailPage() {
   const { id = '' } = useParams();
   const { db, requestSync } = useSync();
+  const { identity } = useAuth();
+  const isOwner = identity?.staff?.role === 'OWNER';
   const { server, sale, items: serverItems } = useSale(id);
   const local = useLiveQuery(() => db.localSales.get(id), [db, id]);
   const createOp = useLiveQuery(async () => (local ? ((await db.outbox.get(local.opId)) ?? null) : null), [db, local?.opId]);
@@ -120,6 +124,7 @@ export function SaleDetailPage() {
         </section>
 
         <SaleSignature saleId={sale.id} confirmationStatus={sale.confirmationStatus} />
+        <SaleResponseSection saleId={sale.id} onServer={!sale.sync || sale.sync === 'SYNCED'} isOwner={isOwner} />
 
         {sale.sync === 'FAILED' && createOp && (
           <section role="alert" className="space-y-3 rounded-card bg-danger/10 p-5">

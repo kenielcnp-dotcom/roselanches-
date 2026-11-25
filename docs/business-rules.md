@@ -68,6 +68,17 @@ Saldo = vendas ativas + saldo anterior + ajustes de débito − pagamentos confi
 - A tela de assinatura mostra cliente, lugar, compra, total e o texto v1. "Confirmar assinatura" só libera com um traço de verdade (um toque ou ponto não vale).
 - Assinatura é evidência de concordância com o conteúdo mostrado, não prova de identidade. Não há extração biométrica.
 - Venda assinada não é alterada em silêncio: cancelamento invalida a confirmação.
+- No portal, o cliente confirma ou contesta cada compra vendo o mesmo texto de confirmação; o servidor confere o hash do resumo canônico. Pode mudar de ideia: a manifestação anterior é invalidada (não apagada) e a nova entra no lugar.
+- **A contestação não mexe na dívida.** A Rose vê "compras contestadas" no painel, conversa com o cliente e: se a venda estiver errada, cancela e registra de novo; se estiver certa, encerra a contestação com uma resposta, que o cliente vê. Encerrada, a compra volta a "sem confirmação" e o cliente pode confirmar.
+
+## Portal do cliente
+
+- A Rose convida pela ficha do cliente: link pelo WhatsApp do cadastro, link copiado ou QR na tela. O link vale 3 dias, funciona uma vez, e gerar outro cancela o anterior.
+- O cliente abre o link, cria a conta (e-mail e senha) ou entra, e o vínculo acontece na hora. Conta da Rose nunca vira conta de cliente.
+- O portal mostra saldo, avisos de pagamento, extrato com o local de cada compra, o estado de pagamento e de confirmação, e filtros (a confirmar, em aberto, compras, pagamentos, local).
+- "Pagar com Pix": chave para copiar e QR estático (BR Code do Banco Central) com valor opcional ("Tudo", outro valor ou digitar no banco). "Já paguei" manda um aviso; o saldo só muda quando a Rose confirma.
+- A observação de um pagamento e o motivo de cancelamentos, estornos e ajustes aparecem para o cliente no extrato. As observações do cadastro do cliente, não.
+- A dona pode tirar o acesso (com motivo) e mandar um convite novo, por exemplo quando o cliente perde a senha.
 
 ## Cadastros
 

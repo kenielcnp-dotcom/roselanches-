@@ -47,6 +47,11 @@ Cada RPC descobre o negócio a partir de `auth.uid()` e nunca confia em `busines
 
 - Vínculo entre cadastro e conta só por convite de uso único: token de 192 bits, só o SHA-256 no banco, 72 h de validade, um convite aberto por cliente. O telefone nunca é usado como prova de identidade.
 - Nenhum link público com ID de cliente.
+- O token viaja depois do "#" da URL (nunca chega a servidor nenhum, nem aos logs), sai da barra de endereço assim que a tela abre e fica só no `sessionStorage` da aba até o vínculo.
+- O resgate registra cada tentativa; 10 falhas em uma hora bloqueiam a conta por uma hora, mesmo com um token certo.
+- O cliente não lê nenhuma tabela: as RPCs `portal_*` descobrem o cadastro pelo `auth.uid()` e nunca recebem id de cliente. Compra de outra pessoa responde "não encontrada", sem revelar que existe.
+- Confirmar, contestar e avisar pagamento são idempotentes (id gerado no aparelho); o mesmo id com outros dados vira CONFLICT registrado na auditoria.
+- O portal não grava nada financeiro no aparelho (só memória da página) e as consultas levam o id do cadastro na chave, para uma conta nunca ver o cache de outra.
 
 ## Dados no aparelho
 

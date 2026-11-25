@@ -3,14 +3,14 @@ import { Link } from 'react-router';
 import { Clock } from 'lucide-react';
 import { Button } from '@/components/Button';
 import { ErrorState, LoadingState } from '@/components/States';
-import { METHOD_LABELS, paymentLabel } from '@/domain/labels';
 import { formatBRL } from '@/domain/money';
-import { formatDate, formatDateTime, PERIOD_LABELS } from '@/domain/period';
+import { formatDateTime } from '@/domain/period';
 import { useLiveQuery } from '@/lib/offline/useLiveQuery';
 import { supabase } from '@/lib/supabase/client';
 import { errorMessage, toAppError } from '@/lib/supabase/errors';
 import { fetchStatement, type StatementEntry } from '@/services/sales';
 import { useSync } from '@/features/sync/SyncProvider';
+import { StatementEntryRow } from '@/features/shared/StatementEntryRow';
 
 const PAGE = 20;
 
@@ -76,7 +76,7 @@ export function CustomerStatement({ customerId }: { customerId: string }) {
       ) : (
         <ul className="divide-y divide-line overflow-hidden rounded-card bg-white shadow-soft ring-1 ring-line">
           {entries.map((e) => (
-            <EntryRow key={`${e.kind}-${e.id}`} entry={e} customerId={customerId} />
+            <StatementEntryRow key={`${e.kind}-${e.id}`} entry={e} to={staffLink(e, customerId)} audience="staff" />
           ))}
         </ul>
       )}
@@ -90,75 +90,8 @@ export function CustomerStatement({ customerId }: { customerId: string }) {
   );
 }
 
-function EntryRow({ entry: e, customerId }: { entry: StatementEntry; customerId: string }) {
-  const cancelled = e.status === 'CANCELLED' || e.status === 'REVERSED';
-  const credit = e.kind === 'PAYMENT' || e.kind === 'ADJUSTMENT_CREDIT';
-  const when = new Date(e.occurredAt);
-
-  let title: string;
-  let detail: string;
-  switch (e.kind) {
-    case 'SALE':
-      title =
-        e.mode === 'ITEMS' && e.items ? e.items.map((i) => `${i.quantity}× ${i.productName}`).join(' + ') : (e.description ?? 'Venda');
-      detail = `${formatDateTime(when)}${e.period ? ` · ${PERIOD_LABELS[e.period]}` : ''}${e.establishmentName ? ` · ${e.establishmentName}` : ''}`;
-      break;
-    case 'PAYMENT':
-      title = `Pagamento${e.method ? ` em ${METHOD_LABELS[e.method].toLowerCase()}` : ''}`;
-      detail = `${formatDateTime(when)}${e.description ? ` · ${e.description}` : ''}`;
-      break;
-    case 'OPENING_BALANCE':
-      title = 'Saldo anterior';
-      detail = `${formatDate(when)}${e.description ? ` · ${e.description}` : ''}`;
-      break;
-    default:
-      title = e.kind === 'ADJUSTMENT_CREDIT' ? 'Ajuste (crédito)' : 'Ajuste (débito)';
-      detail = `${formatDateTime(when)} · ${e.description ?? ''}`;
-  }
-
-  const row = (
-    <>
-      <span className="min-w-0 flex-1">
-        <span className={`block font-bold ${cancelled ? 'text-brown-soft line-through' : 'text-brown'}`}>{title}</span>
-        <span className="block text-sm text-brown-soft">{detail}</span>
-        <span className="mt-0.5 flex flex-wrap gap-1.5 text-xs font-bold">
-          {e.kind === 'SALE' && e.paymentKind && (
-            <span className="rounded-full bg-cream-deep px-2 py-0.5 text-brown">{paymentLabel(e.paymentKind, e.method)}</span>
-          )}
-          {cancelled && (
-            <span className="rounded-full bg-danger/10 px-2 py-0.5 text-danger">
-              {e.status === 'REVERSED' ? 'Estornado' : 'Cancelado'}
-              {e.statusReason ? `: ${e.statusReason}` : ''}
-            </span>
-          )}
-          {!cancelled && e.openCents !== null && e.kind !== 'PAYMENT' && e.paymentKind !== 'PAID_NOW' && (
-            <span className={`rounded-full px-2 py-0.5 ${e.openCents === 0 ? 'bg-success/10 text-success' : 'bg-peach text-orange-deep'}`}>
-              {e.openCents === 0 ? 'Quitado' : e.openCents === e.amountCents ? 'Em aberto' : `Falta ${formatBRL(e.openCents)}`}
-            </span>
-          )}
-        </span>
-      </span>
-      <span className={`tabular shrink-0 font-black ${cancelled ? 'text-brown-soft line-through' : credit ? 'text-success' : 'text-brown'}`}>
-        {credit ? '−' : ''}
-        {formatBRL(e.amountCents)}
-      </span>
-    </>
-  );
-
-  return (
-    <li>
-      <Link
-        to={
-          e.kind === 'SALE'
-            ? `/vendas/${e.id}`
-            : e.kind === 'PAYMENT'
-              ? `/recebimentos/${e.id}`
-              : `/clientes/${customerId}/lancamentos/${e.id}?tipo=${e.kind === 'OPENING_BALANCE' ? 'OPENING_BALANCE' : 'ADJUSTMENT'}`
-        }
-        className="flex items-start gap-3 px-4 py-3 active:bg-cream-deep"
-      >
-        {row}
-      </Link>
-    </li>
-  );
+function staffLink(e: StatementEntry, customerId: string): string {
+  if (e.kind === 'SALE') return `/vendas/${e.id}`;
+  if (e.kind === 'PAYMENT') return `/recebimentos/${e.id}`;
+  return `/clientes/${customerId}/lancamentos/${e.id}?tipo=${e.kind === 'OPENING_BALANCE' ? 'OPENING_BALANCE' : 'ADJUSTMENT'}`;
 }

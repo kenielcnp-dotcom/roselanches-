@@ -11,6 +11,7 @@ import { useAuth } from '@/features/auth/AuthProvider';
 import { useCustomers, useEstablishments } from '@/features/registry/queries';
 import { useSync } from '@/features/sync/SyncProvider';
 import { useLiveQuery } from '@/lib/offline/useLiveQuery';
+import { PortalAccessSection } from '@/features/client-portal/PortalAccessSection';
 import { CustomerStatement } from './CustomerStatement';
 
 export function CustomerDetailPage() {
@@ -79,11 +80,6 @@ export function CustomerDetailPage() {
             )}
           </div>
           {!c.isActive && <p className="font-bold text-danger">Cliente desativado</p>}
-          <p className="text-sm text-brown-soft">
-            {c.portalLinked && c.linkedAt
-              ? `Acessa a própria conta pelo app desde ${formatDate(new Date(c.linkedAt))}.`
-              : 'Ainda não acessa a própria conta pelo app.'}
-          </p>
           <div className="grid grid-cols-2 gap-3 pt-1">
             <Link
               to={`/clientes/${c.id}/editar`}
@@ -140,6 +136,8 @@ export function CustomerDetailPage() {
             Nova venda para {firstName}
           </Link>
         )}
+
+        <PortalAccessSection customer={c} isOwner={isOwner} />
 
         <CustomerStatement customerId={c.id} />
       </main>

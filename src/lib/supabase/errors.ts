@@ -65,6 +65,16 @@ const LDR_MESSAGES: Record<string, string> = {
   LDR_ALREADY_SIGNED: 'Esta venda já tem uma assinatura válida.',
   LDR_CONFIRMATION_CONFLICT: 'Já existe outra assinatura com este código.',
   LDR_INVALID_SIGNATURE: 'O arquivo da assinatura é inválido.',
+  LDR_CUSTOMER_ALREADY_LINKED: 'Este cliente já acessa a conta pelo celular.',
+  LDR_CUSTOMER_INACTIVE: 'Cliente desativado. Reative o cadastro antes de convidar.',
+  LDR_CUSTOMER_NOT_LINKED: 'Este cliente não tem acesso pelo celular.',
+  LDR_INVALID_FILTER: 'Filtro inválido.',
+  LDR_INVALID_CONFIRMATION: 'Não foi possível registrar a sua resposta. Abra a compra de novo.',
+  LDR_INVALID_NOTICE: 'Não foi possível enviar o aviso. Tente de novo.',
+  LDR_INVALID_AMOUNT: 'Valor inválido.',
+  LDR_INVALID_NOTE: 'O recado pode ter até 200 caracteres.',
+  LDR_TOO_MANY_NOTICES: 'Você já tem 5 avisos esperando a Rose conferir. Aguarde ela responder.',
+  LDR_NO_OPEN_DISPUTE: 'Esta compra não tem contestação em aberto.',
 };
 
 const AUTH_MESSAGES: Record<string, string> = {

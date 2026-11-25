@@ -232,29 +232,50 @@ export async function fetchStatement(
     p_limit: limit,
   });
   throwIfError(error);
-  return (data ?? []).map((r) => {
-    const items = itemsSchema.parse(r.items ?? null);
-    return {
-      kind: r.kind as StatementKind,
-      id: r.entry_id,
-      occurredAt: r.occurred_at,
-      period: (r.period as Period | null) ?? null,
-      establishmentName: r.establishment_name,
-      mode: (r.mode as SaleMode | null) ?? null,
-      description: r.description,
-      items: items?.map((i) => ({
-        productName: i.name,
-        quantity: i.quantity,
-        unitPriceCents: i.unit_price_cents,
-        subtotalCents: i.subtotal_cents,
-      })) ?? null,
-      amountCents: r.amount_cents,
-      paymentKind: (r.payment_kind as PaymentKind | null) ?? null,
-      method: (r.method as PaymentMethod | null) ?? null,
-      status: r.status,
-      statusReason: r.status_reason,
-      confirmationStatus: (r.confirmation_status as ConfirmationStatus | null) ?? null,
-      openCents: r.open_cents,
-    };
-  });
+  return (data ?? []).map(toStatementEntry);
+}
+
+/** Linha do extrato (mesmo formato para a Rose e para o portal do cliente). */
+export interface StatementRow {
+  kind: string;
+  entry_id: string;
+  occurred_at: string;
+  period: string | null;
+  establishment_name: string | null;
+  mode: string | null;
+  description: string | null;
+  items: unknown;
+  amount_cents: number;
+  payment_kind: string | null;
+  method: string | null;
+  status: string;
+  status_reason: string | null;
+  confirmation_status: string | null;
+  open_cents: number | null;
+}
+
+export function toStatementEntry(r: StatementRow): StatementEntry {
+  const items = itemsSchema.parse(r.items ?? null);
+  return {
+    kind: r.kind as StatementKind,
+    id: r.entry_id,
+    occurredAt: r.occurred_at,
+    period: (r.period as Period | null) ?? null,
+    establishmentName: r.establishment_name,
+    mode: (r.mode as SaleMode | null) ?? null,
+    description: r.description,
+    items: items?.map((i) => ({
+      productName: i.name,
+      quantity: i.quantity,
+      unitPriceCents: i.unit_price_cents,
+      subtotalCents: i.subtotal_cents,
+    })) ?? null,
+    amountCents: r.amount_cents,
+    paymentKind: (r.payment_kind as PaymentKind | null) ?? null,
+    method: (r.method as PaymentMethod | null) ?? null,
+    status: r.status,
+    statusReason: r.status_reason,
+    confirmationStatus: (r.confirmation_status as ConfirmationStatus | null) ?? null,
+    openCents: r.open_cents,
+  };
 }

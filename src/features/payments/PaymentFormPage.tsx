@@ -181,7 +181,13 @@ export function PaymentFormPage() {
             ))}
           </div>
         </fieldset>
-        <TextField label="Observação (opcional)" value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} />
+        <TextField
+          label="Observação (opcional)"
+          value={note}
+          maxLength={200}
+          hint="O cliente vê esta observação no extrato dele."
+          onChange={(e) => setNote(e.target.value)}
+        />
 
         <Button block className="min-h-14 text-lg" loading={saving} disabled={amount <= 0 || amount > MAX_CENTS} onClick={() => void save()}>
           Salvar pagamento de {formatBRL(amount)}

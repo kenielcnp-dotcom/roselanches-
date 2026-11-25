@@ -7,6 +7,7 @@ import { Button } from '@/components/Button';
 import { TextField } from '@/components/Field';
 import { supabase } from '@/lib/supabase/client';
 import { errorMessage } from '@/lib/supabase/errors';
+import { afterAuthPath, pendingInvite } from '@/features/client-portal/pendingInvite';
 import { AuthLayout } from './AuthLayout';
 
 const schema = z.object({
@@ -31,11 +32,12 @@ export function LoginPage() {
       setServerError(errorMessage(error));
       return;
     }
-    navigate('/', { replace: true });
+    navigate(afterAuthPath(), { replace: true });
   });
 
   return (
     <AuthLayout title="Entrar">
+      {pendingInvite() && <p className="mb-4 rounded-2xl bg-peach px-4 py-3 text-brown">Entre para ligar o convite da Rose à sua conta.</p>}
       <form onSubmit={onSubmit} noValidate className="space-y-4">
         <TextField label="E-mail" type="email" autoComplete="email" inputMode="email" error={errors.email?.message} {...register('email')} />
         <TextField label="Senha" type="password" autoComplete="current-password" error={errors.password?.message} {...register('password')} />
@@ -50,7 +52,7 @@ export function LoginPage() {
       </form>
       <p className="mt-5 text-center text-brown-soft">
         Ainda não tem conta?{' '}
-        <Link to="/criar-conta" className="font-extrabold text-orange-deep underline-offset-2 hover:underline">
+        <Link to="/criar-conta" replace className="font-extrabold text-orange-deep underline-offset-2 hover:underline">
           Criar conta
         </Link>
       </p>

@@ -24,5 +24,8 @@ describe('chave Pix', () => {
     expect(formatPixKey('CPF', '12345678909')).toBe('123.456.789-09');
     expect(formatPixKey('CNPJ', '11222333000181')).toBe('11.222.333/0001-81');
     expect(formatPixKey('EMAIL', 'rose@exemplo.com')).toBe('rose@exemplo.com');
+    expect(formatPixKey('PHONE', '+5565999887766')).toBe('(65) 99988-7766');
+    // O que aparece na tela volta a ser a mesma chave ao salvar de novo.
+    expect(normalizePixKey('PHONE', formatPixKey('PHONE', '+5565999887766'))).toEqual({ ok: true, key: '+5565999887766' });
   });
 });
