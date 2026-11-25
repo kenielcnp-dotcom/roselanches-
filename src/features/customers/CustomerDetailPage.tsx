@@ -1,5 +1,5 @@
 import { Link, useParams } from 'react-router';
-import { MessageCircle, Pencil, Plus, Store, UserRound } from 'lucide-react';
+import { HandCoins, MessageCircle, NotebookPen, Pencil, Plus, SlidersHorizontal, Store, UserRound } from 'lucide-react';
 import { CachedNotice } from '@/components/CachedNotice';
 import { PageHeader } from '@/components/PageHeader';
 import { ErrorState, LoadingState } from '@/components/States';
@@ -7,6 +7,7 @@ import { formatBRL } from '@/domain/money';
 import { formatDate } from '@/domain/period';
 import { formatPhone, whatsappLink } from '@/domain/phone';
 import { errorMessage } from '@/lib/supabase/errors';
+import { useAuth } from '@/features/auth/AuthProvider';
 import { useCustomers, useEstablishments } from '@/features/registry/queries';
 import { useSync } from '@/features/sync/SyncProvider';
 import { useLiveQuery } from '@/lib/offline/useLiveQuery';
@@ -16,6 +17,7 @@ export function CustomerDetailPage() {
   const { id } = useParams();
   const customers = useCustomers();
   const establishments = useEstablishments();
+  const { identity } = useAuth();
 
   if (customers.isPending || establishments.isPending) return <LoadingState />;
   if (customers.isError || establishments.isError) {
@@ -30,6 +32,7 @@ export function CustomerDetailPage() {
   if (!c) return <ErrorState message="Cliente não encontrado." />;
   const places = establishments.data.filter((e) => c.establishmentIds.includes(e.id));
   const firstName = c.fullName.split(' ')[0] ?? c.fullName;
+  const isOwner = identity?.staff?.role === 'OWNER';
 
   return (
     <>
@@ -102,6 +105,31 @@ export function CustomerDetailPage() {
             )}
           </div>
         </section>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Link
+            to={`/recebimentos/novo?cliente=${c.id}`}
+            className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-success px-3 text-center font-extrabold text-white shadow-soft active:brightness-95"
+          >
+            <HandCoins className="h-5 w-5 shrink-0" aria-hidden="true" />
+            Receber pagamento
+          </Link>
+          {isOwner && (
+            <Link
+              to={`/clientes/${c.id}/saldo-anterior`}
+              className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-white px-3 text-center font-extrabold text-brown shadow-soft ring-1 ring-line active:bg-cream-deep"
+            >
+              <NotebookPen className="h-5 w-5 shrink-0" aria-hidden="true" />
+              Saldo anterior
+            </Link>
+          )}
+        </div>
+        {isOwner && (
+          <Link to={`/clientes/${c.id}/ajuste`} className="flex min-h-11 items-center justify-center gap-2 font-extrabold text-brown-soft">
+            <SlidersHorizontal className="h-5 w-5" aria-hidden="true" />
+            Lançar ajuste (desconto ou correção)
+          </Link>
+        )}
 
         {c.isActive && (
           <Link

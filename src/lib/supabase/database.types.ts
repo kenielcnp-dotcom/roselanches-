@@ -243,6 +243,12 @@ isOneToOne: false
       foreignKeyName: "financial_adjustments_related_payment_id_business_id_custo_fkey"
       columns: ["related_payment_id","business_id","customer_id"]
 isOneToOne: false
+      referencedRelation: "payment_list"
+      referencedColumns: ["id","business_id","customer_id"]
+    },{
+      foreignKeyName: "financial_adjustments_related_payment_id_business_id_custo_fkey"
+      columns: ["related_payment_id","business_id","customer_id"]
+isOneToOne: false
       referencedRelation: "payments"
       referencedColumns: ["id","business_id","customer_id"]
     },{
@@ -337,6 +343,12 @@ isOneToOne: false
       foreignKeyName: "payment_notifications_payment_id_business_id_fkey"
       columns: ["payment_id","business_id"]
 isOneToOne: false
+      referencedRelation: "payment_list"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payment_notifications_payment_id_business_id_fkey"
+      columns: ["payment_id","business_id"]
+isOneToOne: false
       referencedRelation: "payments"
       referencedColumns: ["id","business_id"]
     }
@@ -376,6 +388,12 @@ isOneToOne: false
       columns: ["customer_id","business_id"]
 isOneToOne: false
       referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payments_notification_id_business_id_fkey"
+      columns: ["notification_id","business_id"]
+isOneToOne: false
+      referencedRelation: "payment_notification_list"
       referencedColumns: ["id","business_id"]
     },{
       foreignKeyName: "payments_notification_id_business_id_fkey"
@@ -610,6 +628,106 @@ isOneToOne: false
       referencedColumns: ["id"]
     }
                   ]
+                },"payment_list": {
+                  Row: {
+                    "amount_cents": number,"business_id": string,"created_at": string,"customer_id": string,"customer_name": string,"id": string,"method": string,"note": string | null,"notification_id": string | null,"received_at": string,"reverse_reason": string | null,"reversed_at": string | null,"sale_id": string | null,"source": string,"status": string
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "payments_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_balances"
+      referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "payments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_overview"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payments_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payments_notification_id_business_id_fkey"
+      columns: ["notification_id","business_id"]
+isOneToOne: false
+      referencedRelation: "payment_notification_list"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payments_notification_id_business_id_fkey"
+      columns: ["notification_id","business_id"]
+isOneToOne: false
+      referencedRelation: "payment_notifications"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payments_sale_id_business_id_customer_id_fkey"
+      columns: ["sale_id","business_id","customer_id"]
+isOneToOne: false
+      referencedRelation: "sale_list"
+      referencedColumns: ["id","business_id","customer_id"]
+    },{
+      foreignKeyName: "payments_sale_id_business_id_customer_id_fkey"
+      columns: ["sale_id","business_id","customer_id"]
+isOneToOne: false
+      referencedRelation: "sales"
+      referencedColumns: ["id","business_id","customer_id"]
+    }
+                  ]
+                },"payment_notification_list": {
+                  Row: {
+                    "amount_cents": number | null,"business_id": string,"created_at": string,"customer_balance_cents": number | null,"customer_id": string,"customer_name": string,"customer_phone": string | null,"id": string,"note": string | null,"payment_id": string | null,"resolution_note": string | null,"resolved_at": string | null,"status": string
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "payment_notifications_business_id_fkey"
+      columns: ["business_id"]
+isOneToOne: false
+      referencedRelation: "businesses"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "payment_notifications_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_balances"
+      referencedColumns: ["customer_id","business_id"]
+    },{
+      foreignKeyName: "payment_notifications_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customer_overview"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payment_notifications_customer_id_business_id_fkey"
+      columns: ["customer_id","business_id"]
+isOneToOne: false
+      referencedRelation: "customers"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payment_notifications_payment_id_business_id_fkey"
+      columns: ["payment_id","business_id"]
+isOneToOne: false
+      referencedRelation: "payment_list"
+      referencedColumns: ["id","business_id"]
+    },{
+      foreignKeyName: "payment_notifications_payment_id_business_id_fkey"
+      columns: ["payment_id","business_id"]
+isOneToOne: false
+      referencedRelation: "payments"
+      referencedColumns: ["id","business_id"]
+    }
+                  ]
                 },"product_overview": {
                   Row: {
                     "business_id": string,"category": string | null,"created_at": string,"id": string,"is_active": boolean,"last_sold_at": string | null,"name": string,"price_cents": number,"units_90d": number | null,"updated_at": string
@@ -671,8 +789,20 @@ isOneToOne: false
                 }
           }
           Functions: {
-            "cancel_sale":
+            "cancel_entry":
+{ Args: { "p_id": string,"p_kind": string,"p_reason": string }; Returns: Json
+                           },
+"cancel_sale":
 { Args: { "p_reason": string,"p_sale_id": string }; Returns: Json
+                           },
+"confirm_payment_notification":
+{ Args: { "p_amount_cents": number,"p_note"?: string,"p_notification_id": string,"p_payment_id": string,"p_received_at": string }; Returns: Json
+                           },
+"create_adjustment":
+{ Args: { "p_entry": Json }; Returns: Json
+                           },
+"create_opening_balance":
+{ Args: { "p_entry": Json }; Returns: Json
                            },
 "create_sale":
 { Args: { "p_sale": Json }; Returns: Json
@@ -684,6 +814,15 @@ isOneToOne: false
                            },
 "dashboard_summary":
 { Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"register_payment":
+{ Args: { "p_payment": Json }; Returns: Json
+                           },
+"reject_payment_notification":
+{ Args: { "p_notification_id": string,"p_reason": string }; Returns: Json
+                           },
+"reverse_payment":
+{ Args: { "p_payment_id": string,"p_reason": string }; Returns: Json
                            },
 "sale_document_hash":
 { Args: { "p_sale": string,"p_terms": string }; Returns: string

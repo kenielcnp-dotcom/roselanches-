@@ -18,6 +18,7 @@ import { useAuth } from '@/features/auth/AuthProvider';
 import { useSaveSalesSettings, useSettings } from '@/features/registry/queries';
 import { useOptionalSync } from '@/features/sync/SyncProvider';
 import { DeviceSection, SignOutButton } from './DeviceSection';
+import { PixSection } from './PixSection';
 
 export function SettingsPage() {
   const { identity } = useAuth();
@@ -40,7 +41,6 @@ export function SettingsPage() {
           </dl>
         </section>
         {staff && <SalesSettingsSection businessId={staff.businessId} canEdit={staff.role === 'OWNER'} />}
-        <p className="px-1 text-brown-soft">Os dados do Pix ficam aqui na etapa de recebimentos.</p>
         {staff && <DeviceSection />}
         <SignOutButton />
       </main>
@@ -52,7 +52,12 @@ function SalesSettingsSection({ businessId, canEdit }: { businessId: string; can
   const query = useSettings(businessId);
   if (query.isPending) return <LoadingState />;
   if (query.isError) return <ErrorState message={errorMessage(query.error)} onRetry={() => void query.refetch()} />;
-  return <SalesSettingsForm businessId={businessId} canEdit={canEdit} settings={query.data} />;
+  return (
+    <>
+      <SalesSettingsForm businessId={businessId} canEdit={canEdit} settings={query.data} />
+      <PixSection businessId={businessId} canEdit={canEdit} current={query.data.pix} />
+    </>
+  );
 }
 
 const AUTO = 'AUTO';

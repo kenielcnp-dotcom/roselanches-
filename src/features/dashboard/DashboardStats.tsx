@@ -87,6 +87,19 @@ export function DashboardStats() {
           <p className="text-sm text-brown-soft">devendo agora</p>
         </Link>
       </div>
+      <Link
+        to="/recebimentos"
+        className="flex min-h-14 items-center justify-between gap-3 rounded-card bg-white/90 px-4 py-3 shadow-soft ring-1 ring-line active:bg-cream-deep"
+      >
+        <span className="font-bold text-brown">
+          Recebido hoje: <span className="tabular font-black text-success">{formatBRL(d.todayReceivedCents ?? 0)}</span>
+        </span>
+        {(d.pendingNotices ?? 0) > 0 && (
+          <span className="rounded-full bg-orange-deep px-3 py-1 text-sm font-extrabold text-white">
+            {d.pendingNotices === 1 ? '1 aviso de Pix' : `${d.pendingNotices} avisos de Pix`}
+          </span>
+        )}
+      </Link>
     </div>
   );
 }

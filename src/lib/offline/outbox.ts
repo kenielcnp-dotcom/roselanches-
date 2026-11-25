@@ -3,7 +3,8 @@
 import Dexie from 'dexie';
 import { toCreateSalePayload } from '@/services/sales';
 import type { OutboxOp, SaleDraft } from '@/types/domain';
-import type { LocalDb, LocalSale, LocalSignature } from './db';
+import type { RegisterPaymentPayload } from '@/services/payments';
+import type { LocalDb, LocalPayment, LocalSale, LocalSignature } from './db';
 
 export interface SaleDisplay {
   customerName: string;
@@ -78,6 +79,30 @@ export async function enqueueCancel(db: LocalDb, saleId: string, reason: string,
   });
 }
 
+/**
+ * Pagamento recebido na rua, também sem internet. O id nasce quando a tela
+ * abre: gravar de novo o mesmo id (toque duplo) não cria outro recebimento.
+ */
+export async function enqueuePayment(
+  db: LocalDb,
+  payload: RegisterPaymentPayload,
+  customerName: string,
+  now = Date.now(),
+): Promise<boolean> {
+  const op = newOp('REGISTER_PAYMENT', payload.id, payload, [], now);
+  const row: LocalPayment = { id: payload.id, opId: op.opId, payload, customerName, createdAt: now };
+  try {
+    await db.transaction('rw', db.localPayments, db.outbox, async () => {
+      await db.localPayments.add(row);
+      await db.outbox.add(op);
+    });
+    return true;
+  } catch (e) {
+    if (e instanceof Dexie.ConstraintError || (e as { name?: string }).name === 'ConstraintError') return false;
+    throw e;
+  }
+}
+
 /** "Tentar de novo" numa operação que falhou. */
 export async function retryOp(db: LocalDb, opId: string, now = Date.now()): Promise<void> {
   await db.outbox.update(opId, { state: 'PENDING', nextAttemptAt: now, updatedAt: now, attempts: 0 });
@@ -108,6 +133,7 @@ export interface OutboxCounts {
   /** Vendas ainda não confirmadas pelo servidor (inclui as com falha). */
   pendingSales: number;
   pendingSignatures: number;
+  pendingPayments: number;
   pendingOther: number;
   failed: number;
   syncing: boolean;
@@ -117,6 +143,7 @@ export interface OutboxCounts {
 export function countOutbox(ops: readonly OutboxOp[]): OutboxCounts {
   let pendingSales = 0;
   let pendingSignatures = 0;
+  let pendingPayments = 0;
   let pendingOther = 0;
   let failed = 0;
   let syncing = false;
@@ -128,14 +155,15 @@ export function countOutbox(ops: readonly OutboxOp[]): OutboxCounts {
     if (o.lastError?.kind === 'auth' && o.state === 'PENDING') authPaused = true;
     if (o.type === 'CREATE_SALE') pendingSales += 1;
     else if (o.type === 'UPLOAD_SIGNATURE') pendingSignatures += 1;
+    else if (o.type === 'REGISTER_PAYMENT') pendingPayments += 1;
     else pendingOther += 1;
   }
-  return { pendingSales, pendingSignatures, pendingOther, failed, syncing, authPaused };
+  return { pendingSales, pendingSignatures, pendingPayments, pendingOther, failed, syncing, authPaused };
 }
 
 /** Itens já confirmados ficam 7 dias (para a tela de vendas) e depois saem. */
 export async function pruneSynced(db: LocalDb, now = Date.now(), keepMs = 7 * 86_400_000): Promise<void> {
-  await db.transaction('rw', db.localSales, db.outbox, async () => {
+  await db.transaction('rw', db.localSales, db.localPayments, db.outbox, async () => {
     const old = await db.outbox
       .where('state')
       .equals('SYNCED')
@@ -143,7 +171,7 @@ export async function pruneSynced(db: LocalDb, now = Date.now(), keepMs = 7 * 86
       .toArray();
     if (old.length === 0) return;
     await db.outbox.bulkDelete(old.map((o) => o.opId));
-    const saleIds = old.filter((o) => o.type === 'CREATE_SALE').map((o) => o.entityId);
-    await db.localSales.bulkDelete(saleIds);
+    await db.localSales.bulkDelete(old.filter((o) => o.type === 'CREATE_SALE').map((o) => o.entityId));
+    await db.localPayments.bulkDelete(old.filter((o) => o.type === 'REGISTER_PAYMENT').map((o) => o.entityId));
   });
 }

@@ -17,6 +17,7 @@ export function DeviceSection() {
   const toast = useToast();
   const waitingSales = counts.pendingSales;
   const waitingSignatures = counts.pendingSignatures;
+  const waitingPayments = counts.pendingPayments;
 
   return (
     <section aria-labelledby="dados-celular" className="space-y-3 rounded-card bg-white/90 p-5 shadow-soft ring-1 ring-line">
@@ -25,11 +26,12 @@ export function DeviceSection() {
         Dados no celular
       </h2>
       <p className="text-brown">
-        {waitingSales + waitingSignatures === 0
+        {waitingSales + waitingSignatures + waitingPayments === 0
           ? 'Tudo o que foi registrado aqui já chegou ao servidor.'
           : `Aguardando envio: ${[
               waitingSales > 0 ? plural(waitingSales, 'venda', 'vendas') : null,
               waitingSignatures > 0 ? plural(waitingSignatures, 'assinatura', 'assinaturas') : null,
+              waitingPayments > 0 ? plural(waitingPayments, 'pagamento', 'pagamentos') : null,
             ]
               .filter(Boolean)
               .join(' e ')}.`}
@@ -87,7 +89,7 @@ export function SignOutButton() {
   const { counts, requestSync } = useSync();
   const [blocked, setBlocked] = useState(false);
   const [sending, setSending] = useState(false);
-  const unsent = counts.pendingSales + counts.pendingSignatures + counts.pendingOther;
+  const unsent = counts.pendingSales + counts.pendingSignatures + counts.pendingPayments + counts.pendingOther;
 
   return (
     <>

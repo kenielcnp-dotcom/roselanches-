@@ -29,7 +29,7 @@ interface SyncContextValue {
 
 const SyncContext = createContext<SyncContextValue | null>(null);
 
-const EMPTY: OutboxCounts = { pendingSales: 0, pendingSignatures: 0, pendingOther: 0, failed: 0, syncing: false, authPaused: false };
+const EMPTY: OutboxCounts = { pendingSales: 0, pendingSignatures: 0, pendingPayments: 0, pendingOther: 0, failed: 0, syncing: false, authPaused: false };
 
 /** Só uma rodada por vez, também entre abas (Web Lock), quando o navegador suporta. */
 async function withSyncLock(fn: () => Promise<void>): Promise<void> {
@@ -90,6 +90,7 @@ function SyncEngine({ userId, businessId, children }: { userId: string; business
         if (report.sent > 0) {
           const n = report.syncedSales.length;
           if (n > 0) toast.show(n === 1 ? 'Venda sincronizada.' : `${n} vendas sincronizadas.`);
+          else if (report.syncedPayments > 0) toast.show(report.syncedPayments === 1 ? 'Pagamento sincronizado.' : `${report.syncedPayments} pagamentos sincronizados.`);
           else if (report.syncedSignatures > 0) toast.show('Assinatura sincronizada.');
           await Promise.all([
             queryClient.invalidateQueries({ queryKey: ['dashboard'] }),
@@ -97,6 +98,7 @@ function SyncEngine({ userId, businessId, children }: { userId: string; business
             queryClient.invalidateQueries({ queryKey: ['sales'] }),
             queryClient.invalidateQueries({ queryKey: ['statement'] }),
             queryClient.invalidateQueries({ queryKey: ['signature'] }),
+            queryClient.invalidateQueries({ queryKey: ['payments'] }),
           ]);
           await refreshCatalogNow();
         }
@@ -132,7 +134,7 @@ function SyncEngine({ userId, businessId, children }: { userId: string; business
   }, [connection, requestSync]);
 
   // Com pendências, tenta de tempos em tempos (o backoff de cada operação decide se é hora).
-  const hasPending = counts.pendingSales + counts.pendingSignatures + counts.pendingOther - counts.failed > 0;
+  const hasPending = counts.pendingSales + counts.pendingSignatures + counts.pendingPayments + counts.pendingOther - counts.failed > 0;
   useEffect(() => {
     if (!hasPending) return;
     const id = window.setInterval(() => void requestSync(), SYNC_INTERVAL_MS);

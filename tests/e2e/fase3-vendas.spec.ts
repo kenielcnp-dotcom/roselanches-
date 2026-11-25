@@ -136,7 +136,8 @@ test('cancelar venda com motivo; o extrato mostra cancelada', async ({ page }) =
 
   await page.getByRole('link', { name: /Maria Silva/ }).click();
   await expect(page.getByRole('heading', { name: 'Compras e pagamentos' })).toBeVisible();
-  await expect(page.getByText('Cancelado: Valor errado')).toBeVisible();
+  // Só a venda desta rodada (outras execuções deixam vendas canceladas parecidas).
+  await expect(page.getByRole('link', { name: new RegExp(`Online ${suffix}`) }).getByText('Cancelado: Valor errado')).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/14-extrato-cliente.png`, fullPage: true });
   const { rows } = await db.query('select status from public.sales where description = $1', [`Online ${suffix}`]);
   expect(rows[0].status).toBe('CANCELLED');

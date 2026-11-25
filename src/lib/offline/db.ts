@@ -9,6 +9,7 @@
 import Dexie, { type Table } from 'dexie';
 import type { Customer } from '@/services/customers';
 import type { Establishment } from '@/services/establishments';
+import type { RegisterPaymentPayload } from '@/services/payments';
 import type { Product } from '@/services/products';
 import type { OutboxOp, Period, SaleDraft } from '@/types/domain';
 
@@ -57,6 +58,15 @@ export interface LocalSignature {
   capturedAt: string;
 }
 
+/** Pagamento registrado neste celular, até o servidor confirmar. */
+export interface LocalPayment {
+  id: string;
+  opId: string;
+  payload: RegisterPaymentPayload;
+  customerName: string;
+  createdAt: number;
+}
+
 export class LocalDb extends Dexie {
   meta!: Table<MetaRow, string>;
   establishments!: Table<CachedEstablishment, string>;
@@ -65,6 +75,7 @@ export class LocalDb extends Dexie {
   localSales!: Table<LocalSale, string>;
   outbox!: Table<OutboxOp, string>;
   localSignatures!: Table<LocalSignature, string>;
+  localPayments!: Table<LocalPayment, string>;
 
   constructor(name: string) {
     super(name);
@@ -77,6 +88,7 @@ export class LocalDb extends Dexie {
       outbox: 'opId, state, createdAt, entityId',
     });
     this.version(2).stores({ localSignatures: 'confirmationId, saleId' });
+    this.version(3).stores({ localPayments: 'id, createdAt, opId' });
   }
 }
 

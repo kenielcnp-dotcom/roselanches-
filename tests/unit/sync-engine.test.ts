@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto';
 import { randomUUID } from 'node:crypto';
 import { getLocalDb, deleteLocalDb, type LocalDb } from '@/lib/offline/db';
-import { countOutbox, discardFailedSale, enqueueCancel, enqueueSale, resumeInterrupted } from '@/lib/offline/outbox';
+import { countOutbox, discardFailedSale, enqueueCancel, enqueuePayment, enqueueSale, resumeInterrupted } from '@/lib/offline/outbox';
 import { backoffDelay, runSyncRound } from '@/lib/offline/sync-engine';
 import type { Client } from '@/lib/supabase/client';
 import type { SaleDraft } from '@/types/domain';
@@ -307,5 +307,28 @@ describe('assinatura na fila', () => {
     expect(ops.map((o) => o.state)).toEqual(['SYNCED', 'PENDING']);
     expect(await db.localSignatures.count()).toBe(1);
     expect(countOutbox(ops)).toMatchObject({ pendingSales: 0, pendingSignatures: 1 });
+  });
+});
+
+describe('pagamento na fila', () => {
+  function pay(customerId = randomUUID()) {
+    return { id: randomUUID(), customer_id: customerId, amount_cents: 1500, method: 'CASH' as const, received_at: new Date().toISOString(), note: null };
+  }
+
+  it('grava no celular; toque duplo não cria outro; sobe pela fila', async () => {
+    const p = pay();
+    expect(await enqueuePayment(db, p, 'Maria Silva')).toBe(true);
+    expect(await enqueuePayment(db, p, 'Maria Silva')).toBe(false);
+    expect(countOutbox(await db.outbox.toArray())).toMatchObject({ pendingPayments: 1, pendingSales: 0 });
+    const { client, calls } = fakeClient(() => ({ data: { status: 'CREATED' }, error: null }));
+    const r = await runSyncRound(db, client);
+    expect(r.syncedPayments).toBe(1);
+    expect(calls).toEqual([{ name: 'register_payment', args: { p_payment: p } }]);
+  });
+
+  it('CONFLICT fica em FAILED para revisão', async () => {
+    await enqueuePayment(db, pay(), 'Maria Silva');
+    const { client } = fakeClient(() => ({ data: { status: 'CONFLICT' }, error: null }));
+    expect((await runSyncRound(db, client)).failed).toBe(1);
   });
 });

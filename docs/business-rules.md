@@ -47,7 +47,11 @@ Saldo = vendas ativas + saldo anterior + ajustes de débito − pagamentos confi
 
 - Dinheiro ou Pix; parcial ou total. Cada pagamento tem UUID próprio, então um reenvio não gera dois recebimentos.
 - Pagamentos quitam as dívidas mais antigas primeiro (FIFO derivado), o que define o "estado de pagamento" de cada venda e a "dívida originada" em cada estabelecimento.
-- Aviso de Pix do cliente ("Já paguei") **não** reduz o saldo. Só a confirmação da Rose cria o pagamento, e um aviso vira no máximo um pagamento.
+- Aviso de Pix do cliente ("Já paguei") **não** reduz o saldo. Só a confirmação da Rose cria o pagamento, e um aviso vira no máximo um pagamento. Ao confirmar, a Rose informa o valor que **viu no banco** (pode ser diferente do avisado). Recusar exige motivo, que o cliente vê.
+- Registrar pagamento (dinheiro ou Pix recebido direto) funciona sem internet, pela fila. A tela sugere "Quitar tudo" e avisa quanto ainda fica devendo, ou quanto vira crédito.
+- Pagamento de venda paga na hora não se estorna sozinho: cancela-se a venda, e o pagamento é estornado junto.
+- **Só a dona** estorna pagamentos e lança ou cancela saldo anterior e ajustes ("Diminuir a dívida" = crédito; "Aumentar a dívida" = débito). Tudo com motivo, autor e data.
+- Saldo anterior não pode ter data de referência no futuro.
 - Correção = estorno com motivo.
 
 ## Confirmação do cliente

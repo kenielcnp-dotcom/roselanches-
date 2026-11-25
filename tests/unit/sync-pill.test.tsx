@@ -24,3 +24,13 @@ describe('pílula de sincronização', () => {
     expect(screen.getByRole('status')).toHaveTextContent('1 venda não enviada');
   });
 });
+
+describe('pílula compacta', () => {
+  it('mostra só o ícone e a contagem, mantendo o texto para leitores de tela', () => {
+    render(<SyncPill compact state={{ kind: 'pending', sales: 1, signatures: 0, payments: 1 }} />);
+    const pill = screen.getByRole('status');
+    expect(pill).toHaveTextContent('Aguardando envio');
+    expect(pill).toHaveTextContent('1 venda e 1 pagamento');
+    expect(pill).toHaveTextContent('2');
+  });
+});

@@ -4,10 +4,17 @@ import { dbConnect } from './helpers';
 // Matriz de quem executa cada função. Qualquer função nova precisa entrar aqui
 // de propósito: o teste falha se uma função aparecer sem decisão explícita.
 const AUTHENTICATED_RPCS = [
+  'cancel_entry',
   'cancel_sale',
+  'confirm_payment_notification',
+  'create_adjustment',
+  'create_opening_balance',
   'create_sale',
   'customer_statement',
   'dashboard_summary',
+  'register_payment',
+  'reject_payment_notification',
+  'reverse_payment',
   'sale_document_hash',
   'save_customer',
   'whoami',

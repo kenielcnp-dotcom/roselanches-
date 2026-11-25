@@ -76,7 +76,7 @@ export function CustomerStatement({ customerId }: { customerId: string }) {
       ) : (
         <ul className="divide-y divide-line overflow-hidden rounded-card bg-white shadow-soft ring-1 ring-line">
           {entries.map((e) => (
-            <EntryRow key={`${e.kind}-${e.id}`} entry={e} />
+            <EntryRow key={`${e.kind}-${e.id}`} entry={e} customerId={customerId} />
           ))}
         </ul>
       )}
@@ -90,7 +90,7 @@ export function CustomerStatement({ customerId }: { customerId: string }) {
   );
 }
 
-function EntryRow({ entry: e }: { entry: StatementEntry }) {
+function EntryRow({ entry: e, customerId }: { entry: StatementEntry; customerId: string }) {
   const cancelled = e.status === 'CANCELLED' || e.status === 'REVERSED';
   const credit = e.kind === 'PAYMENT' || e.kind === 'ADJUSTMENT_CREDIT';
   const when = new Date(e.occurredAt);
@@ -147,13 +147,18 @@ function EntryRow({ entry: e }: { entry: StatementEntry }) {
 
   return (
     <li>
-      {e.kind === 'SALE' ? (
-        <Link to={`/vendas/${e.id}`} className="flex items-start gap-3 px-4 py-3 active:bg-cream-deep">
-          {row}
-        </Link>
-      ) : (
-        <div className="flex items-start gap-3 px-4 py-3">{row}</div>
-      )}
+      <Link
+        to={
+          e.kind === 'SALE'
+            ? `/vendas/${e.id}`
+            : e.kind === 'PAYMENT'
+              ? `/recebimentos/${e.id}`
+              : `/clientes/${customerId}/lancamentos/${e.id}?tipo=${e.kind === 'OPENING_BALANCE' ? 'OPENING_BALANCE' : 'ADJUSTMENT'}`
+        }
+        className="flex items-start gap-3 px-4 py-3 active:bg-cream-deep"
+      >
+        {row}
+      </Link>
     </li>
   );
 }

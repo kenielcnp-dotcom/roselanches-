@@ -10,11 +10,13 @@ interface PageHeaderProps {
   back?: string;
   /** Pílula de sincronização (padrão: nas telas principais, não nos formulários). */
   showSync?: boolean;
+  /** Pílula só com o ícone (padrão: quando há "Voltar", para caber o título). */
+  compactSync?: boolean;
   children?: ReactNode;
 }
 
 /** Cabeçalho das telas internas: voltar + título grande + pílula de sincronização. */
-export function PageHeader({ title, back, showSync = !back, children }: PageHeaderProps) {
+export function PageHeader({ title, back, showSync = !back, compactSync = !!back, children }: PageHeaderProps) {
   return (
     <header className="safe-top sticky top-0 z-20 bg-cream/95 backdrop-blur">
       <div className="mx-auto flex max-w-lg items-center justify-between gap-3 px-4 py-3">
@@ -22,18 +24,18 @@ export function PageHeader({ title, back, showSync = !back, children }: PageHead
           {back && <BackButton fallback={back} />}
           <h1 className="truncate text-2xl font-black text-brown">{title}</h1>
         </div>
-        {showSync && <HeaderSyncPill />}
+        {showSync && <HeaderSyncPill compact={compactSync} />}
       </div>
       {children}
     </header>
   );
 }
 
-function HeaderSyncPill() {
+function HeaderSyncPill({ compact }: { compact: boolean }) {
   const syncState = useSyncPillState();
   return (
-    <div className="max-w-[11.5rem] shrink-0">
-      <SyncPill state={syncState} />
+    <div className={compact ? 'shrink-0' : 'max-w-[11.5rem] shrink-0'}>
+      <SyncPill state={syncState} compact={compact} />
     </div>
   );
 }

@@ -293,7 +293,7 @@ function SaleFlow({ establishments, customers, products, settings, onSaved, refr
 
   return (
     <>
-      <PageHeader title="Vender" back="/" showSync>
+      <PageHeader title="Vender" back="/" showSync compactSync={false}>
         <div className="mx-auto flex max-w-lg items-center justify-between gap-2 px-4 pb-2">
           <p className="min-w-0 truncate text-brown">
             Vendendo em <strong className="font-black">{establishment.name}</strong>

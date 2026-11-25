@@ -24,7 +24,7 @@ export function SalesPage() {
 
   return (
     <>
-      <PageHeader title="Vendas" back="/" showSync />
+      <PageHeader title="Vendas" back="/" showSync compactSync={false} />
       <main className="mx-auto max-w-lg space-y-3 px-4 pt-2 pb-6">
         <Link
           to="/vender"

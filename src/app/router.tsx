@@ -16,6 +16,11 @@ import { EstablishmentFormPage } from '@/features/establishments/EstablishmentFo
 import { EstablishmentsPage } from '@/features/establishments/EstablishmentsPage';
 import { ProductFormPage } from '@/features/products/ProductFormPage';
 import { ProductsPage } from '@/features/products/ProductsPage';
+import { EntryDetailPage } from '@/features/payments/EntryDetailPage';
+import { EntryFormPage } from '@/features/payments/EntryFormPage';
+import { PaymentDetailPage } from '@/features/payments/PaymentDetailPage';
+import { PaymentFormPage } from '@/features/payments/PaymentFormPage';
+import { ReceivablesPage } from '@/features/payments/ReceivablesPage';
 import { NewSalePage } from '@/features/sales/NewSalePage';
 import { SaleDetailPage } from '@/features/sales/SaleDetailPage';
 import { SalesPage } from '@/features/sales/SalesPage';
@@ -48,7 +53,12 @@ export const router = createBrowserRouter([
       { path: 'clientes/novo', element: <CustomerFormPage /> },
       { path: 'clientes/:id', element: <CustomerDetailPage /> },
       { path: 'clientes/:id/editar', element: <CustomerFormPage /> },
-      { path: 'recebimentos', element: <ComingSoonPage title="Recebimentos" /> },
+      { path: 'recebimentos', element: <ReceivablesPage /> },
+      { path: 'recebimentos/novo', element: <PaymentFormPage /> },
+      { path: 'recebimentos/:id', element: <PaymentDetailPage /> },
+      { path: 'clientes/:id/saldo-anterior', element: <EntryFormPage kind="OPENING_BALANCE" /> },
+      { path: 'clientes/:id/ajuste', element: <EntryFormPage kind="ADJUSTMENT" /> },
+      { path: 'clientes/:id/lancamentos/:entryId', element: <EntryDetailPage /> },
       { path: 'relatorios', element: <ComingSoonPage title="Relatórios" /> },
       { path: 'produtos', element: <ProductsPage /> },
       { path: 'produtos/novo', element: <ProductFormPage /> },

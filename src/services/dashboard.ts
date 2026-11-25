@@ -9,6 +9,8 @@ const schema = z.object({
   today_sales_count: z.number().int(),
   today_sales_cents: z.number().int(),
   today_credit_cents: z.number().int(),
+  today_received_cents: z.number().int().default(0),
+  pending_notifications: z.number().int().default(0),
   timezone: z.string(),
   today: z.string(),
   as_of: z.string(),
@@ -20,6 +22,8 @@ export interface DashboardSummary {
   todaySalesCount: number;
   todaySalesCents: number;
   todayCreditCents: number;
+  todayReceivedCents: number;
+  pendingNotices: number;
   asOf: Date;
 }
 
@@ -33,6 +37,8 @@ export async function fetchDashboard(client: Client): Promise<DashboardSummary> 
     todaySalesCount: r.today_sales_count,
     todaySalesCents: r.today_sales_cents,
     todayCreditCents: r.today_credit_cents,
+    todayReceivedCents: r.today_received_cents,
+    pendingNotices: r.pending_notifications,
     asOf: new Date(r.as_of),
   };
 }

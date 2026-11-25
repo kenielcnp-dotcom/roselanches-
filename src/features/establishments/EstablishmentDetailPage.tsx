@@ -155,14 +155,14 @@ function LinkedCustomerRow({
 }) {
   const link = useLinkCustomer();
   const toast = useToast();
-  const remove = () =>
-    link.mutate(
-      { establishmentId, customerId: c.id, linked: false },
-      {
-        onSuccess: () => toast.show(`${c.fullName} saiu de ${establishmentName}. As vendas antigas continuam lá.`),
-        onError: (e) => toast.show(errorMessage(e), 'error'),
-      },
-    );
+  const remove = async () => {
+    try {
+      await link.mutateAsync({ establishmentId, customerId: c.id, linked: false });
+      toast.show(`${c.fullName} saiu de ${establishmentName}. As vendas antigas continuam lá.`);
+    } catch (e) {
+      toast.show(errorMessage(e), 'error');
+    }
+  };
   return (
     <li className="flex items-center gap-2 pr-2">
       <Link to={`/clientes/${c.id}`} className="flex min-h-16 min-w-0 flex-1 flex-col justify-center px-4 py-2 active:bg-cream-deep">
@@ -174,7 +174,7 @@ function LinkedCustomerRow({
       </Link>
       <button
         type="button"
-        onClick={remove}
+        onClick={() => void remove()}
         disabled={link.isPending}
         aria-label={`Remover ${c.fullName} deste lugar`}
         className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-brown-soft active:bg-peach disabled:opacity-50"
@@ -219,15 +219,14 @@ function AddCustomers({
               <button
                 type="button"
                 disabled={link.isPending}
-                onClick={() =>
-                  link.mutate(
-                    { establishmentId, customerId: c.id, linked: true },
-                    {
-                      onSuccess: () => toast.show(`${c.fullName} agora é cliente de ${establishmentName}.`),
-                      onError: (e) => toast.show(errorMessage(e), 'error'),
-                    },
-                  )
-                }
+                onClick={async () => {
+                  try {
+                    await link.mutateAsync({ establishmentId, customerId: c.id, linked: true });
+                    toast.show(`${c.fullName} agora é cliente de ${establishmentName}.`);
+                  } catch (e) {
+                    toast.show(errorMessage(e), 'error');
+                  }
+                }}
                 className="flex min-h-14 w-full items-center justify-between gap-3 py-2 text-left active:bg-cream-deep disabled:opacity-50"
               >
                 <span className="min-w-0">

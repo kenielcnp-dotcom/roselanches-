@@ -9,6 +9,7 @@
 import type { Client } from '@/lib/supabase/client';
 import { toAppError } from '@/lib/supabase/errors';
 import { cancelSale, createSale, type CreateSalePayload } from '@/services/sales';
+import { registerPayment, type RegisterPaymentPayload } from '@/services/payments';
 import { uploadSignature } from '@/services/signatures';
 import type { OutboxError, OutboxOp } from '@/types/domain';
 import type { LocalDb } from './db';
@@ -27,6 +28,7 @@ export interface SyncReport {
   /** Ids das vendas que acabaram de chegar ao servidor. */
   syncedSales: string[];
   syncedSignatures: number;
+  syncedPayments: number;
   failed: number;
   /** Parou por falta de conexão ou sessão expirada. */
   stoppedBy: 'network' | 'auth' | null;
@@ -69,7 +71,16 @@ const HANDLERS: Record<OutboxOp['type'], Handler | undefined> = {
     await db.localSignatures.delete(op.entityId);
     return {};
   },
-  REGISTER_PAYMENT: undefined,
+  REGISTER_PAYMENT: async (client, op) => {
+    const status = await registerPayment(client, op.payload as RegisterPaymentPayload);
+    if (status === 'CONFLICT') {
+      throw new PermanentSyncError(
+        'CONFLICT',
+        'O servidor já tem um pagamento com este código e valor diferente. Confira e registre de novo se for preciso.',
+      );
+    }
+    return {};
+  },
 };
 
 function classify(e: unknown): OutboxError {
@@ -88,7 +99,7 @@ export interface SyncOptions {
 /** Uma rodada de envio. Quem chama garante que só uma rodada roda por vez. */
 export async function runSyncRound(db: LocalDb, client: Client, options: SyncOptions = {}): Promise<SyncReport> {
   const now = options.now ?? Date.now;
-  const report: SyncReport = { sent: 0, syncedSales: [], syncedSignatures: 0, failed: 0, stoppedBy: null, flags: [] };
+  const report: SyncReport = { sent: 0, syncedSales: [], syncedSignatures: 0, syncedPayments: 0, failed: 0, stoppedBy: null, flags: [] };
 
   const all = await db.outbox.orderBy('createdAt').toArray();
   const state = new Map(all.map((o) => [o.opId, o.state]));
@@ -111,6 +122,7 @@ export async function runSyncRound(db: LocalDb, client: Client, options: SyncOpt
       report.sent += 1;
       if (op.type === 'CREATE_SALE') report.syncedSales.push(op.entityId);
       if (op.type === 'UPLOAD_SIGNATURE') report.syncedSignatures += 1;
+      if (op.type === 'REGISTER_PAYMENT') report.syncedPayments += 1;
       report.flags.push(...(result.flags ?? []));
     } catch (e) {
       const error = classify(e);

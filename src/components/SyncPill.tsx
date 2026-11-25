@@ -5,7 +5,7 @@ export type SyncPillState =
   | { kind: 'checking' }
   | { kind: 'synced'; at: Date | null }
   | { kind: 'sending' }
-  | { kind: 'pending'; sales: number; signatures: number }
+  | { kind: 'pending'; sales: number; signatures: number; payments?: number }
   | { kind: 'offline'; pending: number }
   | { kind: 'auth'; pending: number }
   | { kind: 'failed'; count: number };
@@ -14,8 +14,19 @@ function plural(n: number, one: string, many: string): string {
   return `${n} ${n === 1 ? one : many}`;
 }
 
-/** Pílula do cabeçalho: conexão + sincronização + pendências, num lugar só. */
-export function SyncPill({ state }: { state: SyncPillState }) {
+function pendingCount(state: SyncPillState): number {
+  if (state.kind === 'pending') return state.sales + state.signatures + (state.payments ?? 0);
+  if (state.kind === 'offline' || state.kind === 'auth') return state.pending;
+  if (state.kind === 'failed') return state.count;
+  return 0;
+}
+
+/**
+ * Pílula do cabeçalho: conexão + sincronização + pendências, num lugar só.
+ * compact: só o ícone (e a contagem), para telas de título longo; o texto
+ * completo continua disponível para leitores de tela.
+ */
+export function SyncPill({ state, compact = false }: { state: SyncPillState; compact?: boolean }) {
   let icon;
   let title: string;
   let detail: string;
@@ -44,6 +55,7 @@ export function SyncPill({ state }: { state: SyncPillState }) {
       const parts = [
         state.sales > 0 ? plural(state.sales, 'venda', 'vendas') : null,
         state.signatures > 0 ? plural(state.signatures, 'assinatura', 'assinaturas') : null,
+        state.payments ? plural(state.payments, 'pagamento', 'pagamentos') : null,
       ].filter(Boolean);
       icon = <Clock className="h-5 w-5 text-orange-deep" strokeWidth={2.5} />;
       title = 'Aguardando envio';
@@ -69,6 +81,28 @@ export function SyncPill({ state }: { state: SyncPillState }) {
       detail = `${plural(state.count, 'venda não enviada', 'vendas não enviadas')}`;
       tone = 'text-danger';
       break;
+  }
+
+  if (compact) {
+    const count = pendingCount(state);
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        title={`${title}: ${detail}`}
+        className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white/95 shadow-soft ring-1 ring-line"
+      >
+        {icon}
+        <span className="sr-only">
+          {title}. {detail}
+        </span>
+        {count > 0 && (
+          <span aria-hidden="true" className="tabular absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-deep px-1 text-xs font-black text-white">
+            {count}
+          </span>
+        )}
+      </div>
+    );
   }
 
   return (
