@@ -1,6 +1,6 @@
 # Publicação
 
-Estado em 25/11/2026: **no ar em https://lanchesrose.com.br** (projeto `roselanches` na Vercel, publicação automática a cada push na `main`; `www` redireciona para o endereço principal). Supabase da nuvem (`jvucakuibzrehyuxipel`) com as migrações 0100–1400 e a Edge Function `signature-upload`. Faltam os ajustes de autenticação no painel do Supabase (passo 2) e a conta da Rose (passo 5).
+Estado em 25/11/2026: **no ar em https://lanchesrose.com.br** (projeto `roselanches` na Vercel, publicação automática a cada push na `main`; `www` redireciona para o endereço principal). Supabase da nuvem (`jvucakuibzrehyuxipel`) com as migrações 0100–1400 e a Edge Function `signature-upload`. Autenticação configurada no painel (passo 2) e conta da Rose criada como dona em 26/11/2026 (passo 5, fuso `America/Cuiaba`). Falta o teste num Android real (passo 6).
 
 Verificar o site no ar (só leitura, não cria dados): `npm run verificar:producao`.
 
